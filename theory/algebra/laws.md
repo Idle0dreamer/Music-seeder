@@ -32,6 +32,21 @@ For state components not exported by scope \(s\):
 A phrase-local suspension, temporary rhythmic context, or ornament host cannot
 leak into its parent scope.
 
+Generated output obeys the same explicit rule. A non-exporting scope may retain
+append-only trace evidence, but its actions and event stages cannot enter a
+candidate. Phrase export additionally requires melody export so span identities
+cannot dangle.
+
+## Generation laws
+
+- Every sealed stage contains exactly one structural event.
+- Every candidate action belongs to exactly one stage.
+- Candidate and stage identities are unique within a generation request.
+- All grammar outcomes and candidate programs are evaluated before seeding.
+- Profile-illegal candidates retain diagnostics and never enter the draw.
+- Same profile, grammar, seed, and request select the same candidate regardless
+  of branch or candidate storage order.
+
 ## Tonal laws
 
 - Color does not change the principal center.
@@ -73,4 +88,3 @@ N(N(P))=N(P).
   solution.
 - Contradictory hard constraints fail with a minimal conflicting subset where
   practical; they are never averaged.
-

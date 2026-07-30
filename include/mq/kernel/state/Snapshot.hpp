@@ -4,6 +4,7 @@
 #include "mq/kernel/Rational.hpp"
 #include "mq/kernel/evidence/Kind.hpp"
 #include "mq/kernel/performance/Event.hpp"
+#include "mq/kernel/phrase/Span.hpp"
 #include "mq/kernel/tonicization/Level.hpp"
 #include "mq/kernel/trace/Event.hpp"
 
@@ -63,6 +64,13 @@ struct Melody {
     bool operator==(const Melody&) const = default;
 };
 
+struct Phrase {
+    std::optional<phrase::Frame> active;
+    std::vector<phrase::Span> completed;
+
+    bool operator==(const Phrase&) const = default;
+};
+
 struct Snapshot {
     Center center;
     Jins jins;
@@ -71,6 +79,7 @@ struct Snapshot {
     Cell cell;
     Path path;
     Melody melody;
+    Phrase phrase;
     Trace trace;
 
     bool operator==(const Snapshot&) const = default;

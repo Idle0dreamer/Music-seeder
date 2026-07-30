@@ -4,7 +4,8 @@ DBGFLAGS := -std=c++23 -O0 -g3 -Wall -Wextra -Wpedantic -Werror -Iinclude
 
 KERNEL_SRC := $(shell find src/kernel -name '*.cpp' | sort)
 KERNEL_TEST := $(shell find tests/kernel -name '*.cpp' | sort)
-KERNEL_APP := $(KERNEL_SRC) apps/kernel/main.cpp
+KERNEL_APP_SRC := $(shell find apps/kernel -name '*.cpp' | sort)
+KERNEL_APP := $(KERNEL_SRC) $(KERNEL_APP_SRC)
 TEST_SRC := $(KERNEL_SRC) $(KERNEL_TEST)
 TEST_OBJ := $(patsubst %.cpp,build/debug/%.o,$(TEST_SRC))
 APP_OBJ := $(patsubst %.cpp,build/release/%.o,$(KERNEL_APP))

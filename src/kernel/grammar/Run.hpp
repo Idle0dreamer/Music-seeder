@@ -45,6 +45,14 @@ private:
         const Term& term,
         const Scope& form,
         Frame frame) const;
+    [[nodiscard]] Batch stage(
+        const Term& term,
+        const Stage& form,
+        Frame frame) const;
+    [[nodiscard]] Batch candidate(
+        const Term& term,
+        const Candidate& form,
+        Frame frame) const;
 };
 
 void append(Batch& target, Batch source);

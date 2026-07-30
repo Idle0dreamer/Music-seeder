@@ -62,6 +62,7 @@ Batch Runner::run(const Term& term, Frame frame) const {
                     };
                 }
                 frame.outcome.state = std::move(*result);
+                frame.outcome.program.push_back(form.operation);
                 return Batch{{std::move(frame)}, {}};
             } else if constexpr (std::is_same_v<T, Seq>) {
                 return seq(term, form, std::move(frame));
@@ -71,6 +72,10 @@ Batch Runner::run(const Term& term, Frame frame) const {
                 return repeat(term, form, std::move(frame));
             } else if constexpr (std::is_same_v<T, Scope>) {
                 return scope(term, form, std::move(frame));
+            } else if constexpr (std::is_same_v<T, Stage>) {
+                return stage(term, form, std::move(frame));
+            } else if constexpr (std::is_same_v<T, Candidate>) {
+                return candidate(term, form, std::move(frame));
             } else if constexpr (std::is_same_v<T, Guard>) {
                 if (!guard::holds(
                         form.predicate,

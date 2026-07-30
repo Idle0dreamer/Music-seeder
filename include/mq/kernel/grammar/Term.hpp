@@ -51,6 +51,14 @@ public:
         scope::Policy policy,
         Term body);
     static Term bind(Identity identity, Identity binding, Term body);
+    static Term stage(
+        Identity identity,
+        Identity stage,
+        Term body);
+    static Term candidate(
+        Identity identity,
+        Identity candidate,
+        Term body);
 
     [[nodiscard]] const Identity& identity() const noexcept;
 

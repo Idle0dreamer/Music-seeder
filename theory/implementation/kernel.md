@@ -52,7 +52,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Multiple-parent conflict rejection | profile law tests |
 | Explicit conflict resolution | profile law tests |
 | Regional narrowing, prohibition, and exception | profile law tests |
-| Ten tonal, vocabulary, and event operators | `Operation` variant |
+| Twelve tonal, phrase, vocabulary, and event operators | `Operation` variant |
 | Exact tonicization evidence thresholds | `Evaluator` |
 | Seeded lexicographic alternative selection | `choice::select` |
 | Storage-order and ineligible-choice stability | choice law tests |
@@ -63,35 +63,59 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Explicit state projections and scope exports | scope restoration tests |
 | Typed path source, target, maximum level, and prior-path guards | path graph tests |
 | Missing path graph rejects modulation without fallback | path guard tests |
+| Event-bounded phrase spans | checked `Begin`, `Cadence`, and `End` transitions |
+| Exact cadence evidence and closure strength | distinct evidence and span fields |
+| Final-event closed-phrase rule | phrase transition laws |
+| Phrase scope dependency | Phrase export requires Melody export |
+| Typed phrase pitch context | function, cadence family, and boundary readers |
+| Phrase-conditioned exact pitch target | end-to-end request law |
+| One-event generation stages | static and runtime stage-count laws |
+| Complete candidate evaluation | legal outcomes and retained diagnostics before seed |
+| Exact staged performance plans | one target per committed structural event |
+| Executable profile comparison | reconstructed prohibition changes legal generation set |
+| Typed grammar output | `Stage` and `Candidate` term forms |
+| Scope-controlled generated output | explicit `Output` export and non-leakage law |
+| Grammar-to-generator compilation | sealed derivations become exact candidate plans |
+| Executable neutral generation witness | CLI seed selects a complete candidate and prints exact targets |
 
 ## Deliberately not claimed yet
 
-- Phrase, motif, cadence, sayr, ornament, timing, and iqa operator families.
+- Phrase relations, motif, sayr, ornament, timing, and iqa operator families.
 - `Alt` identity normalization and its normalized associativity law.
 - Recursive production definitions and explicit well-founded budget accounting.
 - Profile-declared choice bands beyond equal minimum-cost outcomes.
-- Typed phrase-function and cadence state over structural event spans.
+- Numeric cadence-strength consumption by contextual pitch rules.
+- A full jins melodic-unit descriptor and its baggage or gesture grammar.
+- A grammar that constructs extended musical candidates rather than neutral
+  finite fixtures.
 - Continuous intonation trajectory basis functions.
 - A sourced real regional profile.
+- A vocabulary-composition boundary for admitting a second theory module.
 
 Audio rendering is outside this ledger. The independent synthesis boundary is
 specified under `synthesis/`.
 
 ## Next coherent sequence
 
-1. Define phrase spans over stable structural event identities.
-2. Represent question, response, suspension, and closure functions explicitly.
-3. Project phrase function and cadence state into calculated pitch requests.
-4. Normalize `Alt` identities and test normalized associativity.
-5. Add recursive production budgets before recursive grammar modules.
-6. Encode one sourced Bayati evidence fixture only after its rule review.
+1. Define a full jins melodic-unit descriptor without scale arrays: stable
+   tonic and ghammaz roles, register regions, emphasis roles, baggage
+   capabilities, and gesture identities.
+2. Consume that descriptor in event-stage legality and pitch projection.
+3. Define sayr obligations over completed phrase spans, jins state, and path
+   history.
+4. Consume sayr obligations in candidate legality before adding recursive
+   productions.
+5. Add explicit well-founded production budgets, then recursive phrase
+   production definitions.
+6. Admit sourced regional evidence only after the corresponding generated
+   consequences have validation laws.
 
 ## Validation environment
 
 Verified in the current workspace:
 
 - optimized GCC C++23 build with warnings as errors;
-- twenty-four debug law suites;
+- thirty debug law suites;
 - undefined-behavior sanitizer;
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails

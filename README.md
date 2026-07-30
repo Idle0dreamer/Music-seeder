@@ -23,9 +23,13 @@ grammar authority.
 
 ```sh
 make kernel
-./build/kernel
+./build/kernel 2
 make kernel-test
 ```
+
+The optional unsigned seed drives the neutral executable generation fixture.
+It prints the selected complete candidate and exact structural targets. This is
+an integration witness, not an authentic regional performance or audio demo.
 
 `make test` is an alias for the kernel law suite. Rejected legacy prototype
 sources are not part of this checkpoint.
@@ -37,6 +41,7 @@ sources are not part of this checkpoint.
 | `theory/algebra` | sorts, operators, semantics, laws, regional reconstruction |
 | `theory/pitch` | exact calculated pitch-field specification |
 | `include/mq/kernel/grammar` | finite terms, guards, scope policy, derivations |
+| `include/mq/kernel/generate` | staged complete-candidate evaluation and seeded selection |
 | `include/mq/kernel/state` | decomposed musical-state projections |
 | `include/mq/kernel/performance` | instrument-neutral structural events and exact targets |
 | `include/mq/kernel/motion` | typed intended melodic direction |

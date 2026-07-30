@@ -9,6 +9,11 @@
 
 namespace mq::kernel::grammar {
 
+struct Stage {
+    Identity identity;
+    std::vector<operation::Any> actions;
+};
+
 struct Diagnostic {
     Identity term;
     std::vector<Identity> scope;
@@ -17,9 +22,12 @@ struct Diagnostic {
 };
 
 struct Outcome {
+    std::optional<Identity> candidate;
     state::Snapshot state;
     choice::Cost cost;
     std::vector<choice::Draw> decisions;
+    std::vector<operation::Any> program;
+    std::vector<Stage> stages;
 };
 
 struct Result {

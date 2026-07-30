@@ -65,6 +65,22 @@ void motion();
 
 } // namespace request
 
+namespace phrase {
+
+void laws();
+void scope();
+void projection();
+
+} // namespace phrase
+
+namespace generate {
+
+void laws();
+void profile();
+void grammar();
+
+} // namespace generate
+
 namespace grammar {
 
 void laws();

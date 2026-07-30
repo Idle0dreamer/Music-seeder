@@ -27,6 +27,12 @@ int main() {
         test::event::scope();
         test::request::run();
         test::request::motion();
+        test::phrase::laws();
+        test::phrase::scope();
+        test::phrase::projection();
+        test::generate::laws();
+        test::generate::profile();
+        test::generate::grammar();
         test::path();
         test::grammar::laws();
         test::grammar::relation();
@@ -52,6 +58,12 @@ int main() {
             << "PASS structural event scope laws\n"
             << "PASS exact instrument-neutral pitch request laws\n"
             << "PASS exact same and fall motion laws\n"
+            << "PASS phrase span and cadence transition laws\n"
+            << "PASS phrase scope and dependency laws\n"
+            << "PASS phrase-conditioned pitch request laws\n"
+            << "PASS staged complete-candidate generation laws\n"
+            << "PASS executable profile-to-generation laws\n"
+            << "PASS typed grammar-to-generation laws\n"
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS complete grammar branch evaluation\n";

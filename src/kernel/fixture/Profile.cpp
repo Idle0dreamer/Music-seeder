@@ -57,6 +57,10 @@ std::expected<Profiles, std::string> profiles(
             "allow.place",
             {fixture.role.root, fixture.role.ghammaz},
             source),
+        define(
+            "allow.phrase.function",
+            {fixture.phrase.function},
+            source),
         define("threshold.internal.emphasis", Rational(2), source),
         define("threshold.internal.dwell", Rational(2), source),
         define("threshold.internal.cell", Rational(1), source),

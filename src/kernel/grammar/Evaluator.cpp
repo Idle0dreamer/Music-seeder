@@ -25,7 +25,14 @@ Result Evaluator::derive(
     auto batch = runner.run(
         term,
         detail::Frame{
-            Outcome{std::move(state), {}, {}},
+            Outcome{
+                .candidate = {},
+                .state = std::move(state),
+                .cost = {},
+                .decisions = {},
+                .program = {},
+                .stages = {},
+            },
             {},
             {},
         });

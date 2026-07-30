@@ -45,7 +45,28 @@ struct Bind {
     Term body;
 };
 
-using Form = std::variant<Id, Fail, Atom, Seq, Alt, Guard, Repeat, Scope, Bind>;
+struct Stage {
+    Identity identity;
+    Term body;
+};
+
+struct Candidate {
+    Identity identity;
+    Term body;
+};
+
+using Form = std::variant<
+    Id,
+    Fail,
+    Atom,
+    Seq,
+    Alt,
+    Guard,
+    Repeat,
+    Scope,
+    Bind,
+    Stage,
+    Candidate>;
 
 struct Node {
     Identity identity;

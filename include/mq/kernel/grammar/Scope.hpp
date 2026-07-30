@@ -6,7 +6,7 @@
 
 namespace mq::kernel::grammar::scope {
 
-enum class Part : std::uint8_t {
+enum class Part : std::uint16_t {
     None = 0,
     Center = 1U << 0U,
     Jins = 1U << 1U,
@@ -15,18 +15,20 @@ enum class Part : std::uint8_t {
     Cell = 1U << 4U,
     Path = 1U << 5U,
     Melody = 1U << 6U,
+    Phrase = 1U << 7U,
+    Output = 1U << 8U,
 };
 
 constexpr Part operator|(Part left, Part right) noexcept {
     return static_cast<Part>(
-        static_cast<std::uint8_t>(left) |
-        static_cast<std::uint8_t>(right));
+        static_cast<std::uint16_t>(left) |
+        static_cast<std::uint16_t>(right));
 }
 
 [[nodiscard]] constexpr bool has(Part set, Part part) noexcept {
     return (
-        static_cast<std::uint8_t>(set) &
-        static_cast<std::uint8_t>(part)) != 0;
+        static_cast<std::uint16_t>(set) &
+        static_cast<std::uint16_t>(part)) != 0;
 }
 
 struct Policy {

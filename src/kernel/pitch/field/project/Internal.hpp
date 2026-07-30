@@ -18,4 +18,16 @@ namespace mq::kernel::pitch::field::project::detail {
     const Source& source,
     const state::Snapshot& state);
 
+[[nodiscard]] std::expected<std::optional<Fact>, Error> read(
+    const phrase::function::Read& source,
+    const state::Snapshot& state);
+
+[[nodiscard]] std::expected<std::optional<Fact>, Error> read(
+    const phrase::cadence::Read& source,
+    const state::Snapshot& state);
+
+[[nodiscard]] std::expected<std::optional<Fact>, Error> read(
+    const phrase::boundary::Read& source,
+    const state::Snapshot& state);
+
 } // namespace mq::kernel::pitch::field::project::detail

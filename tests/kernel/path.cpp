@@ -55,7 +55,24 @@ void test::path() {
         operation::Emphasize{fixture.role.ghammaz, Rational(2)},
         operation::Dwell{fixture.role.ghammaz, Rational(2)},
         operation::Emit{fixture.cell},
-        operation::Cadence{fixture.cadence, Rational(1)},
+        operation::Begin{
+            Identity{"test.path.phrase", "evidence", "1"},
+            mq::kernel::phrase::Function{fixture.phrase.function},
+        },
+        operation::Place{
+            Identity{"test.path.event", "cadence", "1"},
+            fixture.role.root,
+            motion::Direction::Start,
+        },
+        operation::Cadence{
+            fixture.cadence,
+            Rational(1),
+            Rational(1),
+        },
+        operation::End{
+            Identity{"test.path.phrase", "evidence", "1"},
+            mq::kernel::phrase::Boundary::Closed,
+        },
         operation::Tonicize{
             fixture.jins.branch,
             tonicization::Level::Internal,

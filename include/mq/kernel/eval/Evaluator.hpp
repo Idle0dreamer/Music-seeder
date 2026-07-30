@@ -48,6 +48,18 @@ private:
         state::Snapshot& state,
         const operation::Place& event,
         std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> begin(
+        state::Snapshot& state,
+        const operation::Begin& phrase,
+        std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> cadence(
+        state::Snapshot& state,
+        const operation::Cadence& cadence,
+        std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> end(
+        state::Snapshot& state,
+        const operation::End& phrase,
+        std::size_t index) const;
 };
 
 } // namespace mq::kernel::eval

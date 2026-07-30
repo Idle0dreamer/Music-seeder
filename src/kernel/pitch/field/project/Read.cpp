@@ -88,13 +88,15 @@ std::expected<std::optional<Fact>, Error> read(
                     value = &reader.maqam;
                 }
                 return std::optional<Fact>{{reader.key, *value}};
-            } else {
+            } else if constexpr (std::same_as<Type, path::Read>) {
                 const bool completed =
                     state.path.completed.contains(reader.path);
                 return std::optional<Fact>{{
                     reader.key,
                     completed ? reader.complete : reader.incomplete,
                 }};
+            } else {
+                return read(reader, state);
             }
         },
         source);

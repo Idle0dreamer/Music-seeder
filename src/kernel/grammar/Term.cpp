@@ -92,6 +92,26 @@ Term Term::bind(Identity identity, Identity binding, Term body) {
     }));
 }
 
+Term Term::stage(
+    Identity identity,
+    Identity stage,
+    Term body) {
+    return Term(std::make_shared<detail::Node>(detail::Node{
+        std::move(identity),
+        detail::Stage{std::move(stage), std::move(body)},
+    }));
+}
+
+Term Term::candidate(
+    Identity identity,
+    Identity candidate,
+    Term body) {
+    return Term(std::make_shared<detail::Node>(detail::Node{
+        std::move(identity),
+        detail::Candidate{std::move(candidate), std::move(body)},
+    }));
+}
+
 const Identity& Term::identity() const noexcept {
     return node_->identity;
 }

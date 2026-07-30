@@ -42,11 +42,11 @@ transformation is unavailable unless the active profile defines its domain.
 
 ## Phrase and form operators
 
-- `Begin(scope,function)` and `End(scope,boundary)`;
+- `Begin(phrase,function)` and `End(phrase,boundary)`;
 - `Prepare(target)`;
 - `Suspend(target)`;
 - `Answer(reference,closureDelta)`;
-- `Cadence(family,target,strength)`;
+- `Cadence(family,evidence,strength)`;
 - `Fulfil(obligation)`;
 - `ActivateIqa(iqa)` and `DeactivateIqa()`.
 
@@ -77,8 +77,15 @@ The grammar itself uses a small closed set:
 \operatorname{Guard}(p,g) &: G\\
 \operatorname{Repeat}_{[m,n]}(g) &: G\\
 \operatorname{Scope}(s,g) &: G\\
-\operatorname{Bind}(x,g) &: G.
+\operatorname{Bind}(x,g) &: G\\
+\operatorname{Stage}(i,g) &: G\\
+\operatorname{Candidate}(i,g) &: G.
 \end{aligned}
 \]
+
+`Stage` groups exactly one fully annotated structural event for pitch
+resolution. `Candidate` gives a complete derivation a stable identity for
+profile validation and seeded selection. They package grammar output; they do
+not add musical meaning.
 
 There is no unrestricted note-choice operator.

@@ -24,6 +24,10 @@ const char* name(const Any& value) noexcept {
                 return "Modulate";
             } else if constexpr (std::is_same_v<T, Place>) {
                 return "Place";
+            } else if constexpr (std::is_same_v<T, Begin>) {
+                return "Begin";
+            } else if constexpr (std::is_same_v<T, End>) {
+                return "End";
             } else {
                 return "Return";
             }

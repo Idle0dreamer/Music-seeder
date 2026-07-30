@@ -4,6 +4,8 @@
 #include "mq/kernel/Rational.hpp"
 #include "mq/kernel/evidence/Kind.hpp"
 #include "mq/kernel/motion/Direction.hpp"
+#include "mq/kernel/phrase/Boundary.hpp"
+#include "mq/kernel/phrase/Function.hpp"
 #include "mq/kernel/tonicization/Level.hpp"
 
 #include <variant>
@@ -35,6 +37,7 @@ struct Emit {
 struct Cadence {
     Identity family;
     Rational evidence{1};
+    Rational strength{1};
 };
 
 struct Tonicize {
@@ -58,6 +61,16 @@ struct Place {
     motion::Direction direction{motion::Direction::Start};
 };
 
+struct Begin {
+    Identity phrase;
+    phrase::Function function;
+};
+
+struct End {
+    Identity phrase;
+    phrase::Boundary boundary{phrase::Boundary::Open};
+};
+
 using Any = std::variant<
     Anchor,
     Enter,
@@ -68,7 +81,9 @@ using Any = std::variant<
     Tonicize,
     Modulate,
     Return,
-    Place>;
+    Place,
+    Begin,
+    End>;
 
 [[nodiscard]] const char* name(const Any& value) noexcept;
 

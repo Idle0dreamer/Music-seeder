@@ -16,6 +16,9 @@ std::expected<Set, std::string> make() {
             Identity{"fixture.role", "root", "1"},
             Identity{"fixture.role", "ghammaz", "1"},
         },
+        .phrase = {
+            Identity{"fixture.phrase.function", "neutral", "1"},
+        },
         .cell = Identity{"fixture.cell", "establish", "1"},
         .cadence = Identity{"fixture.cadence", "local", "1"},
         .path = {

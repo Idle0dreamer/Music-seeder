@@ -58,7 +58,14 @@ capabilities; they do not mutate musical state. Guards may require a binding.
 then restores the parent path and bindings. For each musical component not in
 the explicit export set \(E\), the output projection is restored from the
 input. Trace and decision metadata are append-only evidence and are never
-scope-local musical components.
+scope-local musical components. Generated actions and stages are a separate
+`Output` component and do not escape a scope unless explicitly exported.
+
+`Stage(i,g)` evaluates \(g\), retains its ordered primitive actions, and seals
+that action interval under stable stage identity \(i\). Stages may not nest.
+`Candidate(i,g)` seals one complete outcome under stable candidate identity
+\(i\); candidates may not nest. Generation accepts only outcomes whose actions
+are entirely covered by nonempty stages.
 
 ## Primitive execution
 
@@ -82,6 +89,12 @@ the rule identity and provenance that rejected it.
 required for the first event and forbidden afterward. Its intended direction is
 checked against exact calculated pitch order when the instrument-neutral
 performance target is built; the grammar declaration alone is not proof.
+
+`Begin(i,f)` records the current event-history offset under profile-defined
+phrase function \(f\). `Cadence(a,e,s)` contributes evidence and records exact
+closure strength \(s\) at the current structural event in the active phrase.
+`End(i,b)` resolves the offset to stable first and last event identities and
+rejects an empty span or a closed span without final-event cadence.
 
 ## Sequence
 

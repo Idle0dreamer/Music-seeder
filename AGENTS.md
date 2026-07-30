@@ -19,6 +19,9 @@
   consume instrument-neutral kernel output through a one-way interface.
 - Keep operator semantics universal and reconstruct traditions through explicit,
   provenance-bearing profile operations.
+- Treat maqām as the first vocabulary module, not the permanent shape of the
+  grammar or product. Admit shared operators only when their laws are actually
+  shared across theories.
 - Missing regional knowledge has no generic fallback. Use neutral fixtures until
   sourced rules exist.
 - Random seeds select among complete legal alternatives and never alter legality.
@@ -28,6 +31,8 @@
 - Keep files short, modular, and named by one responsibility.
 - Prefer directories over compound file names.
 - Separate algebra, profile reconstruction, pitch, grammar, and performance.
+- Every foundational sequence must name the concrete downstream breadth it
+  unlocks, and the next sequence must consume that leverage.
 - Keep synthesis, instrument adapters, and acoustic validation under
   `synthesis/`, independent of musical-language validation.
 - Treat optimistic claims as research debt: state the missing evidence and build

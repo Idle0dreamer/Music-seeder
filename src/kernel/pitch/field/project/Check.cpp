@@ -71,6 +71,11 @@ std::expected<void, Error> check(
                            complete(read.complete) &&
                            complete(read.incomplete) &&
                            read.complete != read.incomplete;
+                } else if constexpr (
+                    std::same_as<Type, phrase::boundary::Read>) {
+                    return complete(read.open) &&
+                           complete(read.closed) &&
+                           read.open != read.closed;
                 } else {
                     return true;
                 }

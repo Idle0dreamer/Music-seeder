@@ -76,11 +76,7 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 }
             } else if constexpr (std::is_same_v<T, operation::Cadence>) {
                 subject = value.family.str();
-                if (!profile_.allows("allow.cadence", value.family)) {
-                    return std::unexpected(
-                        denied(index, label, "allow.cadence", subject));
-                }
-                state.evidence.amount[evidence::Kind::Cadence] += value.evidence;
+                return cadence(state, value, index);
             } else if constexpr (std::is_same_v<T, operation::Tonicize>) {
                 subject = value.jins.str();
                 if (!profile_.allows("allow.tonicize", value.jins)) {
@@ -113,6 +109,12 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
             } else if constexpr (std::is_same_v<T, operation::Place>) {
                 subject = value.event.str();
                 return place(state, value, index);
+            } else if constexpr (std::is_same_v<T, operation::Begin>) {
+                subject = value.phrase.str();
+                return begin(state, value, index);
+            } else if constexpr (std::is_same_v<T, operation::End>) {
+                subject = value.phrase.str();
+                return end(state, value, index);
             } else if constexpr (std::is_same_v<T, operation::Return>) {
                 subject = value.center.str();
                 const auto found =

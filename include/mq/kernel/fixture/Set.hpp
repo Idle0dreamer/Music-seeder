@@ -23,6 +23,10 @@ struct Role {
     Identity ghammaz;
 };
 
+struct Phrase {
+    Identity function;
+};
+
 struct Regional {
     profile::Set a;
     profile::Set b;
@@ -42,6 +46,7 @@ struct Set {
     Center center;
     Jins jins;
     Role role;
+    Phrase phrase;
     Identity cell;
     Identity cadence;
     Path path;

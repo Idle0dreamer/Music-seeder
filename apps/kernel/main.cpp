@@ -1,58 +1,29 @@
-#include "mq/kernel/fixture/Set.hpp"
-#include "mq/kernel/pitch/System.hpp"
+#include "generate/Run.hpp"
+#include "pitch/Run.hpp"
 
+#include <charconv>
+#include <cstdint>
 #include <iostream>
+#include <string_view>
 
-int main() {
-    using namespace mq::kernel;
-
-    const auto made = fixture::make();
-    if (!made) {
-        std::cerr << made.error() << '\n';
-        return 1;
+int main(int argc, char** argv) {
+    if (argc > 2) {
+        std::cerr << "usage: kernel [seed]\n";
+        return 2;
     }
-
-    const Identity tonic{"demo.pitch", "tonic", "1"};
-    const Identity ghammaz{"demo.pitch", "ghammaz", "1"};
-    pitch::System field;
-    field.declare(tonic);
-    field.declare(ghammaz);
-    field.equate({
-        {"demo.constraint", "anchor", "1"},
-        {{tonic, Rational(1)}},
-        pitch::Expression::cents(Rational(0)),
-        "demo anchor",
-    });
-    field.equate({
-        {"demo.constraint", "ghammaz", "1"},
-        {{ghammaz, Rational(1)}, {tonic, Rational(-1)}},
-        pitch::Expression::ratio(4, 3),
-        "demo ratio constraint",
-    });
-    const auto solution = field.solve();
-    if (!solution) {
-        std::cerr << solution.error() << '\n';
-        return 1;
+    std::uint64_t seed{};
+    if (argc == 2) {
+        const std::string_view value(argv[1]);
+        const auto parsed = std::from_chars(
+            value.data(),
+            value.data() + value.size(),
+            seed);
+        if (parsed.ec != std::errc{} ||
+            parsed.ptr != value.data() + value.size()) {
+            std::cerr << "seed must be an unsigned integer\n";
+            return 2;
+        }
     }
-
-    std::cout
-        << "kernel: non-ML typed operator and constraint system\n"
-        << "shared profile rules: "
-        << made->profile.shared.rules().size() << '\n'
-        << "regional A emphasis threshold: "
-        << made->profile.regional.a
-               .parameter("threshold.internal.emphasis")
-               ->str()
-        << '\n'
-        << "regional B permits demo path: "
-        << (made->profile.regional.b.allows(
-                "allow.modulate",
-                made->path.direct)
-                ? "yes"
-                : "no")
-        << '\n'
-        << "symbolic ghammaz: " << solution->values.at(ghammaz).str() << '\n'
-        << "realized cents: " << solution->values.at(ghammaz).cents()
-        << '\n';
-    return 0;
+    const auto pitch = app::pitch::run();
+    return pitch == 0 ? app::generate::run(seed) : pitch;
 }

@@ -30,22 +30,24 @@ maqām.
 17. [State projection into pitch context](pitch/project.md)
 18. [Structural pitch events](performance/event.md)
 19. [Performance state](grammar/state.md)
-20. [Motif grammar](grammar/motif.md)
-21. [Phrase and cadence grammar](grammar/phrase.md)
-22. [Sayr](grammar/sayr.md)
-23. [Modulation and tonicization](grammar/modulation.md)
-24. [Contextual intonation](performance/intonation.md)
-25. [Free and measured time](performance/time.md)
-26. [Ornament and articulation](performance/ornament.md)
-27. [Form separation](form/form.md)
-28. [Regional and repertoire profiles](region/profile.md)
-29. [Unified constraint model](math/model.md)
-30. [Corpus and annotation model](data/corpus.md)
-31. [Validation gates](validation/gates.md)
-32. [Bayati case study](case/bayati.md)
-33. [Research debt](validation/debt.md)
-34. [Kernel implementation ledger](implementation/kernel.md)
-35. [Sources](sources/bibliography.md)
+20. [Phrase spans and cadence state](grammar/span.md)
+21. [Staged generation](generation/stage.md)
+22. [Motif grammar](grammar/motif.md)
+23. [Phrase and cadence grammar](grammar/phrase.md)
+24. [Sayr](grammar/sayr.md)
+25. [Modulation and tonicization](grammar/modulation.md)
+26. [Contextual intonation](performance/intonation.md)
+27. [Free and measured time](performance/time.md)
+28. [Ornament and articulation](performance/ornament.md)
+29. [Form separation](form/form.md)
+30. [Regional and repertoire profiles](region/profile.md)
+31. [Unified constraint model](math/model.md)
+32. [Corpus and annotation model](data/corpus.md)
+33. [Validation gates](validation/gates.md)
+34. [Bayati case study](case/bayati.md)
+35. [Research debt](validation/debt.md)
+36. [Kernel implementation ledger](implementation/kernel.md)
+37. [Sources](sources/bibliography.md)
 
 ## Central conclusion
 
@@ -71,9 +73,10 @@ universal typed engine
 The engine may be uniform. Its musical content cannot be uniform across
 Egyptian, Levantine, Iraqi, Gulf, Turkish, North African, and other practices.
 
-## Implementation hold
+## Implementation discipline
 
-No production implementation should begin until:
+Neutral kernel mechanisms may be implemented and tested without invented
+regional constants. Authentic generative claims remain unavailable until:
 
 - every primitive has an unambiguous identity and scope;
 - the Bayati case study can be annotated consistently by practitioners;
@@ -83,7 +86,8 @@ No production implementation should begin until:
   tuning formula;
 - the instrument-neutral performance-plan boundary is typed and testable.
 
-Passing software tests alone is insufficient.
+Passing software tests proves mechanism laws only. It does not prove
+representational, regional, generative, or perceptual correctness.
 
 ## Non-ML boundary
 
