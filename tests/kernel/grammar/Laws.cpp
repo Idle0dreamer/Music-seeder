@@ -18,7 +18,9 @@ void test::grammar::laws() {
     const auto made = fixture::make();
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
-    const kg::Evaluator evaluator(fixture.profile.shared);
+    const kg::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
 
     const auto anchor = kg::Term::atom(
         id("anchor"),
@@ -73,7 +75,9 @@ void test::grammar::laws() {
         {0, 2},
         emphasis);
     require(repeated.has_value(), repeated.error_or("Repeat rejected bounds"));
-    const auto repetitions = evaluator.derive(*repeated);
+    state::Snapshot initial;
+    initial.jins.active = fixture.jins.root;
+    const auto repetitions = evaluator.derive(*repeated, initial);
     require(
         repetitions.outcomes.size() == 3,
         "Repeat did not preserve every bounded count");

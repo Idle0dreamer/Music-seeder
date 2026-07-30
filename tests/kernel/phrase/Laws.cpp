@@ -17,7 +17,11 @@ void test::phrase::laws() {
     const auto made = fixture::make();
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
-    const eval::Evaluator evaluator(fixture.profile.shared);
+    const eval::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
+    state::Snapshot initial;
+    initial.jins.active = fixture.jins.root;
     const auto phraseId = id("span");
     const auto eventId = id("event");
     const operation::Begin begin{
@@ -28,6 +32,8 @@ void test::phrase::laws() {
         eventId,
         fixture.role.root,
         motion::Direction::Start,
+        fixture.region.root,
+        std::nullopt,
     };
     const operation::Cadence cadence{
         fixture.cadence,
@@ -44,7 +50,7 @@ void test::phrase::laws() {
         cadence,
         end,
     };
-    const auto completed = evaluator.run({}, legal);
+    const auto completed = evaluator.run(initial, legal);
     require(completed.has_value(), completed ? "" : completed.error().message);
     require(
         !completed->phrase.active &&
@@ -64,7 +70,8 @@ void test::phrase::laws() {
             completed->trace.events.back().operation == "End",
         "phrase operations were mislabeled in the trace");
 
-    const auto opened = evaluator.run({}, std::vector<operation::Any>{begin});
+    const auto opened =
+        evaluator.run(initial, std::vector<operation::Any>{begin});
     require(opened.has_value(), opened ? "" : opened.error().message);
     const auto nested =
         evaluator.run(*opened, std::vector<operation::Any>{begin});
@@ -105,6 +112,8 @@ void test::phrase::laws() {
         id("tail"),
         fixture.role.ghammaz,
         motion::Direction::Rise,
+        fixture.region.upper,
+        std::nullopt,
     };
     const auto unclosed = evaluator.run(
         *first,

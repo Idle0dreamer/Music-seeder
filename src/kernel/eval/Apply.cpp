@@ -43,25 +43,13 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 }
             } else if constexpr (std::is_same_v<T, operation::Enter>) {
                 subject = value.jins.str();
-                if (!profile_.allows("allow.enter", value.jins)) {
-                    return std::unexpected(
-                        denied(index, label, "allow.enter", subject));
-                }
-                state.jins.active = value.jins;
+                return enter(state, value, index);
             } else if constexpr (std::is_same_v<T, operation::Emphasize>) {
                 subject = value.role.str();
-                if (!profile_.allows("allow.emphasize", value.role)) {
-                    return std::unexpected(
-                        denied(index, label, "allow.emphasize", subject));
-                }
-                state.evidence.amount[evidence::Kind::Emphasis] += value.amount;
+                return emphasize(state, value, index);
             } else if constexpr (std::is_same_v<T, operation::Dwell>) {
                 subject = value.role.str();
-                if (!profile_.allows("allow.dwell", value.role)) {
-                    return std::unexpected(
-                        denied(index, label, "allow.dwell", subject));
-                }
-                state.evidence.amount[evidence::Kind::Dwell] += value.amount;
+                return dwell(state, value, index);
             } else if constexpr (std::is_same_v<T, operation::Emit>) {
                 subject = value.cell.str();
                 if (!profile_.allows("allow.emit", value.cell)) {
@@ -79,6 +67,14 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 return cadence(state, value, index);
             } else if constexpr (std::is_same_v<T, operation::Tonicize>) {
                 subject = value.jins.str();
+                if (state.gesture.active) {
+                    return std::unexpected(Violation{
+                        index,
+                        label,
+                        "gesture.active",
+                        "active gesture must end before tonicization",
+                    });
+                }
                 if (!profile_.allows("allow.tonicize", value.jins)) {
                     return std::unexpected(
                         denied(index, label, "allow.tonicize", subject));
@@ -87,7 +83,11 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 if (!evidence) {
                     return evidence;
                 }
-                state.jins.active = value.jins;
+                const auto selected = descriptor(value.jins, index, label);
+                if (!selected) {
+                    return std::unexpected(selected.error());
+                }
+                state.jins.active = (*selected)->identity;
                 state.tonicization.level = value.level;
             } else if constexpr (std::is_same_v<T, operation::Modulate>) {
                 subject = value.path.str();
@@ -115,6 +115,18 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
             } else if constexpr (std::is_same_v<T, operation::End>) {
                 subject = value.phrase.str();
                 return end(state, value, index);
+            } else if constexpr (
+                std::is_same_v<T, operation::gesture::Begin>) {
+                subject = value.occurrence.str();
+                return begin(state, value, index);
+            } else if constexpr (
+                std::is_same_v<T, operation::gesture::End>) {
+                subject = value.occurrence.str();
+                return end(state, value, index);
+            } else if constexpr (
+                std::is_same_v<T, operation::sayr::Fulfill>) {
+                subject = value.obligation.str();
+                return fulfill(state, value, index);
             } else if constexpr (std::is_same_v<T, operation::Return>) {
                 subject = value.center.str();
                 const auto found =

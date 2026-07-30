@@ -4,10 +4,14 @@
 #include "mq/kernel/Rational.hpp"
 #include "mq/kernel/evidence/Kind.hpp"
 #include "mq/kernel/motion/Direction.hpp"
+#include "mq/kernel/operation/gesture/Begin.hpp"
+#include "mq/kernel/operation/gesture/End.hpp"
+#include "mq/kernel/operation/sayr/Fulfill.hpp"
 #include "mq/kernel/phrase/Boundary.hpp"
 #include "mq/kernel/phrase/Function.hpp"
 #include "mq/kernel/tonicization/Level.hpp"
 
+#include <optional>
 #include <variant>
 
 namespace mq::kernel::operation {
@@ -59,6 +63,8 @@ struct Place {
     Identity event;
     Identity role;
     motion::Direction direction{motion::Direction::Start};
+    Identity region;
+    std::optional<Identity> baggage;
 };
 
 struct Begin {
@@ -83,7 +89,10 @@ using Any = std::variant<
     Return,
     Place,
     Begin,
-    End>;
+    End,
+    gesture::Begin,
+    gesture::End,
+    sayr::Fulfill>;
 
 [[nodiscard]] const char* name(const Any& value) noexcept;
 

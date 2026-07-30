@@ -17,6 +17,8 @@ enum class Part : std::uint16_t {
     Melody = 1U << 6U,
     Phrase = 1U << 7U,
     Output = 1U << 8U,
+    Gesture = 1U << 9U,
+    Sayr = 1U << 10U,
 };
 
 constexpr Part operator|(Part left, Part right) noexcept {

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "mq/kernel/eval/Context.hpp"
 #include "mq/kernel/operation/Operation.hpp"
-#include "mq/kernel/path/Graph.hpp"
 #include "mq/kernel/profile/Set.hpp"
 #include "mq/kernel/state/Snapshot.hpp"
 
@@ -21,7 +21,13 @@ struct Violation {
 class Evaluator {
 public:
     explicit Evaluator(const profile::Set& profile);
+    Evaluator(const profile::Set& profile, Context context);
     Evaluator(const profile::Set& profile, const path::Graph& paths);
+    Evaluator(const profile::Set& profile, const jins::Catalog& catalog);
+    Evaluator(
+        const profile::Set& profile,
+        const jins::Catalog& catalog,
+        const path::Graph& paths);
 
     [[nodiscard]] std::expected<state::Snapshot, Violation> run(
         state::Snapshot state,
@@ -29,7 +35,7 @@ public:
 
 private:
     const profile::Set& profile_;
-    const path::Graph* paths_{};
+    Context context_;
 
     [[nodiscard]] std::expected<state::Snapshot, Violation> apply(
         state::Snapshot state,
@@ -48,6 +54,26 @@ private:
         state::Snapshot& state,
         const operation::Place& event,
         std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> enter(
+        state::Snapshot& state,
+        const operation::Enter& action,
+        std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> emphasize(
+        state::Snapshot& state,
+        const operation::Emphasize& action,
+        std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> dwell(
+        state::Snapshot& state,
+        const operation::Dwell& action,
+        std::size_t index) const;
+    [[nodiscard]] std::expected<const jins::Descriptor*, Violation> descriptor(
+        const state::Snapshot& state,
+        std::size_t index,
+        const char* operation) const;
+    [[nodiscard]] std::expected<const jins::Descriptor*, Violation> descriptor(
+        const Identity& identity,
+        std::size_t index,
+        const char* operation) const;
     [[nodiscard]] std::expected<void, Violation> begin(
         state::Snapshot& state,
         const operation::Begin& phrase,
@@ -59,6 +85,18 @@ private:
     [[nodiscard]] std::expected<void, Violation> end(
         state::Snapshot& state,
         const operation::End& phrase,
+        std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> begin(
+        state::Snapshot& state,
+        const operation::gesture::Begin& gesture,
+        std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> end(
+        state::Snapshot& state,
+        const operation::gesture::End& gesture,
+        std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> fulfill(
+        state::Snapshot& state,
+        const operation::sayr::Fulfill& action,
         std::size_t index) const;
 };
 

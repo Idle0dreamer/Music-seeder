@@ -21,9 +21,14 @@ int run(std::uint64_t seed) {
         std::cerr << model.error() << '\n';
         return 1;
     }
+    const eval::Context context{
+        .jins = {&set->catalog},
+        .path = {&set->path.graph},
+        .sayr = {&set->sayr.plan},
+    };
     const mq::kernel::generate::Engine engine(
         set->profile.shared,
-        set->path.graph);
+        context);
     const auto result = engine.run(
         seed,
         model->choice,

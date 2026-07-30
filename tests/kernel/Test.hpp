@@ -81,6 +81,27 @@ void grammar();
 
 } // namespace generate
 
+namespace jins {
+
+void catalog();
+
+} // namespace jins
+
+namespace gesture {
+
+void laws();
+void scope();
+
+} // namespace gesture
+
+namespace sayr {
+
+void plan();
+void laws();
+void scope();
+
+} // namespace sayr
+
 namespace grammar {
 
 void laws();

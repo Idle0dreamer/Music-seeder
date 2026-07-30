@@ -63,6 +63,8 @@ void test::path() {
             Identity{"test.path.event", "cadence", "1"},
             fixture.role.root,
             motion::Direction::Start,
+            fixture.region.root,
+            std::nullopt,
         },
         operation::Cadence{
             fixture.cadence,
@@ -84,7 +86,10 @@ void test::path() {
         fixture.center.branch,
         tonicization::Level::Internal,
     });
-    const eval::Evaluator evaluator(*selected, graph);
+    const eval::Evaluator evaluator(
+        *selected,
+        fixture.catalog,
+        graph);
     const auto rejected = evaluator.run({}, premature);
     require(
         !rejected && rejected.error().rule == "path.prerequisite",
@@ -109,7 +114,8 @@ void test::path() {
             accepted->path.completed.contains(gated),
         "completed path history was not retained");
 
-    const auto missing = eval::Evaluator(*selected).run({}, premature);
+    const auto missing =
+        eval::Evaluator(*selected, fixture.catalog).run({}, premature);
     require(
         !missing && missing.error().rule == "path.graph",
         "missing path graph silently fell back to permission alone");

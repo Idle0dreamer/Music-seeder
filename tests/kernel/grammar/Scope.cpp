@@ -18,7 +18,9 @@ void test::grammar::relation() {
     const auto made = fixture::make();
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
-    const kg::Evaluator evaluator(fixture.profile.shared);
+    const kg::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
 
     const auto anchor = kg::Term::atom(
         id("anchor"),

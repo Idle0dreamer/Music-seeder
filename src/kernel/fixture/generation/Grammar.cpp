@@ -22,14 +22,25 @@ grammar::Term actions(
 grammar::Term candidate(
     const generate::Candidate& value,
     const std::string& prefix) {
-    const auto& event = value.stages.front();
+    auto body = grammar::Term::stage(
+        id(prefix + ".stage.0"),
+        value.stages.front().identity,
+        actions(value.stages.front(), prefix + ".stage.0"));
+    for (std::size_t index = 1; index < value.stages.size(); ++index) {
+        body = grammar::Term::seq(
+            id(prefix + ".stage.seq." + std::to_string(index)),
+            std::move(body),
+            grammar::Term::stage(
+                id(prefix + ".stage." + std::to_string(index)),
+                value.stages[index].identity,
+                actions(
+                    value.stages[index],
+                    prefix + ".stage." + std::to_string(index))));
+    }
     return grammar::Term::candidate(
         id(prefix + ".seal"),
         value.identity,
-        grammar::Term::stage(
-            id(prefix + ".stage"),
-            event.identity,
-            actions(event, prefix)));
+        std::move(body));
 }
 
 } // namespace mq::kernel::fixture::generation::detail

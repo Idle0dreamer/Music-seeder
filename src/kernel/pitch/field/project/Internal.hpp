@@ -30,4 +30,16 @@ namespace mq::kernel::pitch::field::project::detail {
     const phrase::boundary::Read& source,
     const state::Snapshot& state);
 
+[[nodiscard]] std::expected<std::optional<Fact>, Error> read(
+    const registral::Read& source,
+    const state::Snapshot& state);
+
+[[nodiscard]] std::expected<std::optional<Fact>, Error> read(
+    const baggage::Read& source,
+    const state::Snapshot& state);
+
+[[nodiscard]] std::expected<std::optional<Fact>, Error> read(
+    const gesture::Read& source,
+    const state::Snapshot& state);
+
 } // namespace mq::kernel::pitch::field::project::detail

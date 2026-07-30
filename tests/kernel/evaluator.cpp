@@ -19,13 +19,18 @@ void test::evaluator() {
         } regional;
     };
     const Evaluators evaluator{
-        eval::Evaluator(fixture.profile.shared, fixture.path.graph),
+        eval::Evaluator(
+            fixture.profile.shared,
+            fixture.catalog,
+            fixture.path.graph),
         {
             eval::Evaluator(
                 fixture.profile.regional.a,
+                fixture.catalog,
                 fixture.path.graph),
             eval::Evaluator(
                 fixture.profile.regional.b,
+                fixture.catalog,
                 fixture.path.graph),
         },
     };
@@ -58,6 +63,8 @@ void test::evaluator() {
             Identity{"test.event", "cadence", "1"},
             fixture.role.root,
             motion::Direction::Start,
+            fixture.region.root,
+            std::nullopt,
         },
         operation::Cadence{
             fixture.cadence,

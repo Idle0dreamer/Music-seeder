@@ -5,13 +5,47 @@
 namespace mq::kernel::generate {
 
 Engine::Engine(const profile::Set& profile)
-    : profile_(profile) {}
+    : Engine(profile, eval::Context{}) {}
+
+Engine::Engine(
+    const profile::Set& profile,
+    eval::Context context)
+    : profile_(profile),
+      context_(context) {}
 
 Engine::Engine(
     const profile::Set& profile,
     const path::Graph& paths)
-    : profile_(profile),
-      paths_(&paths) {}
+    : Engine(
+          profile,
+          eval::Context{
+              .jins = {},
+              .path = {&paths},
+              .sayr = {},
+          }) {}
+
+Engine::Engine(
+    const profile::Set& profile,
+    const jins::Catalog& catalog)
+    : Engine(
+          profile,
+          eval::Context{
+              .jins = {&catalog},
+              .path = {},
+              .sayr = {},
+          }) {}
+
+Engine::Engine(
+    const profile::Set& profile,
+    const jins::Catalog& catalog,
+    const path::Graph& paths)
+    : Engine(
+          profile,
+          eval::Context{
+              .jins = {&catalog},
+              .path = {&paths},
+              .sayr = {},
+          }) {}
 
 std::expected<Result, Error> Engine::run(
     std::uint64_t seed,
@@ -36,7 +70,7 @@ std::expected<Result, Error> Engine::run(
         auto outcome = detail::evaluate(
             candidate,
             profile_,
-            paths_,
+            context_,
             projection,
             schema,
             initial,

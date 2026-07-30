@@ -17,15 +17,21 @@ void test::event::laws() {
     const auto made = fixture::make();
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
-    const eval::Evaluator evaluator(fixture.profile.shared);
+    const eval::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
+    state::Snapshot initial;
+    initial.jins.active = fixture.jins.root;
 
     const operation::Place first{
         id("first"),
         fixture.role.root,
         motion::Direction::Start,
+        fixture.region.root,
+        std::nullopt,
     };
     const std::vector<operation::Any> begin{first};
-    const auto started = evaluator.run({}, begin);
+    const auto started = evaluator.run(initial, begin);
     require(
         started &&
             started->melody.current ==
@@ -33,6 +39,9 @@ void test::event::laws() {
                     first.event,
                     first.role,
                     first.direction,
+                    first.region,
+                    first.baggage,
+                    std::nullopt,
                 } &&
             started->melody.history.size() == 1,
         "first structural event was not recorded exactly once");
@@ -41,6 +50,8 @@ void test::event::laws() {
         id("second"),
         fixture.role.ghammaz,
         motion::Direction::Rise,
+        fixture.region.upper,
+        std::nullopt,
     };
     const std::vector<operation::Any> continueWith{second};
     const auto continued = evaluator.run(*started, continueWith);
@@ -56,9 +67,11 @@ void test::event::laws() {
             id("wrong-first"),
             fixture.role.root,
             motion::Direction::Rise,
+            fixture.region.root,
+            std::nullopt,
         },
     };
-    const auto rejectedFirst = evaluator.run({}, wrongFirst);
+    const auto rejectedFirst = evaluator.run(initial, wrongFirst);
     require(
         !rejectedFirst &&
             rejectedFirst.error().rule == "event.direction",
@@ -69,6 +82,8 @@ void test::event::laws() {
             id("restart"),
             fixture.role.root,
             motion::Direction::Start,
+            fixture.region.root,
+            std::nullopt,
         },
     };
     const auto rejectedRestart = evaluator.run(*started, restarted);
@@ -82,6 +97,8 @@ void test::event::laws() {
             first.event,
             fixture.role.root,
             motion::Direction::Same,
+            fixture.region.root,
+            std::nullopt,
         },
     };
     const auto duplicate = evaluator.run(*started, repeated);
@@ -94,10 +111,26 @@ void test::event::laws() {
             id("forbidden"),
             id("unknown-role"),
             motion::Direction::Start,
+            fixture.region.root,
+            std::nullopt,
         },
     };
-    const auto denied = evaluator.run({}, forbidden);
+    const auto denied = evaluator.run(initial, forbidden);
     require(
-        !denied && denied.error().rule == "allow.place",
-        "profile-disallowed structural role was accepted");
+        !denied && denied.error().rule == "jins.role",
+        "descriptor-disallowed structural role was accepted");
+
+    const std::vector<operation::Any> outside{
+        operation::Place{
+            id("outside-register"),
+            fixture.role.root,
+            motion::Direction::Start,
+            id("unknown-register"),
+            std::nullopt,
+        },
+    };
+    const auto unregistered = evaluator.run(initial, outside);
+    require(
+        !unregistered && unregistered.error().rule == "jins.register",
+        "descriptor-disallowed register region was accepted");
 }

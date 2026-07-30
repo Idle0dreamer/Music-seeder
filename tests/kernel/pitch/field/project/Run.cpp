@@ -49,6 +49,12 @@ void test::project::run() {
     const auto motionKey = id("test.project.key", "motion");
     const auto role = id("test.project.role", "current");
     const auto event = id("test.project.event", "current");
+    const auto region = id("test.project.register", "upper");
+    const auto baggage = id("test.project.baggage", "extension");
+    const auto gesture = id("test.project.gesture", "ascent");
+    const auto regionKey = id("test.project.key", "register");
+    const auto baggageKey = id("test.project.key", "baggage");
+    const auto gestureKey = id("test.project.key", "gesture");
     const auto start = id("test.project.motion", "start");
     const auto same = id("test.project.motion", "same");
     const auto rise = id("test.project.motion", "rise");
@@ -63,6 +69,9 @@ void test::project::run() {
         event,
         role,
         motion::Direction::Rise,
+        region,
+        baggage,
+        performance::Gesture{gesture, gesture},
     };
     state.melody.history.push_back(*state.melody.current);
     pp::Plan plan{{
@@ -72,6 +81,9 @@ void test::project::run() {
         pp::jins::Read{jinsKey},
         pp::center::Read{centerRoot, pp::center::Place::Root},
         pp::role::Read{roleKey},
+        pp::registral::Read{regionKey},
+        pp::baggage::Read{baggageKey},
+        pp::gesture::Read{gestureKey},
         pp::motion::Read{
             motionKey,
             start,
@@ -89,6 +101,9 @@ void test::project::run() {
             value(*projected, levelKey) == internal &&
             value(*projected, pathKey) == yes &&
             value(*projected, roleKey) == role &&
+            value(*projected, regionKey) == region &&
+            value(*projected, baggageKey) == baggage &&
+            value(*projected, gestureKey) == gesture &&
             value(*projected, motionKey) == rise,
         "typed state projection produced wrong field facts");
 

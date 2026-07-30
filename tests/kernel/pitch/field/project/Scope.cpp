@@ -24,7 +24,9 @@ void test::project::scope() {
     const auto made = fixture::make();
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
-    const kg::Evaluator evaluator(fixture.profile.shared);
+    const kg::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
 
     const auto local = kg::Term::scope(
         id("term.scope"),

@@ -16,16 +16,22 @@ void test::generate::profile() {
         value.program.stay,
         value.program.travel,
     };
-    const mq::kernel::generate::Engine regionalA(
-        set.profile.regional.a,
-        set.path.graph);
-    const mq::kernel::generate::Engine regionalB(
-        set.profile.regional.b,
-        set.path.graph);
+    const eval::Context context{
+        .jins = {&set.catalog},
+        .path = {&set.path.graph},
+        .sayr = {&set.sayr.plan},
+    };
+    const struct {
+        mq::kernel::generate::Engine a;
+        mq::kernel::generate::Engine b;
+    } regional{
+        {set.profile.regional.a, context},
+        {set.profile.regional.b, context},
+    };
 
     std::optional<std::uint64_t> seed;
     for (std::uint64_t candidate = 0; candidate < 512; ++candidate) {
-        const auto result = regionalA.run(
+        const auto result = regional.a.run(
             candidate,
             value.choice,
             candidates,
@@ -39,13 +45,13 @@ void test::generate::profile() {
     }
     require(seed.has_value(), "no seed selected the legal travel candidate");
 
-    const auto a = regionalA.run(
+    const auto a = regional.a.run(
         *seed,
         value.choice,
         candidates,
         value.projection,
         value.schema);
-    const auto b = regionalB.run(
+    const auto b = regional.b.run(
         *seed,
         value.choice,
         candidates,
@@ -64,11 +70,11 @@ void test::generate::profile() {
             b->rejected.front().candidate ==
                 value.program.travel.identity &&
             b->rejected.front().evaluation &&
-            b->rejected.front().evaluation->rule == "allow.modulate",
-        "regional prohibition did not alter executable generation");
+            b->rejected.front().evaluation->rule == "allow.baggage",
+        "regional baggage narrowing did not alter executable generation");
 
     const std::vector onlyTravel{value.program.travel};
-    const auto none = regionalB.run(
+    const auto none = regional.b.run(
         *seed,
         value.choice,
         onlyTravel,

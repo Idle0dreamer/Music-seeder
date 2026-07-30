@@ -35,7 +35,7 @@ leak into its parent scope.
 Generated output obeys the same explicit rule. A non-exporting scope may retain
 append-only trace evidence, but its actions and event stages cannot enter a
 candidate. Phrase export additionally requires melody export so span identities
-cannot dangle.
+cannot dangle. Gesture export has the same melody dependency.
 
 ## Generation laws
 
@@ -49,6 +49,12 @@ cannot dangle.
 
 ## Tonal laws
 
+- Entering, emphasizing, dwelling, and placing require a validated active jins
+  descriptor; no missing-catalog fallback exists.
+- Descriptor role, register, baggage, and gesture domains intersect effective
+  profile permissions.
+- Ordered gesture steps advance once, cannot end early, and retain exact event
+  span identities.
 - Color does not change the principal center.
 - Tonicization is monotone in accumulated positive evidence within a scope.
 - A stronger tonicization level implies all lower evidence thresholds, but not

@@ -15,7 +15,17 @@ std::expected<Set, std::string> make() {
         .role = {
             Identity{"fixture.role", "root", "1"},
             Identity{"fixture.role", "ghammaz", "1"},
+            Identity{"fixture.role", "extension", "1"},
         },
+        .region = {
+            Identity{"fixture.register", "root", "1"},
+            Identity{"fixture.register", "upper", "1"},
+        },
+        .gesture = {
+            Identity{"fixture.gesture", "ascent", "1"},
+            Identity{"fixture.gesture", "descent", "1"},
+        },
+        .baggage = Identity{"fixture.baggage", "extension", "1"},
         .phrase = {
             Identity{"fixture.phrase.function", "neutral", "1"},
         },
@@ -25,6 +35,22 @@ std::expected<Set, std::string> make() {
             Identity{"fixture.path", "root-to-branch", "1"},
             {},
         },
+        .sayr = {
+            .obligation = {
+                Identity{"fixture.sayr.obligation", "establish", "1"},
+                Identity{"fixture.sayr.obligation", "settle", "1"},
+                Identity{"fixture.sayr.obligation", "expand", "1"},
+                Identity{"fixture.sayr.obligation", "climax", "1"},
+                Identity{"fixture.sayr.obligation", "travel", "1"},
+                Identity{"fixture.sayr.obligation", "restore", "1"},
+            },
+            .route = {
+                Identity{"fixture.sayr.route", "stay", "1"},
+                Identity{"fixture.sayr.route", "journey", "1"},
+            },
+            .plan = {},
+        },
+        .catalog = {},
         .profile = {},
     };
     const auto added = fixture.path.graph.add(path::Rule{
@@ -38,6 +64,18 @@ std::expected<Set, std::string> make() {
     if (!added) {
         return std::unexpected(added.error());
     }
+
+    auto catalog = detail::catalog(fixture);
+    if (!catalog) {
+        return std::unexpected(catalog.error());
+    }
+    fixture.catalog = std::move(*catalog);
+
+    auto sayr = detail::sayr(fixture);
+    if (!sayr) {
+        return std::unexpected(sayr.error());
+    }
+    fixture.sayr.plan = std::move(*sayr);
 
     auto profiles = detail::profiles(fixture);
     if (!profiles) {

@@ -23,16 +23,22 @@ void test::generate::grammar() {
     const auto generated = fixture::generation::make(set);
     require(generated.has_value(), generated.error_or("generation failed"));
     const auto& value = *generated;
-    const mq::kernel::generate::Engine regionalA(
-        set.profile.regional.a,
-        set.path.graph);
-    const mq::kernel::generate::Engine regionalB(
-        set.profile.regional.b,
-        set.path.graph);
+    const eval::Context context{
+        .jins = {&set.catalog},
+        .path = {&set.path.graph},
+        .sayr = {&set.sayr.plan},
+    };
+    const struct {
+        mq::kernel::generate::Engine a;
+        mq::kernel::generate::Engine b;
+    } regional{
+        {set.profile.regional.a, context},
+        {set.profile.regional.b, context},
+    };
 
     std::optional<std::uint64_t> seed;
     for (std::uint64_t item = 0; item < 512; ++item) {
-        const auto result = regionalA.run(
+        const auto result = regional.a.run(
             item,
             value.choice,
             value.production,
@@ -46,13 +52,13 @@ void test::generate::grammar() {
     }
     require(seed.has_value(), "grammar never selected travel");
 
-    const auto a = regionalA.run(
+    const auto a = regional.a.run(
         *seed,
         value.choice,
         value.production,
         value.projection,
         value.schema);
-    const auto b = regionalB.run(
+    const auto b = regional.b.run(
         *seed,
         value.choice,
         value.production,
@@ -70,14 +76,14 @@ void test::generate::grammar() {
             b->legal.size() == 1 &&
             b->derivation.size() == 1 &&
             b->derivation.front().violation &&
-            b->derivation.front().violation->rule == "allow.modulate",
-        "grammar diagnostics lost a regional generation prohibition");
+            b->derivation.front().violation->rule == "allow.baggage",
+        "grammar diagnostics lost regional baggage narrowing");
 
     const auto scoped = kg::Term::scope(
         id("scoped.scope"),
         {id("scoped.policy"), kg::scope::Part::Output},
         value.production);
-    const auto emitted = regionalA.run(
+    const auto emitted = regional.a.run(
         0,
         value.choice,
         scoped,
@@ -91,7 +97,7 @@ void test::generate::grammar() {
         id("hidden.scope"),
         {id("hidden.policy"), kg::scope::Part::None},
         value.production);
-    const auto omitted = regionalA.run(
+    const auto omitted = regional.a.run(
         0,
         value.choice,
         hidden,

@@ -14,16 +14,22 @@ void test::request::run() {
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
     const auto value = make(fixture);
-    const eval::Evaluator evaluator(fixture.profile.shared);
+    const eval::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
+    state::Snapshot initial;
+    initial.jins.active = fixture.jins.root;
 
     const std::vector<operation::Any> firstProgram{
         operation::Place{
             value.first,
             fixture.role.root,
             motion::Direction::Start,
+            fixture.region.root,
+            std::nullopt,
         },
     };
-    const auto firstState = evaluator.run({}, firstProgram);
+    const auto firstState = evaluator.run(initial, firstProgram);
     require(
         firstState.has_value(),
         firstState ? "" : firstState.error().message);
@@ -43,6 +49,8 @@ void test::request::run() {
             value.second,
             fixture.role.ghammaz,
             motion::Direction::Rise,
+            fixture.region.upper,
+            std::nullopt,
         },
     };
     const auto secondState = evaluator.run(*firstState, secondProgram);

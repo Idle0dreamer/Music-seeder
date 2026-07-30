@@ -35,8 +35,8 @@ Every stage is evaluated under the selected effective profile. Each committed
 event must extend the event history by exactly one and extend the exact
 performance-plan prefix by exactly one target.
 
-An unfinished active phrase makes the candidate illegal. Open phrase boundaries
-are legal only after the phrase itself has ended.
+An unfinished active phrase or gesture makes the candidate illegal. Open phrase
+boundaries are legal only after the phrase itself has ended.
 
 ## Complete evaluation before seed
 
@@ -59,7 +59,9 @@ or ranking difference.
 
 This supplies the first answer to regional validation: profile knowledge and
 generation are developed together. The profile algebra constructs scoped
-authority; the generator exposes its musical consequences.
+authority; the generator exposes its musical consequences. The neutral
+regional-B fixture now removes an otherwise descriptor-legal travel candidate
+at its baggage-bearing gesture step and retains that exact diagnostic.
 
 ## Theory-language boundary
 
@@ -96,17 +98,20 @@ Staged generation unlocks:
 - event-by-event sayr and motif obligation checks;
 - a complete instrument-neutral plan for timing and gesture layers.
 
-Typed grammar derivation now consumes stages directly. The next musical
-sequence must use this executable path for a full jins melodic-unit descriptor,
-so tonic, ghammaz, register, emphasis, baggage, and gesture permissions affect
-generated event legality rather than remaining inert catalog data.
+The neutral travel branch now consumes the jins descriptor through three event
+stages: root establishment, ghammaz ascent, and gesture-bound baggage closure.
+Its exact targets are calculated from guarded field constraints rather than a
+descriptor scale array. The next sequence consumes completed phrase, gesture,
+jins, and path state as typed sayr obligations.
 
 ## Laws
 
 - candidate and stage identities are complete and unique;
 - each stage contains exactly one structural event;
 - every legal stage extends state and target history by one;
-- incomplete phrases reject the candidate;
+- incomplete phrases and gestures reject the candidate;
+- the descriptor-driven travel branch calculates its root, ghammaz, and
+  baggage targets from contextual rules;
 - all candidates are evaluated before seeded choice;
 - illegal candidates cannot influence the seed;
 - candidate storage order cannot influence the seed;

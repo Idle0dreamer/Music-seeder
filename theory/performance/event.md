@@ -8,11 +8,13 @@ request pitch. It is not a MIDI note and it contains no instrument action.
 The \(n\)-th event is:
 
 \[
-e_n=(i_n,\rho_n,d_n)
+e_n=(i_n,\rho_n,d_n,r_n,b_n?,\lambda_n?)
 \]
 
 where \(i_n\) is a unique stable event identity, \(\rho_n\) is a structural
-pitch-role identity, and:
+pitch-role identity, \(r_n\) is a relational register-region identity,
+\(b_n?\) is an optional validated baggage capability, \(\lambda_n?\) is the
+active gesture occurrence and family, and:
 
 \[
 d_n\in\{\operatorname{Start},\operatorname{Same},
@@ -31,15 +33,22 @@ Musical state carries:
 U_n=(e_n,[e_1,\ldots,e_n]).
 \]
 
-For `Place(i,r,d)` to succeed:
+For `Place(i,role,direction,region,baggage?)` to succeed:
 
-- \(i\) and \(r\) have complete identities;
-- the selected profile permits role \(r\);
+- every supplied identity is complete;
+- an active catalog descriptor exists;
+- role and register belong to that descriptor;
+- the selected profile permits the role and register;
+- optional baggage matches its descriptor role, register, direction, and
+  gesture restrictions, and the profile permits it;
+- an active gesture advances only when the event matches its next ordered step;
 - \(i\) has not appeared in the event history;
 - current event and history are internally consistent;
-- \(d=\operatorname{Start}\) iff the history was empty.
+- direction is `Start` iff the history was empty.
 
 The successful transition makes the event current and appends it exactly once.
+It contributes exact characteristic-register and baggage evidence after full
+conformance. A gesture-bearing event retains occurrence and family identity.
 The operation trace remains evaluation evidence; it is not the event history.
 
 ## Scope
@@ -51,10 +60,13 @@ without becoming musical state.
 
 ## Context projection
 
-Two typed readers extend pitch-field projection:
+Five typed readers expose event context:
 
 - current structural role;
-- current intended direction through an explicit identity mapping.
+- current intended direction through an explicit identity mapping;
+- current relational register region;
+- optional baggage capability;
+- optional gesture family.
 
 Missing current event state follows the same required-or-optional rule as other
 projection sources. Reader storage order remains immaterial.
@@ -91,19 +103,23 @@ proof work begins.
 
 ## Downstream breadth
 
-Stable structural events unlock exact neighbor relationships, direction-aware
-intonation, phrase spans, motif occurrence boundaries, timing hosts, ornament
-hosts, and instrument-neutral plan identity. The next sequence consumes this
-leverage by defining phrase-function and cadence state over event spans and
-projecting it into the pitch field. Synthesis remains a separate later
-consumer.
+Stable descriptor-conformant events now support exact neighbor relationships,
+direction-aware intonation, phrase spans, completed gesture spans, baggage and
+register evidence, motif boundaries, timing hosts, ornament hosts, and
+instrument-neutral plan identity. The next sequence consumes completed phrases,
+gestures, and path history as sayr landmarks. Synthesis remains a separate
+later consumer.
 
 ## Laws
 
 - event identities are unique and append exactly once;
 - only the first event may use `Start`;
+- descriptor and profile permissions intersect; neither silently widens the
+  other;
+- invalid baggage and gesture steps fail before state or evidence changes;
 - non-exported event state cannot leak through grammar scope;
-- role and direction projection are storage-order invariant;
+- role, direction, register, baggage, and gesture projection are
+  storage-order invariant;
 - a calculated request extends exactly the matching plan prefix;
 - `Same`, `Rise`, and `Fall` require matching exact order certificates;
 - contradictory intended and calculated motion fails;

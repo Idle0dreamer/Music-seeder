@@ -4,7 +4,7 @@ The generator operates on musical state, not on a current scale and note.
 At decision time \(t\), the state is
 
 \[
-S_t=(H_t,Z_t,M_t,P_t,Q_t,T_t,D_t,U_t)
+S_t=(H_t,Z_t,M_t,P_t,Q_t,T_t,D_t,U_t,L_t)
 \]
 
 where:
@@ -17,6 +17,7 @@ where:
 - \(T_t\): timing, breath, and optional iqa state;
 - \(D_t\): discourse state: question, response, contrast, recall, closure.
 - \(U_t\): current structural pitch event and identity-bearing event history.
+- \(L_t\): active ordered gesture frame and completed gesture spans.
 
 ## Tonal hypothesis
 
@@ -59,6 +60,8 @@ exception:
    borrow rules from another profile.
 8. Intended event motion must agree with exact calculated target order before
    the event enters an instrument-neutral performance plan.
+9. An active gesture advances only through descriptor-conformant event steps
+   and cannot cross a jins change.
 
 ## History
 
@@ -72,6 +75,7 @@ Generation is non-Markovian at the note level. The minimum retained history is:
 - registers visited, climax candidates, and return paths;
 - articulation and release intents already emitted.
 - structural event identities, roles, intended motion, and calculated targets.
+- active gesture progress and completed first/last event identities.
 
 The history may be compressed into sufficient statistics only after tests show
 that the compression preserves phrase and modulation judgments.

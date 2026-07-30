@@ -6,7 +6,7 @@ std::expected<void, Violation> Evaluator::check(
     const state::Snapshot& state,
     const operation::Modulate& modulation,
     std::size_t index) const {
-    if (paths_ == nullptr) {
+    if (context_.path.graph == nullptr) {
         return std::unexpected(Violation{
             index,
             "Modulate",
@@ -14,7 +14,7 @@ std::expected<void, Violation> Evaluator::check(
             "no path graph was selected",
         });
     }
-    const auto* rule = paths_->find(modulation.path);
+    const auto* rule = context_.path.graph->find(modulation.path);
     if (rule == nullptr) {
         return std::unexpected(Violation{
             index,

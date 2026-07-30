@@ -1,5 +1,7 @@
 #include "Internal.hpp"
 
+#include <set>
+
 namespace mq::kernel::generate::detail {
 namespace {
 
@@ -34,7 +36,7 @@ Diagnostic failed(
 std::expected<Outcome, Diagnostic> evaluate(
     const Candidate& candidate,
     const profile::Set& profile,
-    const path::Graph* paths,
+    eval::Context context,
     const pitch::field::project::Plan& projection,
     const pitch::field::Schema& schema,
     state::Snapshot state,
@@ -42,11 +44,9 @@ std::expected<Outcome, Diagnostic> evaluate(
     performance::Plan plan;
     for (const auto& stage : candidate.stages) {
         const auto before = state.melody.history.size();
-        auto next = paths == nullptr
-                        ? eval::Evaluator(profile).run(state, stage.actions)
-                        : eval::Evaluator(profile, *paths).run(
-                              state,
-                              stage.actions);
+        const auto next = eval::Evaluator(
+            profile,
+            context).run(state, stage.actions);
         if (!next) {
             return std::unexpected(failed(candidate, stage, next.error()));
         }
@@ -80,6 +80,45 @@ std::expected<Outcome, Diagnostic> evaluate(
             std::nullopt,
             std::nullopt,
         });
+    }
+    if (state.gesture.active) {
+        return std::unexpected(Diagnostic{
+            candidate.identity,
+            candidate.stages.back().identity,
+            "candidate ended with an active gesture",
+            std::nullopt,
+            std::nullopt,
+        });
+    }
+    if (context.sayr.plan != nullptr) {
+        std::set<Identity> history;
+        for (const auto& completion : state.sayr.history) {
+            history.insert(completion.obligation);
+        }
+        const bool consistent =
+            history.size() == state.sayr.history.size() &&
+            history == state.sayr.completed;
+        if (!consistent ||
+            !context.sayr.plan->accepts(state.sayr.history)) {
+            const auto rule =
+                consistent ? "sayr.route" : "sayr.state";
+            const auto message =
+                consistent
+                    ? "candidate did not complete a declared sayr route"
+                    : "candidate has inconsistent sayr completion state";
+            return std::unexpected(Diagnostic{
+                candidate.identity,
+                candidate.stages.back().identity,
+                message,
+                eval::Violation{
+                    state.trace.events.size(),
+                    "Candidate",
+                    rule,
+                    message,
+                },
+                std::nullopt,
+            });
+        }
     }
     return Outcome{
         candidate.identity,

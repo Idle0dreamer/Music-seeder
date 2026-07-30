@@ -57,12 +57,8 @@ std::expected<Result, Error> Engine::run(
     const pitch::field::Schema& schema,
     state::Snapshot initial,
     Limits limits) const {
-    const auto derivation =
-        paths_ == nullptr
-            ? grammar::Evaluator(profile_).derive(production, initial)
-            : grammar::Evaluator(profile_, *paths_).derive(
-                  production,
-                  initial);
+    grammar::Result derivation =
+        grammar::Evaluator(profile_, context_).derive(production, initial);
     if (derivation.outcomes.empty()) {
         return std::unexpected(Error{
             Error::Code::NoLegal,

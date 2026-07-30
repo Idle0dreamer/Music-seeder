@@ -55,7 +55,20 @@ std::expected<Profiles, std::string> profiles(
         define("allow.modulate", {fixture.path.direct}, source),
         define(
             "allow.place",
-            {fixture.role.root, fixture.role.ghammaz},
+            {
+                fixture.role.root,
+                fixture.role.ghammaz,
+                fixture.role.baggage,
+            },
+            source),
+        define(
+            "allow.register",
+            {fixture.region.root, fixture.region.upper},
+            source),
+        define("allow.baggage", {fixture.baggage}, source),
+        define(
+            "allow.gesture",
+            {fixture.gesture.ascent, fixture.gesture.descent},
             source),
         define(
             "allow.phrase.function",
@@ -71,34 +84,42 @@ std::expected<Profiles, std::string> profiles(
         return std::unexpected(shared.error());
     }
 
-    const std::vector<profile::Patch> a{
-        {
+    const struct {
+        std::vector<profile::Patch> a;
+        std::vector<profile::Patch> b;
+    } regional{
+        {{
             profile::Patch::Action::Parameterize,
             "threshold.internal.emphasis",
             rule(Rational(3), "fixture:regional-a"),
+        }},
+        {
+            {
+                profile::Patch::Action::Forbid,
+                "allow.modulate",
+                profile::Rule{false, {"fixture:regional-b"}},
+            },
+            {
+                profile::Patch::Action::Forbid,
+                "allow.baggage",
+                profile::Rule{false, {"fixture:regional-b"}},
+            },
         },
     };
-    auto regionalA =
-        profile::reconstruct("fixture.regional-a", {*shared}, a);
-    if (!regionalA) {
-        return std::unexpected(regionalA.error());
+    auto a =
+        profile::reconstruct("fixture.regional-a", {*shared}, regional.a);
+    if (!a) {
+        return std::unexpected(a.error());
     }
 
-    const std::vector<profile::Patch> b{
-        {
-            profile::Patch::Action::Forbid,
-            "allow.modulate",
-            profile::Rule{false, {"fixture:regional-b"}},
-        },
-    };
-    auto regionalB =
-        profile::reconstruct("fixture.regional-b", {*shared}, b);
-    if (!regionalB) {
-        return std::unexpected(regionalB.error());
+    auto b =
+        profile::reconstruct("fixture.regional-b", {*shared}, regional.b);
+    if (!b) {
+        return std::unexpected(b.error());
     }
     return Profiles{
         *shared,
-        {*regionalA, *regionalB},
+        {*a, *b},
     };
 }
 

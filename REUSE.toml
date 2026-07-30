@@ -9,6 +9,7 @@ path = [
     "include/**",
     "src/**",
     "tests/**",
+    "tools/**",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Idle0dreamer and Music-seeder contributors"

@@ -18,6 +18,18 @@ Batch Runner::scope(
             }},
         };
     }
+    if (scope::has(form.policy.exports, scope::Part::Gesture) &&
+        !scope::has(form.policy.exports, scope::Part::Melody)) {
+        return Batch{
+            {},
+            {{
+                term.identity(),
+                frame.scope,
+                "Gesture export requires Melody export",
+                std::nullopt,
+            }},
+        };
+    }
     const auto state = frame.outcome.state;
     const auto program = frame.outcome.program;
     const auto stages = frame.outcome.stages;
@@ -50,6 +62,12 @@ Batch Runner::scope(
         }
         if (!scope::has(form.policy.exports, scope::Part::Phrase)) {
             output.outcome.state.phrase = state.phrase;
+        }
+        if (!scope::has(form.policy.exports, scope::Part::Gesture)) {
+            output.outcome.state.gesture = state.gesture;
+        }
+        if (!scope::has(form.policy.exports, scope::Part::Sayr)) {
+            output.outcome.state.sayr = state.sayr;
         }
         if (!scope::has(form.policy.exports, scope::Part::Output)) {
             output.outcome.program = program;

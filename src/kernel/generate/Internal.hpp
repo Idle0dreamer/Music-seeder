@@ -14,7 +14,7 @@ namespace mq::kernel::generate::detail {
 [[nodiscard]] std::expected<Outcome, Diagnostic> evaluate(
     const Candidate& candidate,
     const profile::Set& profile,
-    const path::Graph* paths,
+    eval::Context context,
     const pitch::field::project::Plan& projection,
     const pitch::field::Schema& schema,
     state::Snapshot initial,

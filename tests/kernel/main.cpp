@@ -23,8 +23,14 @@ int main() {
         test::field::solve();
         test::project::run();
         test::project::scope();
+        test::jins::catalog();
         test::event::laws();
         test::event::scope();
+        test::gesture::laws();
+        test::gesture::scope();
+        test::sayr::plan();
+        test::sayr::laws();
+        test::sayr::scope();
         test::request::run();
         test::request::motion();
         test::phrase::laws();
@@ -54,8 +60,14 @@ int main() {
             << "PASS calculated field-to-ordering integration\n"
             << "PASS typed state-to-field projection laws\n"
             << "PASS scoped grammar-to-field integration\n"
+            << "PASS validated jins descriptor catalog laws\n"
             << "PASS structural event transition laws\n"
             << "PASS structural event scope laws\n"
+            << "PASS ordered jins gesture and baggage laws\n"
+            << "PASS gesture scope and dependency laws\n"
+            << "PASS validated sayr plan and route laws\n"
+            << "PASS checked sayr fulfillment and proof laws\n"
+            << "PASS sayr scope restoration laws\n"
             << "PASS exact instrument-neutral pitch request laws\n"
             << "PASS exact same and fall motion laws\n"
             << "PASS phrase span and cadence transition laws\n"

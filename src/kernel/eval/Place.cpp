@@ -1,106 +1,66 @@
 #include "mq/kernel/eval/Evaluator.hpp"
 
+#include "place/Internal.hpp"
+
 #include <algorithm>
 
 namespace mq::kernel::eval {
-namespace {
-
-bool complete(const Identity& identity) {
-    return !identity.domain.empty() &&
-           !identity.name.empty() &&
-           !identity.revision.empty();
-}
-
-bool valid(motion::Direction direction) {
-    switch (direction) {
-    case motion::Direction::Start:
-    case motion::Direction::Same:
-    case motion::Direction::Rise:
-    case motion::Direction::Fall:
-        return true;
-    }
-    return false;
-}
-
-Violation reject(
-    std::size_t index,
-    std::string rule,
-    std::string message) {
-    return {
-        index,
-        "Place",
-        std::move(rule),
-        std::move(message),
-    };
-}
-
-} // namespace
 
 std::expected<void, Violation> Evaluator::place(
     state::Snapshot& state,
     const operation::Place& event,
     std::size_t index) const {
-    if (!complete(event.event) || !complete(event.role)) {
-        return std::unexpected(reject(
-            index,
-            "event.identity",
-            "event and role identities must be complete"));
+    const auto active = descriptor(state, index, "Place");
+    if (!active) {
+        return std::unexpected(active.error());
     }
-    if (!valid(event.direction)) {
-        return std::unexpected(reject(
-            index,
-            "event.direction",
-            "event direction is invalid"));
+    const auto valid =
+        place::check(event, **active, profile_, state, index);
+    if (!valid) {
+        return std::unexpected(valid.error());
     }
-
-    const bool empty = state.melody.history.empty();
-    const bool consistent =
-        empty
-            ? !state.melody.current
-            : state.melody.current &&
-                  *state.melody.current ==
-                      state.melody.history.back();
-    if (!consistent) {
-        return std::unexpected(reject(
-            index,
-            "event.history",
-            "current event and event history disagree"));
-    }
-    if ((event.direction == motion::Direction::Start) != empty) {
-        return std::unexpected(reject(
-            index,
-            "event.direction",
-            empty
-                ? "first event must declare Start"
-                : "continuing event may not declare Start"));
-    }
-    if (!profile_.allows("allow.place", event.role)) {
-        return std::unexpected(reject(
-            index,
-            "allow.place",
-            "profile rejected structural role " +
-                event.role.str()));
-    }
-
     const auto repeated = std::ranges::find(
         state.melody.history,
         event.event,
         &performance::Event::identity);
     if (repeated != state.melody.history.end()) {
-        return std::unexpected(reject(
+        return std::unexpected(place::reject(
             index,
             "event.identity",
-            "event identity is already present " +
-                event.event.str()));
+            "event identity is already present " + event.event.str()));
+    }
+    const auto gesture = place::match(
+        event,
+        **active,
+        state,
+        index);
+    if (!gesture) {
+        return std::unexpected(gesture.error());
+    }
+    if (event.baggage &&
+        !profile_.allows("allow.baggage", *event.baggage)) {
+        return std::unexpected(place::reject(
+            index,
+            "allow.baggage",
+            "profile rejected baggage " + event.baggage->str()));
     }
 
     performance::Event placed{
         event.event,
         event.role,
         event.direction,
+        event.region,
+        event.baggage,
+        *gesture,
     };
     state.melody.current = placed;
     state.melody.history.push_back(std::move(placed));
+    if (event.baggage) {
+        state.evidence.amount[evidence::Kind::Baggage] += Rational(1);
+    }
+    if ((*active)->characteristic.contains(event.region)) {
+        state.evidence.amount[evidence::Kind::Register] += Rational(1);
+    }
     return {};
 }
 

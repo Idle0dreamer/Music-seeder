@@ -3,8 +3,11 @@
 #include "mq/kernel/Identity.hpp"
 #include "mq/kernel/Rational.hpp"
 #include "mq/kernel/evidence/Kind.hpp"
+#include "mq/kernel/gesture/Frame.hpp"
+#include "mq/kernel/gesture/Span.hpp"
 #include "mq/kernel/performance/Event.hpp"
 #include "mq/kernel/phrase/Span.hpp"
+#include "mq/kernel/sayr/Completion.hpp"
 #include "mq/kernel/tonicization/Level.hpp"
 #include "mq/kernel/trace/Event.hpp"
 
@@ -71,6 +74,20 @@ struct Phrase {
     bool operator==(const Phrase&) const = default;
 };
 
+struct Gesture {
+    std::optional<gesture::Frame> active;
+    std::vector<gesture::Span> completed;
+
+    bool operator==(const Gesture&) const = default;
+};
+
+struct Sayr {
+    std::set<Identity> completed;
+    std::vector<sayr::Completion> history;
+
+    bool operator==(const Sayr&) const = default;
+};
+
 struct Snapshot {
     Center center;
     Jins jins;
@@ -80,6 +97,8 @@ struct Snapshot {
     Path path;
     Melody melody;
     Phrase phrase;
+    Gesture gesture;
+    Sayr sayr;
     Trace trace;
 
     bool operator==(const Snapshot&) const = default;

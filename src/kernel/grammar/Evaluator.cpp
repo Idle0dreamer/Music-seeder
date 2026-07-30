@@ -7,21 +7,50 @@
 namespace mq::kernel::grammar {
 
 Evaluator::Evaluator(const profile::Set& profile)
-    : profile_(profile) {}
+    : Evaluator(profile, eval::Context{}) {}
+
+Evaluator::Evaluator(
+    const profile::Set& profile,
+    eval::Context context)
+    : profile_(profile),
+      context_(context) {}
 
 Evaluator::Evaluator(const profile::Set& profile, const path::Graph& paths)
-    : profile_(profile),
-      paths_(&paths) {}
+    : Evaluator(
+          profile,
+          eval::Context{
+              .jins = {},
+              .path = {&paths},
+              .sayr = {},
+          }) {}
+
+Evaluator::Evaluator(
+    const profile::Set& profile,
+    const jins::Catalog& catalog)
+    : Evaluator(
+          profile,
+          eval::Context{
+              .jins = {&catalog},
+              .path = {},
+              .sayr = {},
+          }) {}
+
+Evaluator::Evaluator(
+    const profile::Set& profile,
+    const jins::Catalog& catalog,
+    const path::Graph& paths)
+    : Evaluator(
+          profile,
+          eval::Context{
+              .jins = {&catalog},
+              .path = {&paths},
+              .sayr = {},
+          }) {}
 
 Result Evaluator::derive(
     const Term& term,
     state::Snapshot state) const {
-    const auto make = [&]() {
-        return paths_ == nullptr
-                 ? detail::Runner(profile_)
-                 : detail::Runner(profile_, *paths_);
-    };
-    auto runner = make();
+    detail::Runner runner(profile_, context_);
     auto batch = runner.run(
         term,
         detail::Frame{

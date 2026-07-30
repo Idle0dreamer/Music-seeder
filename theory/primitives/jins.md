@@ -32,6 +32,11 @@ J=(\tau,G,R,F,C,B,L,E,X,I,\Sigma)
 - \(I\): contextual intonation model;
 - \(\Sigma\): scope and evidence.
 
+The first executable structural subset is specified in
+[`jins/descriptor.md`](jins/descriptor.md). It defines role, register, baggage,
+and gesture conformance without embedding an interval or cents array. Exact
+pitch relations remain calculated field constraints over those roles.
+
 ## Core versus baggage
 
 Core and baggage are not separated only by range.

@@ -29,6 +29,10 @@ trace contains the required evidence. It cannot manufacture that evidence.
 \[
 \begin{array}{ll}
 \operatorname{Emit}(c) & \text{realize a cell}\\
+\operatorname{gesture::Begin}(o,f) &
+  \text{begin ordered gesture occurrence }o\text{ of family }f\\
+\operatorname{gesture::End}(o) &
+  \text{complete occurrence }o\text{ after its final step}\\
 \operatorname{Expose}(m) & \text{first identity-bearing motif occurrence}\\
 \operatorname{Recall}(m) & \text{retrieve an established motif}\\
 \operatorname{Transform}(m,x) & \text{apply a licensed transformation}\\
@@ -54,7 +58,8 @@ Iqa operators alter rhythmic context, never maqam identity.
 
 ## Performance operators
 
-- `Place(event,role,direction)` records structural melodic intent;
+- `Place(event,role,direction,region,baggage?)` records descriptor-conformant
+  structural melodic intent;
 - `Intone(role,context)` solves a pitch field and trajectory;
 - `Time(event,context)` realizes structural time;
 - `Ornament(host,family)` elaborates a host without replacing it;

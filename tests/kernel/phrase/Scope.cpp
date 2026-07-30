@@ -26,6 +26,8 @@ kg::Term body(const mq::kernel::fixture::Set& fixture) {
             id("event"),
             fixture.role.root,
             motion::Direction::Start,
+            fixture.region.root,
+            std::nullopt,
         });
     const auto cadence = kg::Term::atom(
         id("cadence"),
@@ -50,14 +52,18 @@ void test::phrase::scope() {
     const auto made = fixture::make();
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
-    const kg::Evaluator evaluator(fixture.profile.shared);
+    const kg::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
     const auto phraseBody = body(fixture);
+    state::Snapshot initial;
+    initial.jins.active = fixture.jins.root;
 
     const auto hidden = kg::Term::scope(
         id("hidden"),
         {id("scope.hidden"), kg::scope::Part::None},
         phraseBody);
-    const auto local = evaluator.derive(hidden);
+    const auto local = evaluator.derive(hidden, initial);
     require(
         local.outcomes.size() == 1 &&
             local.outcomes.front().state.melody.history.empty() &&
@@ -72,7 +78,7 @@ void test::phrase::scope() {
             kg::scope::Part::Melody | kg::scope::Part::Phrase,
         },
         phraseBody);
-    const auto exported = evaluator.derive(exposed);
+    const auto exported = evaluator.derive(exposed, initial);
     require(
         exported.outcomes.size() == 1 &&
             exported.outcomes.front().state.melody.history.size() == 1 &&
@@ -83,7 +89,7 @@ void test::phrase::scope() {
         id("dangling"),
         {id("scope.dangling"), kg::scope::Part::Phrase},
         phraseBody);
-    const auto rejected = evaluator.derive(dangling);
+    const auto rejected = evaluator.derive(dangling, initial);
     require(
         rejected.outcomes.empty() &&
             rejected.diagnostics.size() == 1 &&

@@ -20,14 +20,13 @@ struct Batch {
 
 class Runner {
 public:
-    explicit Runner(const profile::Set& profile);
-    Runner(const profile::Set& profile, const path::Graph& paths);
+    Runner(const profile::Set& profile, eval::Context context);
 
     [[nodiscard]] Batch run(const Term& term, Frame frame) const;
 
 private:
     const profile::Set& profile_;
-    const path::Graph* paths_{};
+    eval::Context context_;
 
     [[nodiscard]] Batch seq(
         const Term& term,

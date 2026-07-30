@@ -18,20 +18,26 @@ void test::event::scope() {
     const auto made = fixture::make();
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
-    const kg::Evaluator evaluator(fixture.profile.shared);
+    const kg::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
+    state::Snapshot initial;
+    initial.jins.active = fixture.jins.root;
     const auto event = kg::Term::atom(
         id("place"),
         operation::Place{
             id("event"),
             fixture.role.root,
             motion::Direction::Start,
+            fixture.region.root,
+            std::nullopt,
         });
 
     const auto local = kg::Term::scope(
         id("local"),
         {id("scope.local"), kg::scope::Part::None},
         event);
-    const auto hidden = evaluator.derive(local);
+    const auto hidden = evaluator.derive(local, initial);
     require(
         hidden.outcomes.size() == 1 &&
             hidden.outcomes.front().state.melody.history.empty() &&
@@ -43,7 +49,7 @@ void test::event::scope() {
         id("exported"),
         {id("scope.exported"), kg::scope::Part::Melody},
         event);
-    const auto visible = evaluator.derive(exported);
+    const auto visible = evaluator.derive(exported, initial);
     require(
         visible.outcomes.size() == 1 &&
             visible.outcomes.front().state.melody.history.size() == 1 &&

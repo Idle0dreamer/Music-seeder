@@ -11,12 +11,15 @@ std::expected<mq::kernel::state::Snapshot, mq::kernel::eval::Violation> place(
     mq::kernel::state::Snapshot state,
     const mq::kernel::Identity& event,
     const mq::kernel::Identity& role,
-    mq::kernel::motion::Direction direction) {
+    mq::kernel::motion::Direction direction,
+    const mq::kernel::Identity& region) {
     const std::vector<mq::kernel::operation::Any> program{
         mq::kernel::operation::Place{
             event,
             role,
             direction,
+            region,
+            std::nullopt,
         },
     };
     return evaluator.run(std::move(state), program);
@@ -32,14 +35,19 @@ void test::request::motion() {
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
     const auto value = make(fixture);
-    const eval::Evaluator evaluator(fixture.profile.shared);
+    const eval::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
+    state::Snapshot initial;
+    initial.jins.active = fixture.jins.root;
 
     auto firstState = place(
         evaluator,
-        {},
+        initial,
         value.first,
         fixture.role.root,
-        motion::Direction::Start);
+        motion::Direction::Start,
+        fixture.region.root);
     require(
         firstState.has_value(),
         firstState ? "" : firstState.error().message);
@@ -56,7 +64,8 @@ void test::request::motion() {
         *firstState,
         value.second,
         fixture.role.ghammaz,
-        motion::Direction::Rise);
+        motion::Direction::Rise,
+        fixture.region.upper);
     require(
         secondState.has_value(),
         secondState ? "" : secondState.error().message);
@@ -74,7 +83,8 @@ void test::request::motion() {
         *secondState,
         value.third,
         fixture.role.ghammaz,
-        motion::Direction::Same);
+        motion::Direction::Same,
+        fixture.region.upper);
     require(
         thirdState.has_value(),
         thirdState ? "" : thirdState.error().message);
@@ -97,7 +107,8 @@ void test::request::motion() {
         *thirdState,
         value.fourth,
         fixture.role.root,
-        motion::Direction::Fall);
+        motion::Direction::Fall,
+        fixture.region.root);
     require(
         fourthState.has_value(),
         fourthState ? "" : fourthState.error().message);

@@ -2,6 +2,7 @@
 
 #include "mq/kernel/grammar/Result.hpp"
 #include "mq/kernel/grammar/Term.hpp"
+#include "mq/kernel/eval/Context.hpp"
 #include "mq/kernel/profile/Set.hpp"
 
 #include <cstdint>
@@ -13,7 +14,13 @@ namespace mq::kernel::grammar {
 class Evaluator {
 public:
     explicit Evaluator(const profile::Set& profile);
+    Evaluator(const profile::Set& profile, eval::Context context);
     Evaluator(const profile::Set& profile, const path::Graph& paths);
+    Evaluator(const profile::Set& profile, const jins::Catalog& catalog);
+    Evaluator(
+        const profile::Set& profile,
+        const jins::Catalog& catalog,
+        const path::Graph& paths);
 
     [[nodiscard]] Result derive(
         const Term& term,
@@ -26,7 +33,7 @@ public:
 
 private:
     const profile::Set& profile_;
-    const path::Graph* paths_{};
+    eval::Context context_;
 };
 
 } // namespace mq::kernel::grammar

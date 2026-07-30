@@ -3,7 +3,9 @@
 #include "mq/kernel/generate/Candidate.hpp"
 #include "mq/kernel/generate/Limits.hpp"
 #include "mq/kernel/generate/Result.hpp"
+#include "mq/kernel/eval/Context.hpp"
 #include "mq/kernel/grammar/Term.hpp"
+#include "mq/kernel/jins/Catalog.hpp"
 #include "mq/kernel/path/Graph.hpp"
 #include "mq/kernel/pitch/field/Schema.hpp"
 #include "mq/kernel/pitch/field/project/Plan.hpp"
@@ -18,7 +20,13 @@ namespace mq::kernel::generate {
 class Engine {
 public:
     explicit Engine(const profile::Set& profile);
+    Engine(const profile::Set& profile, eval::Context context);
     Engine(const profile::Set& profile, const path::Graph& paths);
+    Engine(const profile::Set& profile, const jins::Catalog& catalog);
+    Engine(
+        const profile::Set& profile,
+        const jins::Catalog& catalog,
+        const path::Graph& paths);
 
     [[nodiscard]] std::expected<Result, Error> run(
         std::uint64_t seed,
@@ -40,7 +48,7 @@ public:
 
 private:
     const profile::Set& profile_;
-    const path::Graph* paths_{};
+    eval::Context context_;
 };
 
 } // namespace mq::kernel::generate

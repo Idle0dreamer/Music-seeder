@@ -20,25 +20,29 @@ Each reader owns one stable field-context key \(k_i\). Its emitted fact is:
 when a value exists. A required reader fails on \(\bot\); an optional reader
 emits nothing. Two readers may not own the same key.
 
-The implemented readers are deliberately limited to state that currently
-exists:
+The implemented readers are limited to typed state that currently exists:
 
 - root or local center from the nonempty center stack;
 - active jins;
 - tonicization level through an explicit identity mapping;
 - completion state for one named modulation path;
 - current structural pitch role;
-- current intended motion through an explicit identity mapping.
+- current intended motion through an explicit identity mapping;
+- current relational register region;
+- optional baggage capability and idiomatic gesture family;
+- active or current completed phrase function;
+- current-event cadence family;
+- current completed phrase boundary.
 
-The projection does not pretend to know phrase function, cadence function,
-register, neighboring role, or performer context. Those require typed state
-components and operations before they can become readers.
+There is still no reader for neighboring-role history, sayr obligation,
+performer, instrument, or acoustic context. Each requires its own typed state
+and laws before projection can expose it.
 
 ## Scope
 
-Projection occurs after a grammar term has completed. It reads the resulting
-snapshot, after lexical scope restoration. A center, jins, tonicization, or
-path change that a scope does not export therefore cannot leak into pitch
+Projection reads an evaluated snapshot after a grammar term or committed event
+stage has completed. A center, jins, tonicization, path, phrase, melody, or
+gesture change that a scope does not export therefore cannot leak into pitch
 context.
 
 Trace events are evidence of evaluation, not authority for current context.
@@ -56,11 +60,11 @@ state fail rather than omitting facts silently.
 
 ## Downstream breadth
 
-This seam lets complete grammar branches request exact context-dependent pitch
-fields using established center, jins, tonicization, path, event role, and
-motion state. Structural pitch requests now consume role and motion directly.
-The next sequence adds phrase function and cadence state over event spans.
-Synthesis remains a separate consumer.
+This seam lets each committed stage request an exact context-dependent pitch
+field using center, jins, tonicization, path, event, phrase, register, baggage,
+and gesture state. The descriptor-driven generator consumes those facts across
+an ordered multi-event gesture. The next projection expansion is reserved for
+typed sayr landmarks; synthesis remains a separate consumer.
 
 ## Laws
 
@@ -69,5 +73,7 @@ Synthesis remains a separate consumer.
 - missing required state fails and missing optional state is omitted;
 - explicit tonicization mappings preserve typed levels;
 - completed-path projection does not depend on trace replay;
+- register, baggage, and gesture facts come from the current structural event;
+- phrase cadence and boundary facts remain tied to the current event span;
 - non-exported scoped state cannot leak into the projected context;
 - the projected context selects and solves a neutral field end to end.

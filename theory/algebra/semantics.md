@@ -85,10 +85,18 @@ For primitive operator \(o\):
 If the precondition is false, execution yields a typed violation containing
 the rule identity and provenance that rejected it.
 
-`Place(i,r,d)` appends one unique structural event to melodic state. `Start` is
-required for the first event and forbidden afterward. Its intended direction is
-checked against exact calculated pitch order when the instrument-neutral
-performance target is built; the grammar declaration alone is not proof.
+`Place(i,role,direction,region,baggage?)` appends one unique structural event
+only after the active jins descriptor, profile, baggage capability, and current
+gesture step all agree. `Start` is required for the first event and forbidden
+afterward. Its intended direction is checked against exact calculated pitch
+order when the instrument-neutral performance target is built; the grammar
+declaration alone is not proof.
+
+`gesture::Begin(o,f)` opens the ordered step definition owned by the active
+descriptor. Each conformant `Place` advances it exactly once.
+`gesture::End(o)` succeeds only when every step has matched, then records exact
+first and last event identities. Entering or tonicizing another jins while a
+gesture remains active fails.
 
 `Begin(i,f)` records the current event-history offset under profile-defined
 phrase function \(f\). `Cadence(a,e,s)` contributes evidence and records exact

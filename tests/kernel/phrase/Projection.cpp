@@ -35,7 +35,11 @@ void test::phrase::projection() {
     const auto made = fixture::make();
     require(made.has_value(), made.error_or("fixture failed"));
     const auto& fixture = *made;
-    const eval::Evaluator evaluator(fixture.profile.shared);
+    const eval::Evaluator evaluator(
+        fixture.profile.shared,
+        fixture.catalog);
+    state::Snapshot initial;
+    initial.jins.active = fixture.jins.root;
     const auto phraseId = id("phrase");
     const auto eventId = id("event");
     const std::vector<operation::Any> program{
@@ -47,6 +51,8 @@ void test::phrase::projection() {
             eventId,
             fixture.role.root,
             motion::Direction::Start,
+            fixture.region.root,
+            std::nullopt,
         },
         operation::Cadence{
             fixture.cadence,
@@ -58,7 +64,7 @@ void test::phrase::projection() {
             mq::kernel::phrase::Boundary::Closed,
         },
     };
-    const auto state = evaluator.run({}, program);
+    const auto state = evaluator.run(initial, program);
     require(state.has_value(), state ? "" : state.error().message);
 
     const auto functionKey = id("key.function");

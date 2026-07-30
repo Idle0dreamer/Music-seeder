@@ -1,6 +1,8 @@
 #pragma once
 
 #include "mq/kernel/pitch/field/project/center/Read.hpp"
+#include "mq/kernel/pitch/field/project/baggage/Read.hpp"
+#include "mq/kernel/pitch/field/project/gesture/Read.hpp"
 #include "mq/kernel/pitch/field/project/jins/Read.hpp"
 #include "mq/kernel/pitch/field/project/motion/Read.hpp"
 #include "mq/kernel/pitch/field/project/path/Read.hpp"
@@ -8,6 +10,7 @@
 #include "mq/kernel/pitch/field/project/phrase/cadence/Read.hpp"
 #include "mq/kernel/pitch/field/project/phrase/function/Read.hpp"
 #include "mq/kernel/pitch/field/project/role/Read.hpp"
+#include "mq/kernel/pitch/field/project/registral/Read.hpp"
 #include "mq/kernel/pitch/field/project/tonicization/Read.hpp"
 
 #include <variant>
@@ -23,6 +26,9 @@ using Source = std::variant<
     path::Read,
     phrase::function::Read,
     phrase::cadence::Read,
-    phrase::boundary::Read>;
+    phrase::boundary::Read,
+    registral::Read,
+    baggage::Read,
+    gesture::Read>;
 
 } // namespace mq::kernel::pitch::field::project

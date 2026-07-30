@@ -28,6 +28,12 @@ const char* name(const Any& value) noexcept {
                 return "Begin";
             } else if constexpr (std::is_same_v<T, End>) {
                 return "End";
+            } else if constexpr (std::is_same_v<T, gesture::Begin>) {
+                return "Gesture.Begin";
+            } else if constexpr (std::is_same_v<T, gesture::End>) {
+                return "Gesture.End";
+            } else if constexpr (std::is_same_v<T, sayr::Fulfill>) {
+                return "Sayr.Fulfill";
             } else {
                 return "Return";
             }

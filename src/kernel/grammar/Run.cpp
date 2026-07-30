@@ -7,12 +7,11 @@
 
 namespace mq::kernel::grammar::detail {
 
-Runner::Runner(const profile::Set& profile)
-    : profile_(profile) {}
-
-Runner::Runner(const profile::Set& profile, const path::Graph& paths)
+Runner::Runner(
+    const profile::Set& profile,
+    eval::Context context)
     : profile_(profile),
-      paths_(&paths) {}
+      context_(context) {}
 
 void append(Batch& target, Batch source) {
     target.frames.insert(
@@ -43,13 +42,9 @@ Batch Runner::run(const Term& term, Frame frame) const {
                 };
             } else if constexpr (std::is_same_v<T, Atom>) {
                 const std::array program{form.operation};
-                auto result = paths_ == nullptr
-                                ? eval::Evaluator(profile_).run(
-                                      frame.outcome.state,
-                                      program)
-                                : eval::Evaluator(profile_, *paths_).run(
-                                      frame.outcome.state,
-                                      program);
+                const auto result = eval::Evaluator(
+                    profile_,
+                    context_).run(frame.outcome.state, program);
                 if (!result) {
                     return Batch{
                         {},

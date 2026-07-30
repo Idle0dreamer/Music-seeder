@@ -3,11 +3,45 @@
 namespace mq::kernel::eval {
 
 Evaluator::Evaluator(const profile::Set& profile)
-    : profile_(profile) {}
+    : Evaluator(profile, Context{}) {}
+
+Evaluator::Evaluator(
+    const profile::Set& profile,
+    Context context)
+    : profile_(profile),
+      context_(context) {}
 
 Evaluator::Evaluator(const profile::Set& profile, const path::Graph& paths)
-    : profile_(profile),
-      paths_(&paths) {}
+    : Evaluator(
+          profile,
+          Context{
+              .jins = {},
+              .path = {&paths},
+              .sayr = {},
+          }) {}
+
+Evaluator::Evaluator(
+    const profile::Set& profile,
+    const jins::Catalog& catalog)
+    : Evaluator(
+          profile,
+          Context{
+              .jins = {&catalog},
+              .path = {},
+              .sayr = {},
+          }) {}
+
+Evaluator::Evaluator(
+    const profile::Set& profile,
+    const jins::Catalog& catalog,
+    const path::Graph& paths)
+    : Evaluator(
+          profile,
+          Context{
+              .jins = {&catalog},
+              .path = {&paths},
+              .sayr = {},
+          }) {}
 
 std::expected<state::Snapshot, Violation> Evaluator::run(
     state::Snapshot state,
