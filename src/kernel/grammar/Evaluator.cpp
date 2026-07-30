@@ -1,0 +1,67 @@
+#include "mq/kernel/grammar/Evaluator.hpp"
+
+#include "Run.hpp"
+
+#include <limits>
+
+namespace mq::kernel::grammar {
+
+Evaluator::Evaluator(const profile::Set& profile)
+    : profile_(profile) {}
+
+Evaluator::Evaluator(const profile::Set& profile, const path::Graph& paths)
+    : profile_(profile),
+      paths_(&paths) {}
+
+Result Evaluator::derive(
+    const Term& term,
+    state::Snapshot state) const {
+    const auto make = [&]() {
+        return paths_ == nullptr
+                 ? detail::Runner(profile_)
+                 : detail::Runner(profile_, *paths_);
+    };
+    auto runner = make();
+    auto batch = runner.run(
+        term,
+        detail::Frame{
+            Outcome{std::move(state), {}, {}},
+            {},
+            {},
+        });
+
+    Result result;
+    result.diagnostics = std::move(batch.diagnostics);
+    result.outcomes.reserve(batch.frames.size());
+    for (auto& frame : batch.frames) {
+        result.outcomes.push_back(std::move(frame.outcome));
+    }
+    return result;
+}
+
+std::expected<Outcome, std::string> Evaluator::choose(
+    std::uint64_t seed,
+    const Term& term,
+    state::Snapshot state) const {
+    const auto result = derive(term, std::move(state));
+    if (result.outcomes.empty()) {
+        const auto message = result.diagnostics.empty()
+                               ? "grammar has no legal outcome"
+                               : result.diagnostics.front().message;
+        return std::unexpected(message);
+    }
+
+    const Outcome* best = nullptr;
+    auto rank = std::numeric_limits<std::uint64_t>::max();
+    for (const auto& outcome : result.outcomes) {
+        const auto candidate = choice::key(seed, outcome.decisions);
+        if (best == nullptr || outcome.cost < best->cost ||
+            (outcome.cost == best->cost && candidate < rank)) {
+            best = &outcome;
+            rank = candidate;
+        }
+    }
+    return *best;
+}
+
+} // namespace mq::kernel::grammar

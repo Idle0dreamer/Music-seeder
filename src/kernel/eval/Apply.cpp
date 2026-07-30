@@ -1,0 +1,140 @@
+#include "mq/kernel/eval/Evaluator.hpp"
+
+#include <algorithm>
+#include <type_traits>
+
+namespace mq::kernel::eval {
+namespace {
+
+Violation denied(
+    std::size_t index,
+    const char* operation,
+    std::string rule,
+    std::string subject) {
+    return Violation{
+        index,
+        operation,
+        std::move(rule),
+        "profile rejected " + std::move(subject),
+    };
+}
+
+} // namespace
+
+std::expected<state::Snapshot, Violation> Evaluator::apply(
+    state::Snapshot state,
+    const operation::Any& action,
+    std::size_t index) const {
+    const auto label = operation::name(action);
+    std::string subject;
+
+    const auto outcome = std::visit(
+        [&](const auto& value) -> std::expected<void, Violation> {
+            using T = std::decay_t<decltype(value)>;
+            if constexpr (std::is_same_v<T, operation::Anchor>) {
+                subject = value.center.str();
+                if (!profile_.allows("allow.anchor", value.center)) {
+                    return std::unexpected(
+                        denied(index, label, "allow.anchor", subject));
+                }
+                if (state.center.stack.empty() ||
+                    state.center.stack.back() != value.center) {
+                    state.center.stack.push_back(value.center);
+                }
+            } else if constexpr (std::is_same_v<T, operation::Enter>) {
+                subject = value.jins.str();
+                if (!profile_.allows("allow.enter", value.jins)) {
+                    return std::unexpected(
+                        denied(index, label, "allow.enter", subject));
+                }
+                state.jins.active = value.jins;
+            } else if constexpr (std::is_same_v<T, operation::Emphasize>) {
+                subject = value.role.str();
+                if (!profile_.allows("allow.emphasize", value.role)) {
+                    return std::unexpected(
+                        denied(index, label, "allow.emphasize", subject));
+                }
+                state.evidence.amount[evidence::Kind::Emphasis] += value.amount;
+            } else if constexpr (std::is_same_v<T, operation::Dwell>) {
+                subject = value.role.str();
+                if (!profile_.allows("allow.dwell", value.role)) {
+                    return std::unexpected(
+                        denied(index, label, "allow.dwell", subject));
+                }
+                state.evidence.amount[evidence::Kind::Dwell] += value.amount;
+            } else if constexpr (std::is_same_v<T, operation::Emit>) {
+                subject = value.cell.str();
+                if (!profile_.allows("allow.emit", value.cell)) {
+                    return std::unexpected(
+                        denied(index, label, "allow.emit", subject));
+                }
+                const auto previous = state.cell.occurrences[value.cell]++;
+                state.evidence.amount[evidence::Kind::Cell] += Rational(1);
+                if (previous > 0) {
+                    state.evidence.amount[evidence::Kind::Recurrence] +=
+                        Rational(1);
+                }
+            } else if constexpr (std::is_same_v<T, operation::Cadence>) {
+                subject = value.family.str();
+                if (!profile_.allows("allow.cadence", value.family)) {
+                    return std::unexpected(
+                        denied(index, label, "allow.cadence", subject));
+                }
+                state.evidence.amount[evidence::Kind::Cadence] += value.evidence;
+            } else if constexpr (std::is_same_v<T, operation::Tonicize>) {
+                subject = value.jins.str();
+                if (!profile_.allows("allow.tonicize", value.jins)) {
+                    return std::unexpected(
+                        denied(index, label, "allow.tonicize", subject));
+                }
+                const auto evidence = check(state, value.level, index, label);
+                if (!evidence) {
+                    return evidence;
+                }
+                state.jins.active = value.jins;
+                state.tonicization.level = value.level;
+            } else if constexpr (std::is_same_v<T, operation::Modulate>) {
+                subject = value.path.str();
+                if (!profile_.allows("allow.modulate", value.path)) {
+                    return std::unexpected(
+                        denied(index, label, "allow.modulate", subject));
+                }
+                const auto path = check(state, value, index);
+                if (!path) {
+                    return path;
+                }
+                const auto evidence = check(state, value.level, index, label);
+                if (!evidence) {
+                    return evidence;
+                }
+                state.center.stack.push_back(value.center);
+                state.path.completed.insert(value.path);
+                state.tonicization.level = value.level;
+            } else if constexpr (std::is_same_v<T, operation::Return>) {
+                subject = value.center.str();
+                const auto found =
+                    std::ranges::find(state.center.stack, value.center);
+                if (found == state.center.stack.end()) {
+                    return std::unexpected(Violation{
+                        index,
+                        label,
+                        "center.stack",
+                        "return target was never established: " + subject,
+                    });
+                }
+                state.center.stack.erase(found + 1, state.center.stack.end());
+                state.tonicization.level = tonicization::Level::Internal;
+            }
+            return {};
+        },
+        action);
+
+    if (!outcome) {
+        return std::unexpected(outcome.error());
+    }
+    state.trace.events.push_back(
+        trace::Event{index, label, std::move(subject)});
+    return state;
+}
+
+} // namespace mq::kernel::eval

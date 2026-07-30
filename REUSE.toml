@@ -1,0 +1,30 @@
+version = 1
+
+[[annotations]]
+path = [
+    ".gitignore",
+    "Makefile",
+    "REUSE.toml",
+    "apps/**",
+    "include/**",
+    "src/**",
+    "tests/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Idle0dreamer and MaqamForge contributors"
+SPDX-License-Identifier = "MPL-2.0"
+
+[[annotations]]
+path = [
+    "AGENTS.md",
+    "ATTRIBUTION.md",
+    "LICENSE_POLICY.md",
+    "README.md",
+    "STATUS.md",
+    "profiles/**",
+    "synthesis/**",
+    "theory/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Idle0dreamer and MaqamForge contributors"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
