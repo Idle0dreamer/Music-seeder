@@ -1,8 +1,9 @@
-# Maqām generative theory
+# Current maqām theory module
 
-This directory is the normative specification for any future generator. The
-existing executable is a rejected prototype and is not evidence that this
-theory has been implemented.
+This directory is the normative specification for Music-seeder's current
+maqām module. It does not define the whole product or pre-empt future theory
+modules. The existing executable is a rejected prototype and is not evidence
+that this theory has been implemented.
 
 The model is intentionally modular. No single document is allowed to stand in
 for the whole tradition, and no scale table is allowed to stand in for a

@@ -1,14 +1,18 @@
-# MaqamForge
+# Music-seeder
 
-MaqamForge is being rebuilt around a non-ML, mathematically explicit operator
-algebra for maqam performance. The shared kernel defines typed musical
-operators and exact composition laws; regional, school, repertoire, performer,
-and form variants are reconstructed from declarative, provenance-bearing
-profile patches.
+Music-seeder is a non-ML, mathematically explicit generative music system. Its
+current theory module addresses maqām performance: typed musical operators,
+exact composition laws, and declarative, provenance-bearing reconstruction of
+regional, school, repertoire, performer, and form variants.
+
+Maqām is the present research scope, not the identity or eventual limit of the
+product. Other theory modules may be added later through explicit boundaries;
+none are modeled or claimed by the current kernel.
 
 The old seed-driven Bayati generator and synthesized audio remain as rejected
 diagnostic prototypes. They are not the project authority. The normative theory
-is under `theory/`; the new C++23 implementation is isolated under
+for the current maqām module is under `theory/`; the C++23 implementation is
+isolated under
 `include/mq/kernel`, `src/kernel`, `apps/kernel`, and `tests/kernel`.
 
 Pitch is calculated from symbolic ratio and contextual constraints. No scale

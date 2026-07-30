@@ -5,7 +5,7 @@
 When distributing MPL-2.0-covered source, preserve copyright and license
 notices and make the MPL-2.0 terms available. A useful project-level notice is:
 
-> MaqamForge, by Idle0dreamer and contributors. Source:
+> Music-seeder, by Idle0dreamer and contributors. Source:
 > https://github.com/Idle0dreamer/Music-seeder. Code licensed under MPL-2.0.
 
 MPL-2.0's file-level obligations still govern covered source and
@@ -16,15 +16,15 @@ modifications; this notice does not replace the license.
 For CC BY-SA 4.0 material, identify:
 
 - the title or described material;
-- Idle0dreamer and MaqamForge contributors as creator attribution;
+- Idle0dreamer and Music-seeder contributors as creator attribution;
 - the repository URL as the source;
 - CC BY-SA 4.0, with a link or copy of the license;
 - whether and how the material was changed.
 
 An example is:
 
-> Adapted from the MaqamForge theory specification by Idle0dreamer and
-> MaqamForge contributors, https://github.com/Idle0dreamer/Music-seeder,
+> Adapted from the Music-seeder maqām theory specification by Idle0dreamer and
+> Music-seeder contributors, https://github.com/Idle0dreamer/Music-seeder,
 > licensed CC BY-SA 4.0. Changes: [describe changes].
 
 Do not imply endorsement. Attribution for cited or incorporated third-party

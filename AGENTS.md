@@ -1,4 +1,4 @@
-# MaqamForge guidance
+# Music-seeder guidance
 
 ## Authority
 

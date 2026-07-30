@@ -11,7 +11,7 @@ path = [
     "tests/**",
 ]
 precedence = "aggregate"
-SPDX-FileCopyrightText = "2026 Idle0dreamer and MaqamForge contributors"
+SPDX-FileCopyrightText = "2026 Idle0dreamer and Music-seeder contributors"
 SPDX-License-Identifier = "MPL-2.0"
 
 [[annotations]]
@@ -26,5 +26,5 @@ path = [
     "theory/**",
 ]
 precedence = "aggregate"
-SPDX-FileCopyrightText = "2026 Idle0dreamer and MaqamForge contributors"
+SPDX-FileCopyrightText = "2026 Idle0dreamer and Music-seeder contributors"
 SPDX-License-Identifier = "CC-BY-SA-4.0"

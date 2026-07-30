@@ -1,6 +1,6 @@
 # Licensing policy
 
-MaqamForge uses licenses by responsibility. `REUSE.toml` is the
+Music-seeder uses licenses by responsibility. `REUSE.toml` is the
 machine-readable authority for the files currently in the repository.
 
 ## Code
