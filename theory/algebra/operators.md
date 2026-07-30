@@ -57,8 +57,11 @@ Iqa operators alter rhythmic context, never maqam identity.
 - `Intone(role,context)` solves a pitch field and trajectory;
 - `Time(event,context)` realizes structural time;
 - `Ornament(host,family)` elaborates a host without replacing it;
-- `Strike(course,technique)` maps an event to instrument excitation;
-- `Damp(course,technique)` changes acoustic boundary conditions.
+- `Articulate(host,intent)` declares instrument-neutral execution intent;
+- `Release(host,intent)` declares continuation or release intent.
+
+Instrument action and excitation are not language operators. A synthesis
+adapter maps supported performance intents after derivation.
 
 ## Combinators
 
@@ -78,4 +81,3 @@ The grammar itself uses a small closed set:
 \]
 
 There is no unrestricted note-choice operator.
-

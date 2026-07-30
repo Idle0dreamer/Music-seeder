@@ -23,9 +23,9 @@ An attack records:
 - onset and release;
 - energy;
 - articulation;
-- mallet/hand/instrument action;
+- execution intent;
 - membership in an ornament;
-- relation to previous resonance.
+- relation to previous musical event.
 
 ## Melodic cell
 

@@ -19,6 +19,12 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Exact underdetermined witnesses | retained stages, reverse substitution, and source-constraint validation |
 | Unified hard solver authority | equalities and inequalities use the same feasibility/witness path |
 | Stable hard-constraint identities | uniqueness validation and identity-bearing contradiction traces |
+| Exact one-tier contextual tendencies | active-set KKT equations solved through hard witnesses |
+| Positive rational tendency weights | target validation and exact weighted-center laws |
+| Hard-bound tendency interaction | upper, lower, and coupled active-set tests |
+| Stable active-set traces | identity-normalized constraints and active identity output |
+| Exact tier predictions | tendency-identity to affine prediction map |
+| Explicit KKT resource failure | bounded active-set enumeration and nested hard-solver limits |
 | Profile rule values and provenance | `Rule`, `Profile` |
 | Seven patch actions | reconstruction implementation and tests |
 | Multiple-parent conflict rejection | profile law tests |
@@ -42,16 +48,18 @@ implements. Passing legacy prototype tests does not advance this ledger.
 - `Alt` identity normalization and its normalized associativity law.
 - Recursive production definitions and explicit well-founded budget accounting.
 - Profile-declared choice bands beyond equal minimum-cost outcomes.
-- Lexicographically ordered soft pitch-constraint tiers.
+- Multiple lexicographically ordered pitch-tendency tiers.
 - Continuous intonation trajectory basis functions.
 - A sourced real regional profile.
-- A replacement dulcimer renderer.
+
+Audio rendering is outside this ledger. The independent synthesis boundary is
+specified under `synthesis/`.
 
 ## Next coherent sequence
 
-1. Consume hard witnesses in active-set KKT solving for the first soft tier.
-2. Preserve stronger-tier predictions before optimizing later tiers.
-3. Prove active-set and storage-order invariance.
+1. Preserve every stronger-tier prediction as an exact equality.
+2. Reuse the KKT tier operator for later lexicographic tiers.
+3. Prove multi-tier non-degradation and storage-order invariance.
 4. Normalize `Alt` identities and test normalized associativity.
 5. Add recursive production budgets before recursive grammar modules.
 6. Encode one sourced Bayati evidence fixture only after its rule review.
@@ -61,7 +69,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 Verified in the current workspace:
 
 - optimized GCC C++23 build with warnings as errors;
-- twelve debug law suites;
+- fourteen debug law suites;
 - undefined-behavior sanitizer;
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails

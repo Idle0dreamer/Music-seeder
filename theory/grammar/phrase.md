@@ -79,7 +79,7 @@ Closure strength is continuous internally but labeled for annotation:
 - final.
 
 A final cadence requires a licensed return path, root-jins re-establishment,
-adequate motivic recall or conclusion, and enough acoustic space for the
+adequate motivic recall or conclusion, and enough temporal space for the
 resolution to be heard.
 
 ## Weighted attribute grammar
@@ -105,7 +105,7 @@ Features include:
 - register and climax preparation;
 - performer and repertoire priors;
 - repetition, novelty, and delayed recall;
-- predicted acoustic clarity.
+- predicted perceptual clarity.
 
 Generation uses constrained beam or particle search over phrase-level
 derivations. Greedy note-by-note sampling is prohibited.

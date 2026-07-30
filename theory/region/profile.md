@@ -6,7 +6,7 @@ Musical permissions, costs, formulas, and constants live in profiles.
 ## Profile
 
 \[
-\mathcal{P}=(g,v,s,c,i,o,f,a,r,e)
+\mathcal{P}=(g,v,s,c,i,o,f,r,e)
 \]
 
 - \(g\): jins and modulation graph data;
@@ -16,7 +16,6 @@ Musical permissions, costs, formulas, and constants live in profiles.
 - \(i\): contextual intonation model;
 - \(o\): ornament and articulation inventory;
 - \(f\): form and timing conventions;
-- \(a\): instrument realization practices;
 - \(r\): repertoire, era, and performer priors;
 - \(e\): evidence, uncertainty, and coverage.
 
@@ -24,8 +23,8 @@ Musical permissions, costs, formulas, and constants live in profiles.
 
 Egyptian, Levantine, Iraqi, Gulf, Turkish, North African, and other related
 practices cannot be represented by a cents offset. A profile can change the
-graph, vocabulary, cadence behavior, intonation, phrase timing, ornament,
-formal expectations, and instrument technique.
+graph, vocabulary, cadence behavior, intonation, phrase timing, ornament, and
+formal expectations.
 
 ## Reconstruction
 
@@ -54,7 +53,7 @@ Each profile publishes a coverage matrix for:
 - motif and cadence vocabulary;
 - intonation contexts;
 - forms and iqa contexts;
-- ornaments and instruments;
+- ornament and articulation intents;
 - repertoire periods and performer representation.
 
 Unsupported cells in this matrix are errors if selected for generation, not

@@ -31,7 +31,7 @@ Every derived claim links back to the exact evidence segments that support it.
 4. **Tonal interpretation** — jins, tonic, level, evidence, competing analyses.
 5. **Phrase syntax** — function, relations, cadence, boundary strength.
 6. **Sayr and form** — landmarks, obligations, sections, climax and return.
-7. **Performance** — intonation, timing, articulation, instrument technique.
+7. **Performance** — intonation, timing, articulation, and observed execution.
 
 No automated layer is promoted to ground truth without expert review.
 
@@ -76,7 +76,7 @@ The system calculates:
 - graph edge weights and duration models;
 - motif transformations and recognition thresholds;
 - phrase production weights;
-- timing, ornament, and acoustic parameter distributions.
+- timing and ornament distributions.
 
 Experts encode or verify:
 
@@ -85,4 +85,3 @@ Experts encode or verify:
 - profile boundaries;
 - source reliability;
 - whether a discovered pattern is idiomatic or incidental.
-

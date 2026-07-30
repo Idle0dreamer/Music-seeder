@@ -51,8 +51,8 @@ Pitch identity is stored relative to:
 3. the register;
 4. the current jins interpretation.
 
-Absolute frequency is a realization parameter chosen after range, instrument,
-and performer profile.
+Absolute frequency is an exported performance parameter chosen after register
+and performer context.
 
 ## Pitch trajectory
 
@@ -66,7 +66,7 @@ where:
 
 - \(\mu\): contextual target center;
 - \(b(t)\): approach and settling curve;
-- \(v(t)\): vibrato or course beating when physically available;
+- \(v(t)\): intended pitch fluctuation;
 - \(o(t)\): ornament trajectory;
 - \(\epsilon(t)\): correlated performer variation.
 

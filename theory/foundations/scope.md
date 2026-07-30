@@ -23,7 +23,7 @@ rule.
 
 ## What “correct” means
 
-Correctness has four distinct meanings:
+Correctness has three distinct meanings:
 
 1. **Representational correctness**  
    The primitives can describe what practitioners identify without forcing it
@@ -34,11 +34,8 @@ Correctness has four distinct meanings:
 3. **Perceptual correctness**  
    acculturated listeners hear the intended jins, maqām, phrase function, and
    degree of closure.
-4. **Acoustic correctness**  
-   the synthetic instrument behaves like the declared instrument profile under
-   isolated and overlapping strikes.
-
-These must be tested separately.
+These must be tested separately. Acoustic correctness belongs to the separate
+synthesis subsystem.
 
 ## Non-goals
 
@@ -52,8 +49,6 @@ The theory does not claim:
 - that taqsīm is random or temporally structureless;
 - that a universal Middle Eastern profile is valid;
 - that a Western ornament name defines Arabic execution;
-- that a physically inspired additive synthesizer is a complete instrument
-  model;
 - that automated metrics can replace practitioner judgment.
 
 ## Required separation of concerns
@@ -70,7 +65,10 @@ The following layers must not be collapsed:
 | Iqāʿ | independently selected rhythmic cycle |
 | Region/repertoire | historically and socially bounded practice |
 | Performer | reviewed vocabulary, habits, range, and intonation |
-| Instrument | available attacks, gestures, tuning, damping, and acoustics |
+| Performance plan | instrument-neutral pitch, time, dynamic, and gesture intent |
 
 An implementation may connect these layers through typed interfaces. It may not
 pretend one layer is an intrinsic property of another.
+
+The language ends at the performance plan. Instrument action and waveform state
+belong to the separate synthesis adapter boundary.

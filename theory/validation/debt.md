@@ -23,18 +23,9 @@ defaults.
 ## Timing and form
 
 - Free-rhythm boundary and elastic-rate annotations.
-- Repeated-note timing models by performer and instrument.
+- Repeated-note timing models by performer and articulation context.
 - Relationship between taqsim section functions and repertoire/era.
 - Rules for transitioning into or out of iqa-bound contexts.
-
-## Dulcimer
-
-- Exact instrument family and regional playing technique to emulate.
-- Geometry and material measurements.
-- Hammer contact parameters and strike-position behavior.
-- Bridge mobility and soundboard radiation measurements.
-- Reference decay and masking distributions by pitch and dynamic.
-- Perceptual definition of crispness for qualified listeners.
 
 ## Evaluation
 
@@ -43,3 +34,5 @@ defaults.
 - How to measure cultural/profile fit without collapsing disagreement.
 - Release coverage required before any “full depth” description.
 
+Audio-specific debt is maintained separately in
+[`synthesis/debt.md`](../../synthesis/debt.md).

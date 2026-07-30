@@ -23,7 +23,7 @@ Hard constraints are rational affine equalities and inequalities:
 H x=h,\qquad Lx\leq l.
 \]
 
-Examples include anchoring, pitch ordering, course range, and an interval
+Examples include anchoring, pitch ordering, register range, and an interval
 identity declared exact within a selected tuning theory.
 
 Every hard constraint carries a stable identity distinct from its prose
@@ -47,6 +47,11 @@ Hard feasibility and witness construction use exact Fourier--Motzkin
 projection followed by reverse substitution. This produces a legal point even
 when the affine system is underdetermined; it does not choose among legal
 points according to contextual preference.
+
+One contextual tendency tier is solved exactly through finite active-set KKT
+systems. The solver returns affine predictions for every stable tendency
+identity; those predictions are the constraints a later lexicographic tier
+must preserve.
 
 ## Conditional terms
 
@@ -78,7 +83,7 @@ c_r(t)=x_r+
 \]
 
 Basis families describe approach, delayed arrival, attraction, release, and
-instrument-specific connection. Boundary conditions ensure the trajectory
+gesture-specific connection. Boundary conditions ensure the trajectory
 reaches or intentionally delays the structural target.
 
 ## Exactness boundary
@@ -90,5 +95,5 @@ Conversion to frequency:
 f=f_0\,2^{c/1200}
 \]
 
-and waveform integration necessarily use controlled floating-point
-approximations. Tests declare error bounds at that boundary.
+uses controlled floating-point approximation at the performance-plan export
+boundary. Instrument mapping and waveform integration belong to `synthesis/`.

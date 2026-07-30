@@ -12,8 +12,11 @@ int main() {
         test::choice();
         test::order();
         test::feasibility();
+        test::feasibility_limits();
         test::witness();
         test::constraint();
+        test::tendency::solve();
+        test::tendency::laws();
         test::path();
         test::grammar::laws();
         test::grammar::relation();
@@ -27,6 +30,8 @@ int main() {
             << "PASS exact affine inequality feasibility\n"
             << "PASS exact hard-constraint witness construction\n"
             << "PASS stable hard-constraint identity laws\n"
+            << "PASS exact contextual tendency KKT solving\n"
+            << "PASS tendency identity, budget, and ordering laws\n"
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS complete grammar branch evaluation\n";

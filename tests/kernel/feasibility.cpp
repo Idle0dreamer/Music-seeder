@@ -2,7 +2,6 @@
 
 #include "mq/kernel/pitch/System.hpp"
 
-#include <algorithm>
 #include <utility>
 
 void test::feasibility() {
@@ -11,7 +10,6 @@ void test::feasibility() {
 
     const Identity x{"test.feasibility", "x", "1"};
     const Identity y{"test.feasibility", "y", "1"};
-    const Identity unknown{"test.feasibility", "unknown", "1"};
     const auto identity = [](std::string name) {
         return Identity{
             "test.feasibility.constraint",
@@ -128,44 +126,4 @@ void test::feasibility() {
         !unsafe.solve(),
         "equality solver ignored a contradictory inequality");
 
-    pitch::System absent;
-    absent.declare(x);
-    absent.bound({
-        identity("absent"),
-        {{unknown, Rational(1)}},
-        {},
-        "unknown role",
-    });
-    const auto absentReport = absent.feasible();
-    require(
-        !absentReport &&
-            absentReport.error().code == pf::Error::Code::Input,
-        "unknown inequality variable was accepted");
-
-    const auto rowLimit = chain.feasible(pf::Limits{
-        2,
-        {},
-    });
-    require(
-        !rowLimit && rowLimit.error().code == pf::Error::Code::Rows,
-        "Fourier-Motzkin row budget did not fail explicitly");
-
-    pitch::System proofLimit;
-    proofLimit.bound({
-        identity("proof"),
-        {},
-        pitch::Expression::ratio(3, 2) * Rational(12),
-        "large exact constant",
-    });
-    const auto proofReport = proofLimit.feasible(pf::Limits{
-        10,
-        pitch::order::Limits{10, 1024},
-    });
-    require(
-        !proofReport &&
-            proofReport.error().code == pf::Error::Code::Proof &&
-            proofReport.error().proof &&
-            proofReport.error().proof->code ==
-                pitch::order::Error::Code::Exponent,
-        "inequality proof budget silently approximated a comparison");
 }

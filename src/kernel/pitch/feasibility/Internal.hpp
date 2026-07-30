@@ -20,6 +20,11 @@ struct Projection {
     Rows final;
 };
 
+[[nodiscard]] std::expected<void, Error> identities(
+    std::span<const Identity> variables,
+    std::span<const Equation> equations,
+    std::span<const Inequality> inequalities);
+
 [[nodiscard]] std::expected<Rows, Error> build(
     std::span<const Identity> variables,
     std::span<const Equation> equations,

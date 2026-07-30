@@ -13,7 +13,10 @@
 - Use C++23. Do not use Python.
 - Do not use machine learning, backpropagation, or opaque learned grammar.
 - Do not encode maqamat or ajnas as hard-coded scale or cents arrays.
-- Keep exact rational and symbolic pitch expressions until acoustic realization.
+- Keep exact rational and symbolic pitch expressions until the exported
+  performance plan reaches its declared numerical boundary.
+- Keep audio synthesis outside `theory/` and `mq/kernel`; synthesis adapters
+  consume instrument-neutral kernel output through a one-way interface.
 - Keep operator semantics universal and reconstruct traditions through explicit,
   provenance-bearing profile operations.
 - Missing regional knowledge has no generic fallback. Use neutral fixtures until
@@ -24,8 +27,9 @@
 
 - Keep files short, modular, and named by one responsibility.
 - Prefer directories over compound file names.
-- Separate algebra, profile reconstruction, pitch, grammar, performance,
-  instrument realization, and validation.
+- Separate algebra, profile reconstruction, pitch, grammar, and performance.
+- Keep synthesis, instrument adapters, and acoustic validation under
+  `synthesis/`, independent of musical-language validation.
 - Treat optimistic claims as research debt: state the missing evidence and build
   the smallest complete seam that removes it.
 

@@ -3,7 +3,7 @@
 MaqamForge is being rebuilt around a non-ML, mathematically explicit operator
 algebra for maqam performance. The shared kernel defines typed musical
 operators and exact composition laws; regional, school, repertoire, performer,
-and instrument variants are reconstructed from declarative, provenance-bearing
+and form variants are reconstructed from declarative, provenance-bearing
 profile patches.
 
 The old seed-driven Bayati generator and synthesized audio remain as rejected
@@ -39,6 +39,7 @@ sources are not part of this checkpoint.
 | `include/mq/kernel/profile` | rules, patches, and effective profiles |
 | `src/kernel/*` | implementations separated by the same domains |
 | `tests/kernel` | executable algebra and reconstruction laws |
+| `synthesis` | separate audio interface, instrument adapters, and acoustic validation |
 | legacy directories | rejected generator/synthesizer retained for diagnosis |
 
 ## Scope
@@ -57,15 +58,6 @@ provenance satisfy the theory gates.
   regional scope.
 - Johnny Farraj and Sami Abu Shumays, [MaqamWorld](https://www.maqamworld.com/en/maqam.php),
   especially the general maqam, Bayati, Bayati-jins, iqa, and form materials.
-- Mayer Alexander and Herbert Rust,
-  [“A method for an acoustical comparison of the Hammered Dulcimer”](https://pub.dega-akustik.de/DAGA_2010/data/articles/000215.pdf),
-  DAGA 2010, for hammer-position variability, strong
-  string/bridge/soundboard coupling, and decay behavior.
-- V. Välimäki et al.,
-  [“Sound Synthesis of the Harpsichord Using a Computationally Efficient Physical Model”](https://www.ee.columbia.edu/~dpwe/e6820/papers/ValPK04-harpsi.pdf),
-  2004, for the useful struck/plucked
-  string decomposition into excitation, string loss/dispersion, and a shared
-  soundboard response.
-
 See `theory/README.md` and `theory/implementation/kernel.md` for the model and
-the exact implementation boundary.
+the exact implementation boundary. Audio work has a separate authority under
+`synthesis/`.

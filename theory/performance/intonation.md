@@ -9,7 +9,7 @@ For a structural event \(u\), the target and trajectory are solved from:
 
 \[
 \operatorname{Intone}\!\left(u\mid
-J,M,\rho,d,n_-,n_+,k,g,p,r,\nu,\iota\right)
+J,M,\rho,d,n_-,n_+,k,g,p,r,\iota\right)
 \]
 
 where:
@@ -23,7 +23,6 @@ where:
 - \(g\): region and repertoire profile;
 - \(p\): performer;
 - \(r\): register;
-- \(\nu\): instrument and technique;
 - \(\iota\): intonational intent, including expressive attraction.
 
 The output \(c_u(t)\) is a constrained cents trajectory, not one scalar.
@@ -40,7 +39,6 @@ c_u(t)=
 +\delta_{\text{cadence}}(t)
 +\delta_{\text{region}}(t)
 +\delta_{\text{performer}}(t)
-+\delta_{\text{instrument}}(t)
 +\epsilon_s(t),
 \]
 
@@ -68,7 +66,7 @@ Such a summary is a query result, never the generative foundation.
 
 ## Constraints
 
-1. Octave equivalence is a configurable instrument and repertoire assumption,
+1. Octave equivalence is a configurable repertoire and analysis assumption,
    not blindly forced on every measured trajectory.
 2. Pitch order and collision constraints are enforced after expressive
    deviations.
@@ -81,6 +79,6 @@ Such a summary is a query result, never the generative foundation.
 ## Estimation
 
 Pitch tracks require manual correction around attacks, ornaments, beating, and
-overlapping courses. Stable-tone extraction alone is insufficient. Measurements
+overlapping sources. Stable-tone extraction alone is insufficient. Measurements
 must link trajectories to melodic roles and phrase context before constants are
 reviewed into a profile.

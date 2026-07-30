@@ -1,5 +1,8 @@
 # Hammered dulcimer acoustic model
 
+This is one prospective synthesis adapter. It is not part of the maqam theory,
+grammar, profile language, or kernel completion claim.
+
 The renderer models a struck, coupled string–bridge–soundboard system. A bank of
 long generic resonators is rejected because it can let one band mask later
 notes.
@@ -112,4 +115,3 @@ expected clarity.
 
 No full performance render is accepted before isolated-note decay and overlap
 tests match profile-specific reference distributions within declared tolerance.
-

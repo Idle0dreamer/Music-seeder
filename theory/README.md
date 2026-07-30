@@ -23,17 +23,17 @@ maqām.
 11. [Calculated pitch fields](pitch/solve.md)
 12. [Exact pitch ordering](pitch/order.md)
 13. [Hard pitch feasibility](pitch/feasibility.md)
-14. [Performance state](grammar/state.md)
-15. [Motif grammar](grammar/motif.md)
-16. [Phrase and cadence grammar](grammar/phrase.md)
-17. [Sayr](grammar/sayr.md)
-18. [Modulation and tonicization](grammar/modulation.md)
-19. [Contextual intonation](performance/intonation.md)
-20. [Free and measured time](performance/time.md)
-21. [Ornament and articulation](performance/ornament.md)
-22. [Form separation](form/form.md)
-23. [Regional and repertoire profiles](region/profile.md)
-24. [Hammered-dulcimer realization](instrument/dulcimer.md)
+14. [Exact contextual tendency tier](pitch/tendency.md)
+15. [Performance state](grammar/state.md)
+16. [Motif grammar](grammar/motif.md)
+17. [Phrase and cadence grammar](grammar/phrase.md)
+18. [Sayr](grammar/sayr.md)
+19. [Modulation and tonicization](grammar/modulation.md)
+20. [Contextual intonation](performance/intonation.md)
+21. [Free and measured time](performance/time.md)
+22. [Ornament and articulation](performance/ornament.md)
+23. [Form separation](form/form.md)
+24. [Regional and repertoire profiles](region/profile.md)
 25. [Unified constraint model](math/model.md)
 26. [Corpus and annotation model](data/corpus.md)
 27. [Validation gates](validation/gates.md)
@@ -59,7 +59,7 @@ universal typed engine
 + reviewed melodic and ornament lexicons
 + hierarchical phrase/form grammar
 + calculated contextual intonation field
-+ instrument realization model
++ instrument-neutral performance plan
 + evidence and validation
 ```
 
@@ -76,7 +76,7 @@ No production implementation should begin until:
 - a small, licensed reference corpus exists;
 - intonation is represented as conditional performance data rather than a
   tuning formula;
-- the hammered-dulcimer model passes isolated-note decay and masking tests.
+- the instrument-neutral performance-plan boundary is typed and testable.
 
 Passing software tests alone is insufficient.
 
@@ -87,3 +87,7 @@ operator algebra with declarative profile rules, exact constraint composition,
 conflict detection, and executable laws. Recordings and expert analysis may
 supply reviewed constants or demonstrate that a rule is attested; they do not
 replace the grammar with an opaque predictor.
+
+Audio synthesis is not part of this theory tree. It consumes a future
+instrument-neutral performance plan through the boundary defined under
+[`synthesis/`](../synthesis/README.md).

@@ -35,7 +35,7 @@ Distinct sorts exist for:
 - ornament family;
 - phrase and section function;
 - iqa and beat role;
-- instrument and technique;
+- performance intent and articulation;
 - evidence source;
 - regional, school, repertoire, and performer profile.
 
@@ -55,14 +55,14 @@ Core immutable values are:
 \text{Boundary} &=
   \text{Scope}\times\text{Closure}\times\text{Target},\\
 \text{Context} &=
-  \text{Profile}\times\text{Form}\times\text{Instrument}.
+  \text{Profile}\times\text{Form}.
 \end{aligned}
 \]
 
 ## State
 
 \[
-\Sigma=(h,z,m,q,d,\tau,a,\Gamma)
+\Sigma=(h,z,m,q,d,\tau,\Gamma)
 \]
 
 - \(h\): formal cursor and scope stack;
@@ -71,9 +71,7 @@ Core immutable values are:
 - \(q\): sayr obligations;
 - \(d\): discourse and cadence state;
 - \(\tau\): metric or free-time state;
-- \(a\): instrument/acoustic state;
 - \(\Gamma\): immutable selected profile and rule environment.
 
 State changes are produced only by typed operators. Direct field mutation is
 outside the language.
-

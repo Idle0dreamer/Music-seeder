@@ -1,20 +1,19 @@
 # Ornament and articulation
 
 An ornament is a grammatical operation with intent, placement conditions, and
-an instrument-specific realization.
+an instrument-neutral performance-plan realization.
 
 ## Abstract operation
 
 \[
-O=(q,h,\pi,\Delta,\chi,\nu)
+O=(q,h,\pi,\Delta,\chi)
 \]
 
 - \(q\): function — approach, emphasis, delay, connection, release, or color;
 - \(h\): host structural event;
 - \(\pi\): melodic and phrase preconditions;
 - \(\Delta\): added or redistributed time;
-- \(\chi\): pitch-role trajectory;
-- \(\nu\): realization map for an instrument and technique.
+- \(\chi\): pitch-role trajectory.
 
 The abstract inventory includes:
 
@@ -45,7 +44,7 @@ K_{\Gamma}(O,h,C),&\operatorname{legal}(O,h,C).
 
 \(K_\Gamma\) is an explicit tiered profile formula over host role, direction,
 motif identity, cadence position, duration budget, register, prior ornament
-density, and instrument state.
+density, and articulation context.
 
 ## Structural conservation
 
@@ -53,17 +52,15 @@ The underlying host and its tonal evidence remain identifiable. An ornament may
 delay, approach, reiterate, or color a host, but cannot silently replace the
 phrase grammar.
 
-## Instrument mapping
+## Adapter boundary
 
-A continuous vocal or bowed slide may be physically unavailable on struck
-dulcimer. A profile may realize its connecting intent as a rapid stepped sweep,
-alternating courses, a grace-note approach, or omit it. This mapping is declared
-and documented; it is not a generic MIDI effect.
+The language emits the gesture's melodic, temporal, and articulation intent.
+It does not select strings, keys, mallets, samples, or excitation models. A
+synthesis adapter must either map the intent explicitly or reject it.
 
 ## Interaction limits
 
-- Dense ornaments are penalized when resonant masking is high.
-- Repeated attacks interact with remaining string displacement and damping.
-- Vibrato-like modulation is allowed only where the instrument technique
-  supports it.
+- Dense ornaments are constrained by phrase clarity and duration.
+- Repeated attacks carry explicit continuation or rearticulation intent.
+- Pitch-fluctuation intent is described without assuming a physical mechanism.
 - Ornament timing is generated jointly with the carrier gesture.

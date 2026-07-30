@@ -59,48 +59,12 @@ std::expected<Rows, Error> build(
     std::span<const Equation> equations,
     std::span<const Inequality> inequalities,
     std::size_t limit) {
+    const auto identified =
+        identities(variables, equations, inequalities);
+    if (!identified) {
+        return std::unexpected(identified.error());
+    }
     const std::set<Identity> known(variables.begin(), variables.end());
-    if (known.size() != variables.size()) {
-        return std::unexpected(Error{
-            Error::Code::Input,
-            "pitch feasibility variables contain a duplicate identity",
-            std::nullopt,
-        });
-    }
-
-    std::set<Identity> constraints;
-    const auto registerConstraint =
-        [&constraints](const Identity& identity) -> std::expected<void, Error> {
-        if (identity.domain.empty() ||
-            identity.name.empty() ||
-            identity.revision.empty()) {
-            return std::unexpected(Error{
-                Error::Code::Input,
-                "pitch constraint identity is incomplete",
-                std::nullopt,
-            });
-        }
-        if (!constraints.insert(identity).second) {
-            return std::unexpected(Error{
-                Error::Code::Input,
-                "duplicate pitch constraint " + identity.str(),
-                std::nullopt,
-            });
-        }
-        return {};
-    };
-    for (const auto& equation : equations) {
-        const auto added = registerConstraint(equation.identity);
-        if (!added) {
-            return std::unexpected(added.error());
-        }
-    }
-    for (const auto& inequality : inequalities) {
-        const auto added = registerConstraint(inequality.identity);
-        if (!added) {
-            return std::unexpected(added.error());
-        }
-    }
 
     Rows rows;
     for (const auto& equation : equations) {

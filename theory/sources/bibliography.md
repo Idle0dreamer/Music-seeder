@@ -47,22 +47,12 @@ on top of it.
   Supports phrase-response data modeling, maqam-isolated datasets, and caution
   that merging related datasets can favor shorter, less sophisticated patterns.
 
-## Hammered dulcimer acoustics
-
-- Rainer Reuter and Alexander Zietlow,
-  [Investigation of the Acoustical Properties of a Hammered
-  Dulcimer](https://pub.dega-akustik.de/DAGA_2010/data/articles/000215.pdf).
-  Supports strike-position, angle, force, and velocity effects; coupled
-  string–bridge–soundboard behavior; and decay as a central quality parameter.
-- Federico Fontana et al.,
-  [Physics-Based Sound Synthesis of the Hammered
-  Dulcimer](https://www.dafx.de/paper-archive/2023/DAFx23_paper_18.pdf).
-  Supports nonlinear hammer/string contact, stiff-string modeling, variable
-  strike position, and time-varying synthesis parameters.
-
 ## Status of formulas
 
 The operator grammar, exact tonicization evidence system, regional patch
-algebra, contextual intonation formulas, time warp, and acoustic rejection
-metrics are engineering proposals derived from the documented phenomena. They
-are marked analytical until corpus and practitioner validation pass.
+algebra, contextual intonation formulas, and time warp are engineering
+proposals derived from the documented phenomena. They are marked analytical
+until corpus and practitioner validation pass.
+
+Audio engineering sources are maintained separately in
+[`synthesis/sources.md`](../../synthesis/sources.md).

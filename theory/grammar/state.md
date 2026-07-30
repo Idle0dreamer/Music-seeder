@@ -4,7 +4,7 @@ The generator operates on musical state, not on a current scale and note.
 At decision time \(t\), the state is
 
 \[
-S_t=(H_t,Z_t,M_t,P_t,Q_t,T_t,A_t,D_t)
+S_t=(H_t,Z_t,M_t,P_t,Q_t,T_t,D_t)
 \]
 
 where:
@@ -15,7 +15,6 @@ where:
 - \(P_t\): phrase-function and cadence state;
 - \(Q_t\): sayr obligations, permissions, and completed landmarks;
 - \(T_t\): timing, breath, and optional iqa state;
-- \(A_t\): acoustic state of the instrument and sounding courses;
 - \(D_t\): discourse state: question, response, contrast, recall, closure.
 
 ## Tonal hypothesis
@@ -54,7 +53,7 @@ exception:
 3. Pitch realization is requested only after a structural pitch role is chosen.
 4. Ornament cannot create a structural tonicization that its carrier tone lacks.
 5. Phrase-final closure cannot exceed the closure licensed by its section state.
-6. The acoustic renderer may alter audibility, not the intended musical role.
+6. A synthesis adapter may alter physical execution, not intended musical role.
 7. Region and repertoire profiles may narrow permissions but may not silently
    borrow rules from another profile.
 
@@ -68,7 +67,7 @@ Generation is non-Markovian at the note level. The minimum retained history is:
 - tonicization posterior over time;
 - completed and pending sayr obligations;
 - registers visited, climax candidates, and return paths;
-- sounding-course energy and masking estimates.
+- articulation and release intents already emitted.
 
 The history may be compressed into sufficient statistics only after tests show
 that the compression preserves phrase and modulation judgments.
@@ -85,4 +84,3 @@ The model distinguishes:
 
 Random seeds select among licensed alternatives. They never legalize an
 otherwise forbidden transition.
-

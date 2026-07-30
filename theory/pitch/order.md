@@ -54,7 +54,7 @@ zero.
 ## Downstream breadth
 
 This order turns symbolic pitch expressions into lawful comparison operands. It
-unlocks hard register and course bounds, pitch-role ordering, monotone
+unlocks hard register bounds, pitch-role ordering, monotone
 trajectory guards, inequality feasibility, and the primal/dual sign checks
 needed by exact constrained optimization.
 

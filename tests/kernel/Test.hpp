@@ -18,9 +18,17 @@ void evaluator();
 void choice();
 void order();
 void feasibility();
+void feasibility_limits();
 void witness();
 void constraint();
 void path();
+
+namespace tendency {
+
+void solve();
+void laws();
+
+} // namespace tendency
 
 namespace grammar {
 

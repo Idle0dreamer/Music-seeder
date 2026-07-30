@@ -73,8 +73,8 @@ distinct typed failures. None is reported as either feasible or infeasible.
 ## Downstream breadth
 
 Exact witnesses unlock active-set KKT validation for contextual tendency tiers,
-legal trajectory envelopes, instrument-range checks, and concrete realizations
-of partially specified pitch fields. The next sequence consumes this solver in
+legal trajectory envelopes, register checks, and concrete realizations of
+partially specified pitch fields. The next sequence consumes this solver in
 the KKT equations for one soft tier rather than adding a separate approximate
 constraint engine.
 

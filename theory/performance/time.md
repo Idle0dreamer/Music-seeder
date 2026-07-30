@@ -35,7 +35,7 @@ Cell durations are relative and explicitly composed:
 
 Each \(\delta\) is a declared profile formula. \(\epsilon_s\) is bounded seeded
 surface variation. Inputs include emphasis, approach, suspension, cadence
-strength, repetition, register, ornament, and acoustic decay state.
+strength, repetition, register, ornament, and articulation intent.
 
 ## Boundaries
 
@@ -55,7 +55,7 @@ random interval.
 
 Repeated-note timing has its own articulation state. Its microtiming may become
 locally regular even in a free-rhythm performance. It is conditioned on
-emphasis, continuation, ornament, and instrument damping.
+emphasis, continuation, ornament, and release intent.
 
 ## Iqa alignment
 

@@ -1,8 +1,8 @@
 # Unified constraint model
 
 The engine combines a typed term grammar, exact regional profile composition,
-constraint-based pitch realization, explicit timing formulas, and a physical
-instrument model. It is not a neural or backpropagation system.
+constraint-based pitch realization, and explicit timing formulas. It is not a
+neural or backpropagation system.
 
 ## Objects
 
@@ -14,8 +14,7 @@ Let:
 - \(R\): request and finite resource budget;
 - \(s\): seed;
 - \(D\): derivation trace;
-- \(X\): solved performance parameters;
-- \(W\): rendered waveform.
+- \(X\): solved instrument-neutral performance plan.
 
 ## Derivation
 
@@ -44,8 +43,7 @@ The selected trace emits typed constraint systems:
 \begin{aligned}
 \mathcal C_p(D)& &&\text{pitch and trajectory},\\
 \mathcal C_t(D)& &&\text{structural and performed time},\\
-\mathcal C_o(D)& &&\text{ornament placement and realization},\\
-\mathcal C_a(D)& &&\text{instrument actions and acoustic state}.
+\mathcal C_o(D)& &&\text{ornament placement and execution intent}.
 \end{aligned}
 \]
 
@@ -54,7 +52,7 @@ Realization is:
 \[
 X=
 \operatorname{Solve}_\Gamma
-(\mathcal C_p,\mathcal C_t,\mathcal C_o,\mathcal C_a).
+(\mathcal C_p,\mathcal C_t,\mathcal C_o).
 \]
 
 Contradictory hard constraints fail. Ordered soft tiers are solved
@@ -73,15 +71,13 @@ Composition is exact and provenance-preserving. Missing rules, unresolved
 multiple-parent conflicts, unsupported widening, and unreachable return paths
 are errors before generation.
 
-## Rendering
+## Export boundary
 
-\[
-W=\operatorname{Render}_{\mathcal I}(X)
-\]
-
-is the only stage where floating-point approximation is inherently required.
-The pitch-to-frequency exponential, differential-equation integration, and
-audio sampling publish numerical tolerances.
+\(X\) is the terminal object of the theory and language engine. It retains
+exact pitch and time expressions wherever the performance-plan contract
+allows. Frequency conversion, instrument-action mapping, acoustic state, and
+waveform generation belong to the separate
+[synthesis boundary](../../synthesis/interface.md).
 
 ## Seed partition
 
@@ -101,9 +97,8 @@ Source analysis can produce:
 - reviewed constants and bounded tables;
 - competing named variants;
 - evidence supporting or rejecting a rule;
-- acoustic parameter identification.
+- explicit uncertainty and coverage gaps.
 
 Those results enter profiles through explicit, reviewable patch operations.
 There is no gradient descent, neural network, latent embedding, or automated
 replacement of the operator grammar.
-

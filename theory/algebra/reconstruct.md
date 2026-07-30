@@ -11,8 +11,7 @@ N(P_0\triangleleft\Delta_\text{tradition}
 \triangleleft\Delta_\text{region}
 \triangleleft\Delta_\text{school}
 \triangleleft\Delta_\text{repertoire}
-\triangleleft\Delta_\text{performer}
-\triangleleft\Delta_\text{instrument}).
+\triangleleft\Delta_\text{performer}).
 \]
 
 \(P_0\) defines types and operator meanings, not musical defaults. Each
@@ -76,5 +75,4 @@ Regions share:
 
 They may differ in every musically substantive domain: jins placement,
 intonation formulas, baggage, paths, evidence thresholds, cell vocabulary,
-cadences, sayr, timing, ornament, form, and instrument technique.
-
+cadences, sayr, timing, ornament, and form.
