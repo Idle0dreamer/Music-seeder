@@ -12,6 +12,11 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Symbolic ratio pitch expressions | prime-exponent representation |
 | Exact affine pitch equalities | rational Gaussian elimination |
 | Contradiction and underdetermination rejection | pitch solver tests |
+| Exact symbolic pitch order | arbitrary-precision integer certificates and order laws |
+| Bounded certificate verification | deterministic signed-64-bit prime validation and typed proof limits |
+| General hard affine inequality feasibility | Fourier--Motzkin projection laws |
+| Infeasibility proof and provenance | constant order certificate and merged constraint sources |
+| Explicit projection resource failure | typed row, arithmetic, and order-proof errors |
 | Profile rule values and provenance | `Rule`, `Profile` |
 | Seven patch actions | reconstruction implementation and tests |
 | Multiple-parent conflict rejection | profile law tests |
@@ -35,7 +40,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 - `Alt` identity normalization and its normalized associativity law.
 - Recursive production definitions and explicit well-founded budget accounting.
 - Profile-declared choice bands beyond equal minimum-cost outcomes.
-- General affine inequalities.
+- Exact witness construction for underdetermined hard constraints.
 - Lexicographically ordered soft pitch-constraint tiers.
 - Continuous intonation trajectory basis functions.
 - A sourced real regional profile.
@@ -43,10 +48,9 @@ implements. Passing legacy prototype tests does not advance this ledger.
 
 ## Next coherent sequence
 
-1. Define exact ordering for symbolic pitch expressions before admitting
-   inequalities.
-2. Extend pitch solving with hard inequality feasibility.
-3. Add lexicographically ordered soft tiers without floating-point authority.
+1. Retain elimination stages and construct exact hard-constraint witnesses.
+2. Consume witnesses in active-set KKT solving for the first soft tier.
+3. Preserve stronger-tier predictions before optimizing later tiers.
 4. Normalize `Alt` identities and test normalized associativity.
 5. Add recursive production budgets before recursive grammar modules.
 6. Encode one sourced Bayati evidence fixture only after its rule review.
@@ -56,7 +60,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 Verified in the current workspace:
 
 - optimized GCC C++23 build with warnings as errors;
-- debug law suite;
+- ten debug law suites;
 - undefined-behavior sanitizer;
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails

@@ -10,6 +10,8 @@ int main() {
         test::profile();
         test::evaluator();
         test::choice();
+        test::order();
+        test::feasibility();
         test::path();
         test::grammar::laws();
         test::grammar::relation();
@@ -19,6 +21,8 @@ int main() {
             << "PASS regional reconstruction laws\n"
             << "PASS evidence-gated tonal operators\n"
             << "PASS stable seeded choice laws\n"
+            << "PASS proof-producing symbolic pitch order\n"
+            << "PASS exact affine inequality feasibility\n"
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS complete grammar branch evaluation\n";

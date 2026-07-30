@@ -14,16 +14,16 @@ mq::kernel::pitch::Solution solve(
     const Identity fourth{"test.pitch", "fourth", "1"};
 
     pitch::System system;
-    system.add(tonic);
-    system.add(second);
-    system.add(fourth);
-    system.add({{{tonic, Rational(1)}}, root, "root anchor"});
-    system.add({
+    system.declare(tonic);
+    system.declare(second);
+    system.declare(fourth);
+    system.equate({{{tonic, Rational(1)}}, root, "root anchor"});
+    system.equate({
         {{fourth, Rational(1)}, {tonic, Rational(-1)}},
         pitch::Expression::ratio(4, 3),
         "4:3 structural closure",
     });
-    system.add({
+    system.equate({
         {{second, Rational(1)}, {tonic, Rational(-1)}},
         pitch::Expression::ratio(9, 8) +
             pitch::Expression::cents(Rational(-9, 2)),
@@ -64,13 +64,13 @@ void test::pitch() {
         "symbolic ratio realization is numerically wrong");
 
     pitch::System contradiction;
-    contradiction.add(tonic);
-    contradiction.add({
+    contradiction.declare(tonic);
+    contradiction.equate({
         {{tonic, Rational(1)}},
         pitch::Expression::cents(Rational(0)),
         "first anchor",
     });
-    contradiction.add({
+    contradiction.equate({
         {{tonic, Rational(1)}},
         pitch::Expression::cents(Rational(1)),
         "contradictory anchor",

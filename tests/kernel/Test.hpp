@@ -16,6 +16,8 @@ void pitch();
 void profile();
 void evaluator();
 void choice();
+void order();
+void feasibility();
 void path();
 
 namespace grammar {

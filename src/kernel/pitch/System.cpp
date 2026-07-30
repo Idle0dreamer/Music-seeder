@@ -5,18 +5,44 @@
 
 namespace mq::kernel::pitch {
 
-void System::add(Identity variable) {
+void System::declare(Identity variable) {
     if (std::ranges::find(variables_, variable) != variables_.end()) {
         throw std::invalid_argument("duplicate pitch variable " + variable.str());
     }
     variables_.push_back(std::move(variable));
 }
 
-void System::add(Equation equation) {
+void System::equate(Equation equation) {
     equations_.push_back(std::move(equation));
 }
 
+void System::bound(Inequality inequality) {
+    inequalities_.push_back(std::move(inequality));
+}
+
+std::expected<feasibility::Report, feasibility::Error> System::feasible(
+    feasibility::Limits limits) const {
+    return feasibility::check(
+        variables_,
+        equations_,
+        inequalities_,
+        limits);
+}
+
 std::expected<Solution, std::string> System::solve() const {
+    const auto checked = feasible();
+    if (!checked) {
+        return std::unexpected(
+            "pitch feasibility failed: " + checked.error().message);
+    }
+    if (checked->status == feasibility::Status::Infeasible) {
+        const auto source = checked->provenance.empty()
+                              ? std::string{"unknown provenance"}
+                              : checked->provenance.front();
+        return std::unexpected(
+            "contradictory hard pitch constraints at " + source);
+    }
+
     const auto rows = equations_.size();
     const auto columns = variables_.size();
     if (rows == 0 || columns == 0) {

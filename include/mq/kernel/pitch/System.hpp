@@ -1,40 +1,28 @@
 #pragma once
 
-#include "mq/kernel/Identity.hpp"
-#include "mq/kernel/pitch/Expression.hpp"
+#include "mq/kernel/pitch/Feasibility.hpp"
+#include "mq/kernel/pitch/Solution.hpp"
 
 #include <expected>
-#include <map>
 #include <string>
 #include <vector>
 
 namespace mq::kernel::pitch {
 
-struct Term {
-    Identity variable;
-    Rational coefficient;
-};
-
-struct Equation {
-    std::vector<Term> terms;
-    Expression right;
-    std::string provenance;
-};
-
-struct Solution {
-    std::map<Identity, Expression> values;
-};
-
 class System {
 public:
-    void add(Identity variable);
-    void add(Equation equation);
+    void declare(Identity variable);
+    void equate(Equation equation);
+    void bound(Inequality inequality);
 
     [[nodiscard]] std::expected<Solution, std::string> solve() const;
+    [[nodiscard]] std::expected<feasibility::Report, feasibility::Error>
+    feasible(feasibility::Limits limits = {}) const;
 
 private:
     std::vector<Identity> variables_;
     std::vector<Equation> equations_;
+    std::vector<Inequality> inequalities_;
 };
 
 } // namespace mq::kernel::pitch

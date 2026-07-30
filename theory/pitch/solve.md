@@ -11,7 +11,9 @@ For active structural pitch roles \(r_1,\ldots,r_n\), let:
 x=(x_1,\ldots,x_n)^\top
 \]
 
-be rational cents relative to a scoped reference.
+be symbolic pitch expressions relative to a scoped reference. Their
+coefficients are rational; ratio identities and rational-cent offsets remain
+exact until realization.
 
 ## Constraints
 
@@ -81,4 +83,3 @@ f=f_0\,2^{c/1200}
 
 and waveform integration necessarily use controlled floating-point
 approximations. Tests declare error bounds at that boundary.
-

@@ -15,14 +15,14 @@ int main() {
     const Identity tonic{"demo.pitch", "tonic", "1"};
     const Identity ghammaz{"demo.pitch", "ghammaz", "1"};
     pitch::System field;
-    field.add(tonic);
-    field.add(ghammaz);
-    field.add({
+    field.declare(tonic);
+    field.declare(ghammaz);
+    field.equate({
         {{tonic, Rational(1)}},
         pitch::Expression::cents(Rational(0)),
         "demo anchor",
     });
-    field.add({
+    field.equate({
         {{ghammaz, Rational(1)}, {tonic, Rational(-1)}},
         pitch::Expression::ratio(4, 3),
         "demo ratio constraint",
