@@ -61,3 +61,10 @@ provenance satisfy the theory gates.
 See `theory/README.md` and `theory/implementation/kernel.md` for the model and
 the exact implementation boundary. Audio work has a separate authority under
 `synthesis/`.
+
+## Licensing
+
+Code is MPL-2.0. The theory, current synthesis documentation, and other written
+work are CC BY-SA 4.0. Profiles require explicit provenance and rights review;
+the project licenses cannot override source, repertoire, or community
+restrictions. See `LICENSE_POLICY.md`, `ATTRIBUTION.md`, and `REUSE.toml`.
