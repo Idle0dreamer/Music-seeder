@@ -44,6 +44,13 @@ void solve();
 
 } // namespace field
 
+namespace project {
+
+void run();
+void scope();
+
+} // namespace project
+
 namespace grammar {
 
 void laws();

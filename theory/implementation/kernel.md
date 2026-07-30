@@ -34,6 +34,10 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Named pitch authority | declared tier order and active empty-tier removal |
 | Exact field integration | hard-only witness or full lexicographic tendency solve |
 | Explicit field resource failure | bounded context, rule, coverage, and solver work |
+| Typed state-to-field projection | center, jins, tonicization, and path readers |
+| Required projection presence | explicit missing-state error or optional omission |
+| Projection scope non-leakage | restored grammar outcome to field integration law |
+| Explicit projection resource failure | bounded reader count |
 | Profile rule values and provenance | `Rule`, `Profile` |
 | Seven patch actions | reconstruction implementation and tests |
 | Multiple-parent conflict rejection | profile law tests |
@@ -57,7 +61,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 - `Alt` identity normalization and its normalized associativity law.
 - Recursive production definitions and explicit well-founded budget accounting.
 - Profile-declared choice bands beyond equal minimum-cost outcomes.
-- Typed performance-state projection into pitch-field context.
+- Typed structural pitch event and intended motion state.
 - Continuous intonation trajectory basis functions.
 - A sourced real regional profile.
 
@@ -66,9 +70,9 @@ specified under `synthesis/`.
 
 ## Next coherent sequence
 
-1. Define the typed facts projected from performance state.
-2. Make fact ownership and lexical restoration explicit.
-3. Request a calculated field from a neutral evaluated grammar branch.
+1. Define a structural pitch event with role and intended motion.
+2. Give event state explicit scope ownership and history.
+3. Project role and direction into a calculated pitch request.
 4. Normalize `Alt` identities and test normalized associativity.
 5. Add recursive production budgets before recursive grammar modules.
 6. Encode one sourced Bayati evidence fixture only after its rule review.
@@ -78,7 +82,7 @@ specified under `synthesis/`.
 Verified in the current workspace:
 
 - optimized GCC C++23 build with warnings as errors;
-- eighteen debug law suites;
+- twenty debug law suites;
 - undefined-behavior sanitizer;
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails

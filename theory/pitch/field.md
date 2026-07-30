@@ -98,9 +98,9 @@ proof work. Exhaustion fails rather than truncating the field.
 
 This layer lets one exact solver consume reconstructed rules for direction,
 neighbor influence, phrase role, modulation state, region, repertoire, and
-performer without hard-coding a scale per combination. The next consumer is a
-typed performance-state projection that produces the context and requests the
-field; instrument mapping remains outside the theory kernel.
+performer without hard-coding a scale per combination. Typed state projection
+now produces the implemented center, jins, tonicization, and path context.
+Instrument mapping remains outside the theory kernel.
 
 ## Laws
 

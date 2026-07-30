@@ -21,6 +21,8 @@ int main() {
         test::sequence::laws();
         test::field::assembly();
         test::field::solve();
+        test::project::run();
+        test::project::scope();
         test::path();
         test::grammar::laws();
         test::grammar::relation();
@@ -40,6 +42,8 @@ int main() {
             << "PASS tendency non-degradation and tier-order laws\n"
             << "PASS contextual pitch-field assembly laws\n"
             << "PASS calculated field-to-ordering integration\n"
+            << "PASS typed state-to-field projection laws\n"
+            << "PASS scoped grammar-to-field integration\n"
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS complete grammar branch evaluation\n";

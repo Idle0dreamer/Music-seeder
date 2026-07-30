@@ -24,13 +24,15 @@ Implemented so far:
 8. exact lexicographic tendency sequencing without weaker-tier degradation;
 9. guarded contextual pitch-field assembly with explicit coverage;
 10. end-to-end field solving through hard and ordered tendency systems;
-11. declarative profile reconstruction and conflict detection;
-12. evidence-gated tonal operators;
-13. stable seeded lexicographic choice;
-14. typed finite grammar terms and complete relational evaluation;
-15. lexical binding and explicit scope restoration;
-16. path history with source, target, level, and prerequisite guards;
-17. eighteen executable law suites.
+11. typed projection of restored center, jins, tonicization, and path state;
+12. scoped grammar-to-calculated-field integration;
+13. declarative profile reconstruction and conflict detection;
+14. evidence-gated tonal operators;
+15. stable seeded lexicographic choice;
+16. typed finite grammar terms and complete relational evaluation;
+17. lexical binding and explicit scope restoration;
+18. path history with source, target, level, and prerequisite guards;
+19. twenty executable law suites.
 
 No real regional profile is claimed yet. The exact boundary is recorded in
 `theory/implementation/kernel.md`.
