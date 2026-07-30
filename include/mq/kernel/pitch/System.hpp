@@ -15,8 +15,9 @@ public:
     void equate(Equation equation);
     void bound(Inequality inequality);
 
-    [[nodiscard]] std::expected<Solution, std::string> solve() const;
-    [[nodiscard]] std::expected<feasibility::Report, feasibility::Error>
+    [[nodiscard]] std::expected<Solution, std::string> solve(
+        feasibility::Limits limits = {}) const;
+    [[nodiscard]] std::expected<feasibility::Result, feasibility::Error>
     feasible(feasibility::Limits limits = {}) const;
 
 private:

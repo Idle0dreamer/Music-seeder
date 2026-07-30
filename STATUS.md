@@ -15,13 +15,14 @@ Implemented so far:
 2. symbolic prime-factor pitch expressions and exact affine solving;
 3. proof-producing exact order over symbolic pitches;
 4. exact hard affine inequality feasibility;
-5. declarative profile reconstruction and conflict detection;
-6. evidence-gated tonal operators;
-7. stable seeded lexicographic choice;
-8. typed finite grammar terms and complete relational evaluation;
-9. lexical binding and explicit scope restoration;
-10. path history with source, target, level, and prerequisite guards;
-11. ten executable law suites.
+5. exact witnesses for underdetermined hard pitch regions;
+6. declarative profile reconstruction and conflict detection;
+7. evidence-gated tonal operators;
+8. stable seeded lexicographic choice;
+9. typed finite grammar terms and complete relational evaluation;
+10. lexical binding and explicit scope restoration;
+11. path history with source, target, level, and prerequisite guards;
+12. eleven executable law suites.
 
 No real regional profile is claimed yet. The exact boundary is recorded in
 `theory/implementation/kernel.md`.

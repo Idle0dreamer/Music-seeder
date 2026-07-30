@@ -38,29 +38,41 @@ pitch ordering layer proves each comparison exactly. A false row returns an
 infeasibility report containing the order certificate and the merged
 provenance of the constraints that produced it.
 
+## Witness
+
+Each row set is retained immediately before its variable is eliminated. After
+the constant rows pass, variables are restored in reverse order. Substituting
+already restored variables turns every applicable row into a lower or upper
+bound. The witness chooses the greatest lower bound when one exists, otherwise
+the least upper bound, otherwise exact zero.
+
+All bounds are closed, finite sets have exact extrema under symbolic pitch
+ordering, and the chosen point is checked against every original equality and
+inequality before it is returned.
+
 ## Resource boundary
 
 Projection may grow exponentially. A declared row budget is checked before
-each cross product. Rational overflow, row exhaustion, and pitch-order proof
-exhaustion are distinct typed failures. None is reported as either feasible or
-infeasible.
+each cross product. A separate retained-stage budget covers reverse
+substitution storage, including empty-stage headers. Rational overflow, row
+exhaustion, retained-stage exhaustion, and pitch-order proof exhaustion are
+distinct typed failures. None is reported as either feasible or infeasible.
 
 ## Current boundary
 
 - inequalities are closed and non-strict;
 - variables range over the exact symbolic pitch-expression space;
-- feasibility is general, but witness construction is not yet implemented;
-- the equality solver returns a value only when its equality subsystem is
-  fully determined and rejects any value that violates an inequality;
+- feasible underdetermined hard regions return a validated exact witness;
+- the system solver uses the same witness path for equalities and inequalities;
 - lexicographic soft-tier optimization remains separate.
 
 ## Downstream breadth
 
-Feasibility unlocks exact witnesses for underdetermined hard regions, active-set
-KKT validation for contextual tendency tiers, legal trajectory envelopes, and
-instrument-range checks. The next sequence consumes the retained elimination
-stages to construct a witness; soft-tier optimization follows that witness
-rather than adding a separate approximate solver.
+Exact witnesses unlock active-set KKT validation for contextual tendency tiers,
+legal trajectory envelopes, instrument-range checks, and concrete realizations
+of partially specified pitch fields. The next sequence consumes this solver in
+the KKT equations for one soft tier rather than adding a separate approximate
+constraint engine.
 
 ## Laws
 
@@ -69,5 +81,8 @@ rather than adding a separate approximate solver.
 - projection detects contradictions spanning multiple variables;
 - symbolic ratios and rational cents retain their exact order;
 - declared-variable validation is strict;
-- row and proof budgets fail explicitly;
+- row, retained-stage, and proof budgets fail explicitly;
+- reverse substitution satisfies underdetermined equations and one- or
+  two-sided bounds;
+- free variables receive a deterministic exact witness;
 - an equality solution cannot bypass an incompatible inequality.

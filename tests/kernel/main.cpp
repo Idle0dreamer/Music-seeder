@@ -12,6 +12,7 @@ int main() {
         test::choice();
         test::order();
         test::feasibility();
+        test::witness();
         test::path();
         test::grammar::laws();
         test::grammar::relation();
@@ -23,6 +24,7 @@ int main() {
             << "PASS stable seeded choice laws\n"
             << "PASS proof-producing symbolic pitch order\n"
             << "PASS exact affine inequality feasibility\n"
+            << "PASS exact hard-constraint witness construction\n"
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS complete grammar branch evaluation\n";

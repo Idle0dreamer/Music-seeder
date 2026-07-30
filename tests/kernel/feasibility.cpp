@@ -22,7 +22,9 @@ void test::feasibility() {
     });
     const auto openReport = open.feasible();
     require(
-        openReport && openReport->status == pf::Status::Feasible,
+        openReport &&
+            openReport->status == pf::Status::Feasible &&
+            openReport->solution,
         "underdetermined pitch inequality was not recognized as feasible");
 
     pitch::System chain;
@@ -69,7 +71,10 @@ void test::feasibility() {
     boundary.bound({{{x, Rational(1)}}, fourth, "exact ceiling"});
     const auto boundaryReport = boundary.feasible();
     require(
-        boundaryReport && boundaryReport->status == pf::Status::Feasible,
+        boundaryReport &&
+            boundaryReport->status == pf::Status::Feasible &&
+            boundaryReport->solution &&
+            boundaryReport->solution->values.at(x) == fourth,
         "closed exact inequality rejected its equality boundary");
 
     pitch::System unsafe;

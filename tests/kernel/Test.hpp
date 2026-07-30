@@ -18,6 +18,7 @@ void evaluator();
 void choice();
 void order();
 void feasibility();
+void witness();
 void path();
 
 namespace grammar {

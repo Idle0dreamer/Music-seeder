@@ -39,6 +39,11 @@ Contextual tendencies are ordered soft tiers:
 subject to the hard constraints. All coefficients and weights are rational.
 A lower tier cannot trade away a stronger tier.
 
+Hard feasibility and witness construction use exact Fourier--Motzkin
+projection followed by reverse substitution. This produces a legal point even
+when the affine system is underdetermined; it does not choose among legal
+points according to contextual preference.
+
 ## Conditional terms
 
 The target formula for role \(r\) is assembled from explicit profile terms:
