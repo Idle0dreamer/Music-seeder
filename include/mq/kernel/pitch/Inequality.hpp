@@ -9,6 +9,7 @@
 namespace mq::kernel::pitch {
 
 struct Inequality {
+    Identity identity;
     std::vector<Term> terms;
     Expression right;
     std::string provenance;

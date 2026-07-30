@@ -18,6 +18,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Explicit projection resource failure | typed row, arithmetic, and order-proof errors |
 | Exact underdetermined witnesses | retained stages, reverse substitution, and source-constraint validation |
 | Unified hard solver authority | equalities and inequalities use the same feasibility/witness path |
+| Stable hard-constraint identities | uniqueness validation and identity-bearing contradiction traces |
 | Profile rule values and provenance | `Rule`, `Profile` |
 | Seven patch actions | reconstruction implementation and tests |
 | Multiple-parent conflict rejection | profile law tests |
@@ -60,7 +61,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 Verified in the current workspace:
 
 - optimized GCC C++23 build with warnings as errors;
-- eleven debug law suites;
+- twelve debug law suites;
 - undefined-behavior sanitizer;
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails

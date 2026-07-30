@@ -9,6 +9,7 @@
 namespace mq::kernel::pitch {
 
 struct Equation {
+    Identity identity;
     std::vector<Term> terms;
     Expression right;
     std::string provenance;

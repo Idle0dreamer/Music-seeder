@@ -10,6 +10,10 @@ Hx=h,\qquad Lx\leq l.
 This layer decides whether the hard region is empty. It does not choose a
 preferred point and does not implement soft tiers.
 
+Every equation and inequality has a complete, unique stable identity. Identity
+is the machine reference used by contradiction and active-set traces;
+provenance remains the human evidence description.
+
 ## Projection
 
 Each equality is represented by its two opposing inequalities. For a variable
@@ -81,6 +85,8 @@ constraint engine.
 - projection detects contradictions spanning multiple variables;
 - symbolic ratios and rational cents retain their exact order;
 - declared-variable validation is strict;
+- incomplete and duplicate constraint identities are rejected;
+- contradiction traces retain stable constraint identities and provenance;
 - row, retained-stage, and proof budgets fail explicitly;
 - reverse substitution satisfies underdetermined equations and one- or
   two-sided bounds;

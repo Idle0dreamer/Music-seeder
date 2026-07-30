@@ -18,11 +18,13 @@ int main() {
     field.declare(tonic);
     field.declare(ghammaz);
     field.equate({
+        {"demo.constraint", "anchor", "1"},
         {{tonic, Rational(1)}},
         pitch::Expression::cents(Rational(0)),
         "demo anchor",
     });
     field.equate({
+        {"demo.constraint", "ghammaz", "1"},
         {{ghammaz, Rational(1)}, {tonic, Rational(-1)}},
         pitch::Expression::ratio(4, 3),
         "demo ratio constraint",

@@ -42,6 +42,7 @@ struct Error {
 struct Result {
     Status status;
     std::optional<Solution> solution;
+    std::vector<Identity> constraints;
     std::vector<std::string> provenance;
     std::optional<order::Proof> proof;
 };

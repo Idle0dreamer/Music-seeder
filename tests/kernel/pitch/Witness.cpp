@@ -3,6 +3,8 @@
 #include "mq/kernel/pitch/System.hpp"
 #include "mq/kernel/pitch/order/Compare.hpp"
 
+#include <utility>
+
 void test::witness() {
     using namespace mq::kernel;
     namespace pf = pitch::feasibility;
@@ -11,17 +13,35 @@ void test::witness() {
     const Identity y{"test.witness", "y", "1"};
     const auto zero = pitch::Expression{};
     const auto fourth = pitch::Expression::ratio(4, 3);
+    const auto identity = [](std::string name) {
+        return Identity{
+            "test.witness.constraint",
+            std::move(name),
+            "1",
+        };
+    };
 
     pitch::System affine;
     affine.declare(x);
     affine.declare(y);
     affine.equate({
+        identity("sum"),
         {{x, Rational(1)}, {y, Rational(1)}},
         fourth,
         "underdetermined sum",
     });
-    affine.bound({{{x, Rational(-1)}}, zero, "x nonnegative"});
-    affine.bound({{{y, Rational(-1)}}, zero, "y nonnegative"});
+    affine.bound({
+        identity("x"),
+        {{x, Rational(-1)}},
+        zero,
+        "x nonnegative",
+    });
+    affine.bound({
+        identity("y"),
+        {{y, Rational(-1)}},
+        zero,
+        "y nonnegative",
+    });
     const auto affineSolution = affine.solve();
     require(
         affineSolution &&
@@ -41,11 +61,13 @@ void test::witness() {
     pitch::System box;
     box.declare(x);
     box.bound({
+        identity("floor"),
         {{x, Rational(-1)}},
         pitch::Expression::cents(Rational(-1)),
         "one cent floor",
     });
     box.bound({
+        identity("ceiling"),
         {{x, Rational(1)}},
         pitch::Expression::cents(Rational(2)),
         "two cent ceiling",
@@ -71,6 +93,7 @@ void test::witness() {
     retained.declare(x);
     retained.declare(y);
     retained.bound({
+        identity("retained"),
         {{x, Rational(1)}, {y, Rational(-1)}},
         zero,
         "retained row",

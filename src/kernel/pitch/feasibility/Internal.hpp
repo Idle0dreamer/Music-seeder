@@ -9,6 +9,7 @@ namespace mq::kernel::pitch::feasibility::detail {
 struct Row {
     std::map<Identity, Rational> left;
     Expression right;
+    std::vector<Identity> constraints;
     std::vector<std::string> provenance;
 };
 

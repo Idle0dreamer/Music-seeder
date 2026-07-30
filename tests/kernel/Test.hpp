@@ -19,6 +19,7 @@ void choice();
 void order();
 void feasibility();
 void witness();
+void constraint();
 void path();
 
 namespace grammar {

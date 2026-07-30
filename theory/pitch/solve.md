@@ -26,6 +26,10 @@ H x=h,\qquad Lx\leq l.
 Examples include anchoring, pitch ordering, course range, and an interval
 identity declared exact within a selected tuning theory.
 
+Every hard constraint carries a stable identity distinct from its prose
+provenance. Solver traces and later active sets refer to identities, never
+storage positions.
+
 Contextual tendencies are ordered soft tiers:
 
 \[

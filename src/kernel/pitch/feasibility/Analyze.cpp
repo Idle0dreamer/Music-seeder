@@ -41,6 +41,7 @@ std::expected<Result, Error> analyze(
                 return Result{
                     Status::Infeasible,
                     std::nullopt,
+                    row.constraints,
                     row.provenance,
                     *proof,
                 };
@@ -60,6 +61,7 @@ std::expected<Result, Error> analyze(
         return Result{
             Status::Feasible,
             std::move(*solution),
+            {},
             {},
             std::nullopt,
         };

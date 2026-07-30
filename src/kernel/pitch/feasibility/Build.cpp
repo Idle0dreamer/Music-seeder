@@ -6,6 +6,7 @@ namespace mq::kernel::pitch::feasibility::detail {
 namespace {
 
 std::expected<Row, Error> make(
+    Identity identity,
     std::span<const Term> terms,
     Expression right,
     std::string provenance,
@@ -13,6 +14,7 @@ std::expected<Row, Error> make(
     Rational scale) {
     Row row;
     row.right = std::move(right) * scale;
+    row.constraints.push_back(std::move(identity));
     if (!provenance.empty()) {
         row.provenance.push_back(std::move(provenance));
     }
@@ -66,11 +68,46 @@ std::expected<Rows, Error> build(
         });
     }
 
+    std::set<Identity> constraints;
+    const auto registerConstraint =
+        [&constraints](const Identity& identity) -> std::expected<void, Error> {
+        if (identity.domain.empty() ||
+            identity.name.empty() ||
+            identity.revision.empty()) {
+            return std::unexpected(Error{
+                Error::Code::Input,
+                "pitch constraint identity is incomplete",
+                std::nullopt,
+            });
+        }
+        if (!constraints.insert(identity).second) {
+            return std::unexpected(Error{
+                Error::Code::Input,
+                "duplicate pitch constraint " + identity.str(),
+                std::nullopt,
+            });
+        }
+        return {};
+    };
+    for (const auto& equation : equations) {
+        const auto added = registerConstraint(equation.identity);
+        if (!added) {
+            return std::unexpected(added.error());
+        }
+    }
+    for (const auto& inequality : inequalities) {
+        const auto added = registerConstraint(inequality.identity);
+        if (!added) {
+            return std::unexpected(added.error());
+        }
+    }
+
     Rows rows;
     for (const auto& equation : equations) {
         auto upper = append(
             rows,
             make(
+                equation.identity,
                 equation.terms,
                 equation.right,
                 equation.provenance,
@@ -83,6 +120,7 @@ std::expected<Rows, Error> build(
         auto lower = append(
             rows,
             make(
+                equation.identity,
                 equation.terms,
                 equation.right,
                 equation.provenance,
@@ -97,6 +135,7 @@ std::expected<Rows, Error> build(
         auto result = append(
             rows,
             make(
+                inequality.identity,
                 inequality.terms,
                 inequality.right,
                 inequality.provenance,

@@ -3,8 +3,13 @@
 #include "mq/kernel/pitch/System.hpp"
 
 #include <cmath>
+#include <utility>
 
 namespace {
+
+mq::kernel::Identity identity(std::string name) {
+    return {"test.pitch.constraint", std::move(name), "1"};
+}
 
 mq::kernel::pitch::Solution solve(
     const mq::kernel::pitch::Expression& root) {
@@ -17,13 +22,20 @@ mq::kernel::pitch::Solution solve(
     system.declare(tonic);
     system.declare(second);
     system.declare(fourth);
-    system.equate({{{tonic, Rational(1)}}, root, "root anchor"});
     system.equate({
+        identity("root"),
+        {{tonic, Rational(1)}},
+        root,
+        "root anchor",
+    });
+    system.equate({
+        identity("fourth"),
         {{fourth, Rational(1)}, {tonic, Rational(-1)}},
         pitch::Expression::ratio(4, 3),
         "4:3 structural closure",
     });
     system.equate({
+        identity("second"),
         {{second, Rational(1)}, {tonic, Rational(-1)}},
         pitch::Expression::ratio(9, 8) +
             pitch::Expression::cents(Rational(-9, 2)),
@@ -66,11 +78,13 @@ void test::pitch() {
     pitch::System contradiction;
     contradiction.declare(tonic);
     contradiction.equate({
+        identity("first"),
         {{tonic, Rational(1)}},
         pitch::Expression::cents(Rational(0)),
         "first anchor",
     });
     contradiction.equate({
+        identity("contradiction"),
         {{tonic, Rational(1)}},
         pitch::Expression::cents(Rational(1)),
         "contradictory anchor",

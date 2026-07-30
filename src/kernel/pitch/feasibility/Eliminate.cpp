@@ -5,9 +5,10 @@
 namespace mq::kernel::pitch::feasibility::detail {
 namespace {
 
+template <typename Value>
 void merge(
-    std::vector<std::string>& target,
-    const std::vector<std::string>& source) {
+    std::vector<Value>& target,
+    const std::vector<Value>& source) {
     for (const auto& item : source) {
         if (std::ranges::find(target, item) == target.end()) {
             target.push_back(item);
@@ -32,6 +33,8 @@ Row combine(
         [](const auto& item) { return item.second == Rational(0); });
     result.right =
         upper.right * upperScale + lower.right * lowerScale;
+    result.constraints = upper.constraints;
+    merge(result.constraints, lower.constraints);
     result.provenance = upper.provenance;
     merge(result.provenance, lower.provenance);
     return result;
