@@ -78,6 +78,11 @@ For primitive operator \(o\):
 If the precondition is false, execution yields a typed violation containing
 the rule identity and provenance that rejected it.
 
+`Place(i,r,d)` appends one unique structural event to melodic state. `Start` is
+required for the first event and forbidden afterward. Its intended direction is
+checked against exact calculated pitch order when the instrument-neutral
+performance target is built; the grammar declaration alone is not proof.
+
 ## Sequence
 
 \[

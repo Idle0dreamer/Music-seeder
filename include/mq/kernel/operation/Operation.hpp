@@ -3,6 +3,7 @@
 #include "mq/kernel/Identity.hpp"
 #include "mq/kernel/Rational.hpp"
 #include "mq/kernel/evidence/Kind.hpp"
+#include "mq/kernel/motion/Direction.hpp"
 #include "mq/kernel/tonicization/Level.hpp"
 
 #include <variant>
@@ -51,6 +52,12 @@ struct Return {
     Identity center;
 };
 
+struct Place {
+    Identity event;
+    Identity role;
+    motion::Direction direction{motion::Direction::Start};
+};
+
 using Any = std::variant<
     Anchor,
     Enter,
@@ -60,7 +67,8 @@ using Any = std::variant<
     Cadence,
     Tonicize,
     Modulate,
-    Return>;
+    Return,
+    Place>;
 
 [[nodiscard]] const char* name(const Any& value) noexcept;
 

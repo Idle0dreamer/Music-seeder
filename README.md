@@ -38,8 +38,10 @@ sources are not part of this checkpoint.
 | `theory/pitch` | exact calculated pitch-field specification |
 | `include/mq/kernel/grammar` | finite terms, guards, scope policy, derivations |
 | `include/mq/kernel/state` | decomposed musical-state projections |
+| `include/mq/kernel/performance` | instrument-neutral structural events and exact targets |
+| `include/mq/kernel/motion` | typed intended melodic direction |
 | `include/mq/kernel/path` | constrained modulation graph rules |
-| `include/mq/kernel/pitch` | symbolic expressions and equality system |
+| `include/mq/kernel/pitch` | exact fields, requests, expressions, and constraint systems |
 | `include/mq/kernel/profile` | rules, patches, and effective profiles |
 | `src/kernel/*` | implementations separated by the same domains |
 | `tests/kernel` | executable algebra and reconstruction laws |

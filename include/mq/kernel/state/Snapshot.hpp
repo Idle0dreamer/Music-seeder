@@ -3,6 +3,7 @@
 #include "mq/kernel/Identity.hpp"
 #include "mq/kernel/Rational.hpp"
 #include "mq/kernel/evidence/Kind.hpp"
+#include "mq/kernel/performance/Event.hpp"
 #include "mq/kernel/tonicization/Level.hpp"
 #include "mq/kernel/trace/Event.hpp"
 
@@ -55,6 +56,13 @@ struct Path {
     bool operator==(const Path&) const = default;
 };
 
+struct Melody {
+    std::optional<performance::Event> current;
+    std::vector<performance::Event> history;
+
+    bool operator==(const Melody&) const = default;
+};
+
 struct Snapshot {
     Center center;
     Jins jins;
@@ -62,6 +70,7 @@ struct Snapshot {
     Evidence evidence;
     Cell cell;
     Path path;
+    Melody melody;
     Trace trace;
 
     bool operator==(const Snapshot&) const = default;

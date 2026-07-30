@@ -38,12 +38,21 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Required projection presence | explicit missing-state error or optional omission |
 | Projection scope non-leakage | restored grammar outcome to field integration law |
 | Explicit projection resource failure | bounded reader count |
+| Structural pitch events | `performance::Event` and checked `Place` transition |
+| Intended motion state | typed `Start`, `Same`, `Rise`, and `Fall` |
+| Scoped event history | `Melody` state component and explicit scope export |
+| Role and motion projection | typed readers over current structural event |
+| Instrument-neutral target plan | exact event target prefix under `performance` |
+| Plan-to-history correspondence | complete prefix and event identity validation |
+| Exact motion verification | symbolic order certificates against prior target |
+| Explicit motion proof failure | direction mismatch and order-budget laws |
+| Explicit request resource failure | bounded event-history prefix validation |
 | Profile rule values and provenance | `Rule`, `Profile` |
 | Seven patch actions | reconstruction implementation and tests |
 | Multiple-parent conflict rejection | profile law tests |
 | Explicit conflict resolution | profile law tests |
 | Regional narrowing, prohibition, and exception | profile law tests |
-| Nine tonal/vocabulary operators | `Operation` variant |
+| Ten tonal, vocabulary, and event operators | `Operation` variant |
 | Exact tonicization evidence thresholds | `Evaluator` |
 | Seeded lexicographic alternative selection | `choice::select` |
 | Storage-order and ineligible-choice stability | choice law tests |
@@ -61,7 +70,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 - `Alt` identity normalization and its normalized associativity law.
 - Recursive production definitions and explicit well-founded budget accounting.
 - Profile-declared choice bands beyond equal minimum-cost outcomes.
-- Typed structural pitch event and intended motion state.
+- Typed phrase-function and cadence state over structural event spans.
 - Continuous intonation trajectory basis functions.
 - A sourced real regional profile.
 
@@ -70,9 +79,9 @@ specified under `synthesis/`.
 
 ## Next coherent sequence
 
-1. Define a structural pitch event with role and intended motion.
-2. Give event state explicit scope ownership and history.
-3. Project role and direction into a calculated pitch request.
+1. Define phrase spans over stable structural event identities.
+2. Represent question, response, suspension, and closure functions explicitly.
+3. Project phrase function and cadence state into calculated pitch requests.
 4. Normalize `Alt` identities and test normalized associativity.
 5. Add recursive production budgets before recursive grammar modules.
 6. Encode one sourced Bayati evidence fixture only after its rule review.
@@ -82,7 +91,7 @@ specified under `synthesis/`.
 Verified in the current workspace:
 
 - optimized GCC C++23 build with warnings as errors;
-- twenty debug law suites;
+- twenty-four debug law suites;
 - undefined-behavior sanitizer;
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails

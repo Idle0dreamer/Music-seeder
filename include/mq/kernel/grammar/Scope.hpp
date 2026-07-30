@@ -14,6 +14,7 @@ enum class Part : std::uint8_t {
     Evidence = 1U << 3U,
     Cell = 1U << 4U,
     Path = 1U << 5U,
+    Melody = 1U << 6U,
 };
 
 constexpr Part operator|(Part left, Part right) noexcept {

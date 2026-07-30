@@ -54,6 +54,18 @@ std::expected<void, Error> check(
                     return complete(read.color) &&
                            complete(read.internal) &&
                            complete(read.maqam);
+                } else if constexpr (std::same_as<Type, motion::Read>) {
+                    const std::set<Identity> values{
+                        read.start,
+                        read.same,
+                        read.rise,
+                        read.fall,
+                    };
+                    return complete(read.start) &&
+                           complete(read.same) &&
+                           complete(read.rise) &&
+                           complete(read.fall) &&
+                           values.size() == 4;
                 } else if constexpr (std::same_as<Type, path::Read>) {
                     return complete(read.path) &&
                            complete(read.complete) &&

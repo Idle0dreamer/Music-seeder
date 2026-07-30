@@ -44,6 +44,10 @@ private:
         const state::Snapshot& state,
         const operation::Modulate& modulation,
         std::size_t index) const;
+    [[nodiscard]] std::expected<void, Violation> place(
+        state::Snapshot& state,
+        const operation::Place& event,
+        std::size_t index) const;
 };
 
 } // namespace mq::kernel::eval

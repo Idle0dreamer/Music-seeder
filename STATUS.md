@@ -32,7 +32,11 @@ Implemented so far:
 16. typed finite grammar terms and complete relational evaluation;
 17. lexical binding and explicit scope restoration;
 18. path history with source, target, level, and prerequisite guards;
-19. twenty executable law suites.
+19. unique structural pitch events with intended motion and scoped history;
+20. role and direction projection into contextual pitch fields;
+21. exact instrument-neutral pitch targets with plan-prefix validation;
+22. exact `Same`, `Rise`, and `Fall` order certificates;
+23. twenty-four executable law suites.
 
 No real regional profile is claimed yet. The exact boundary is recorded in
 `theory/implementation/kernel.md`.

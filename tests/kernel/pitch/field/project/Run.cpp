@@ -45,18 +45,40 @@ void test::project::run() {
     const auto jinsKey = id("test.project.key", "jins");
     const auto levelKey = id("test.project.key", "level");
     const auto pathKey = id("test.project.key", "path");
+    const auto roleKey = id("test.project.key", "role");
+    const auto motionKey = id("test.project.key", "motion");
+    const auto role = id("test.project.role", "current");
+    const auto event = id("test.project.event", "current");
+    const auto start = id("test.project.motion", "start");
+    const auto same = id("test.project.motion", "same");
+    const auto rise = id("test.project.motion", "rise");
+    const auto fall = id("test.project.motion", "fall");
 
     state::Snapshot state;
     state.center.stack = {root, local};
     state.jins.active = jins;
     state.tonicization.level = tonicization::Level::Internal;
     state.path.completed.insert(route);
+    state.melody.current = performance::Event{
+        event,
+        role,
+        motion::Direction::Rise,
+    };
+    state.melody.history.push_back(*state.melody.current);
     pp::Plan plan{{
         pp::path::Read{pathKey, route, yes, no},
         pp::tonicization::Read{levelKey, color, internal, maqam},
         pp::center::Read{centerLocal, pp::center::Place::Local},
         pp::jins::Read{jinsKey},
         pp::center::Read{centerRoot, pp::center::Place::Root},
+        pp::role::Read{roleKey},
+        pp::motion::Read{
+            motionKey,
+            start,
+            same,
+            rise,
+            fall,
+        },
     }};
     const auto projected = pp::run(plan, state);
     require(
@@ -65,7 +87,9 @@ void test::project::run() {
             value(*projected, centerLocal) == local &&
             value(*projected, jinsKey) == jins &&
             value(*projected, levelKey) == internal &&
-            value(*projected, pathKey) == yes,
+            value(*projected, pathKey) == yes &&
+            value(*projected, roleKey) == role &&
+            value(*projected, motionKey) == rise,
         "typed state projection produced wrong field facts");
 
     std::ranges::reverse(plan.sources);

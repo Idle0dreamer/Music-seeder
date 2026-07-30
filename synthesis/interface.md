@@ -6,7 +6,9 @@ instrument-specific execution.
 
 ## Kernel output
 
-The future contract carries:
+The current kernel carries stable structural events and exact structural pitch
+targets in an instrument-neutral prefix plan. The complete future contract also
+carries:
 
 - stable event and gesture identities;
 - structural roles and phrase boundaries;

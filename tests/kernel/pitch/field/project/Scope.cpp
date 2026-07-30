@@ -46,7 +46,9 @@ void test::project::scope() {
     const auto context = pp::run(
         pp::Plan{{pp::jins::Read{key}}},
         grammar.outcomes.front().state);
-    require(context.has_value(), context.error().message);
+    require(
+        context.has_value(),
+        context ? "" : context.error().message);
 
     const auto x = id("variable.x");
     const auto tier = id("tier.structural");

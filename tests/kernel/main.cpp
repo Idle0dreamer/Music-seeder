@@ -23,6 +23,10 @@ int main() {
         test::field::solve();
         test::project::run();
         test::project::scope();
+        test::event::laws();
+        test::event::scope();
+        test::request::run();
+        test::request::motion();
         test::path();
         test::grammar::laws();
         test::grammar::relation();
@@ -44,6 +48,10 @@ int main() {
             << "PASS calculated field-to-ordering integration\n"
             << "PASS typed state-to-field projection laws\n"
             << "PASS scoped grammar-to-field integration\n"
+            << "PASS structural event transition laws\n"
+            << "PASS structural event scope laws\n"
+            << "PASS exact instrument-neutral pitch request laws\n"
+            << "PASS exact same and fall motion laws\n"
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS complete grammar branch evaluation\n";

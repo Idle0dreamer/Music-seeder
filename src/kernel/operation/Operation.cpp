@@ -22,6 +22,8 @@ const char* name(const Any& value) noexcept {
                 return "Tonicize";
             } else if constexpr (std::is_same_v<T, Modulate>) {
                 return "Modulate";
+            } else if constexpr (std::is_same_v<T, Place>) {
+                return "Place";
             } else {
                 return "Return";
             }
@@ -30,4 +32,3 @@ const char* name(const Any& value) noexcept {
 }
 
 } // namespace mq::kernel::operation
-

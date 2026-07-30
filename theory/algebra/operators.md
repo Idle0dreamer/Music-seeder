@@ -54,6 +54,7 @@ Iqa operators alter rhythmic context, never maqam identity.
 
 ## Performance operators
 
+- `Place(event,role,direction)` records structural melodic intent;
 - `Intone(role,context)` solves a pitch field and trajectory;
 - `Time(event,context)` realizes structural time;
 - `Ornament(host,family)` elaborates a host without replacing it;

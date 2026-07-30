@@ -26,11 +26,13 @@ exists:
 - root or local center from the nonempty center stack;
 - active jins;
 - tonicization level through an explicit identity mapping;
-- completion state for one named modulation path.
+- completion state for one named modulation path;
+- current structural pitch role;
+- current intended motion through an explicit identity mapping.
 
-The projection does not pretend to know direction, phrase function, cadence
-function, register, neighboring role, or performer context. Those require
-typed state components and operations before they can become readers.
+The projection does not pretend to know phrase function, cadence function,
+register, neighboring role, or performer context. Those require typed state
+components and operations before they can become readers.
 
 ## Scope
 
@@ -55,10 +57,10 @@ state fail rather than omitting facts silently.
 ## Downstream breadth
 
 This seam lets complete grammar branches request exact context-dependent pitch
-fields using their established center, jins, tonicization, and path history.
-The next sequence must add typed structural pitch-event and motion state, then
-consume it immediately by projecting direction and role into an
-instrument-neutral performance request. Synthesis remains a separate consumer.
+fields using established center, jins, tonicization, path, event role, and
+motion state. Structural pitch requests now consume role and motion directly.
+The next sequence adds phrase function and cadence state over event spans.
+Synthesis remains a separate consumer.
 
 ## Laws
 

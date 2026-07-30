@@ -32,6 +32,9 @@ Batch Runner::scope(
         if (!scope::has(form.policy.exports, scope::Part::Path)) {
             output.outcome.state.path = state.path;
         }
+        if (!scope::has(form.policy.exports, scope::Part::Melody)) {
+            output.outcome.state.melody = state.melody;
+        }
         output.scope = path;
         output.bindings = bindings;
     }

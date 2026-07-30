@@ -51,6 +51,20 @@ void scope();
 
 } // namespace project
 
+namespace event {
+
+void laws();
+void scope();
+
+} // namespace event
+
+namespace request {
+
+void run();
+void motion();
+
+} // namespace request
+
 namespace grammar {
 
 void laws();

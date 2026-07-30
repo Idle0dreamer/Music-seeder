@@ -110,6 +110,9 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 state.center.stack.push_back(value.center);
                 state.path.completed.insert(value.path);
                 state.tonicization.level = value.level;
+            } else if constexpr (std::is_same_v<T, operation::Place>) {
+                subject = value.event.str();
+                return place(state, value, index);
             } else if constexpr (std::is_same_v<T, operation::Return>) {
                 subject = value.center.str();
                 const auto found =

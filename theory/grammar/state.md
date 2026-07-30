@@ -4,7 +4,7 @@ The generator operates on musical state, not on a current scale and note.
 At decision time \(t\), the state is
 
 \[
-S_t=(H_t,Z_t,M_t,P_t,Q_t,T_t,D_t)
+S_t=(H_t,Z_t,M_t,P_t,Q_t,T_t,D_t,U_t)
 \]
 
 where:
@@ -16,6 +16,7 @@ where:
 - \(Q_t\): sayr obligations, permissions, and completed landmarks;
 - \(T_t\): timing, breath, and optional iqa state;
 - \(D_t\): discourse state: question, response, contrast, recall, closure.
+- \(U_t\): current structural pitch event and identity-bearing event history.
 
 ## Tonal hypothesis
 
@@ -56,6 +57,8 @@ exception:
 6. A synthesis adapter may alter physical execution, not intended musical role.
 7. Region and repertoire profiles may narrow permissions but may not silently
    borrow rules from another profile.
+8. Intended event motion must agree with exact calculated target order before
+   the event enters an instrument-neutral performance plan.
 
 ## History
 
@@ -68,6 +71,7 @@ Generation is non-Markovian at the note level. The minimum retained history is:
 - completed and pending sayr obligations;
 - registers visited, climax candidates, and return paths;
 - articulation and release intents already emitted.
+- structural event identities, roles, intended motion, and calculated targets.
 
 The history may be compressed into sufficient statistics only after tests show
 that the compression preserves phrase and modulation judgments.

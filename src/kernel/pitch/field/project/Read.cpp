@@ -44,6 +44,39 @@ std::expected<std::optional<Fact>, Error> read(
                     reader.key,
                     *state.jins.active,
                 }};
+            } else if constexpr (std::same_as<Type, role::Read>) {
+                if (!state.melody.current) {
+                    return absent(reader.key, reader.presence);
+                }
+                return std::optional<Fact>{{
+                    reader.key,
+                    state.melody.current->role,
+                }};
+            } else if constexpr (std::same_as<Type, motion::Read>) {
+                if (!state.melody.current) {
+                    return absent(reader.key, reader.presence);
+                }
+                const Identity* value = &reader.start;
+                switch (state.melody.current->direction) {
+                case mq::kernel::motion::Direction::Start:
+                    break;
+                case mq::kernel::motion::Direction::Same:
+                    value = &reader.same;
+                    break;
+                case mq::kernel::motion::Direction::Rise:
+                    value = &reader.rise;
+                    break;
+                case mq::kernel::motion::Direction::Fall:
+                    value = &reader.fall;
+                    break;
+                default:
+                    return std::unexpected(Error{
+                        Error::Code::Input,
+                        "current event has an invalid direction",
+                        reader.key,
+                    });
+                }
+                return std::optional<Fact>{{reader.key, *value}};
             } else if constexpr (
                 std::same_as<Type, tonicization::Read>) {
                 const Identity* value = &reader.color;
