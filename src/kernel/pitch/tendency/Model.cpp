@@ -31,6 +31,14 @@ std::expected<void, Error> insert(
             std::nullopt,
         });
     }
+    if (identity.domain.starts_with("mq.kernel.kkt")) {
+        return std::unexpected(Error{
+            Error::Code::Input,
+            "tendency input uses the reserved KKT identity domain",
+            {},
+            std::nullopt,
+        });
+    }
     return {};
 }
 
@@ -63,14 +71,6 @@ std::expected<Model, Error> model(
     std::set<Identity> known;
     std::set<Identity> identities;
     for (const auto& variable : result.variables) {
-        if (variable.domain.starts_with("mq.kernel.kkt")) {
-            return std::unexpected(Error{
-                Error::Code::Input,
-                "pitch variable uses the reserved KKT identity domain",
-                {},
-                std::nullopt,
-            });
-        }
         const auto added = insert(known, variable);
         if (!added) {
             return std::unexpected(added.error());

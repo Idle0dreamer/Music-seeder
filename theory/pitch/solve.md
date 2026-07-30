@@ -53,6 +53,11 @@ systems. The solver returns affine predictions for every stable tendency
 identity; those predictions are the constraints a later lexicographic tier
 must preserve.
 
+Multiple tiers are solved strongest to weakest. Each stronger target prediction
+is frozen by an exact affine equality before the next KKT tier runs. A weaker
+contextual tendency therefore cannot buy improvement by degrading a stronger
+authority.
+
 ## Conditional terms
 
 The target formula for role \(r\) is assembled from explicit profile terms:

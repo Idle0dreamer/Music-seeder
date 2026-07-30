@@ -21,13 +21,14 @@ Implemented so far:
 5. exact witnesses for underdetermined hard pitch regions;
 6. stable hard-constraint identities and contradiction traces;
 7. exact one-tier contextual tendency optimization through KKT conditions;
-8. declarative profile reconstruction and conflict detection;
-9. evidence-gated tonal operators;
-10. stable seeded lexicographic choice;
-11. typed finite grammar terms and complete relational evaluation;
-12. lexical binding and explicit scope restoration;
-13. path history with source, target, level, and prerequisite guards;
-14. fourteen executable law suites.
+8. exact lexicographic tendency sequencing without weaker-tier degradation;
+9. declarative profile reconstruction and conflict detection;
+10. evidence-gated tonal operators;
+11. stable seeded lexicographic choice;
+12. typed finite grammar terms and complete relational evaluation;
+13. lexical binding and explicit scope restoration;
+14. path history with source, target, level, and prerequisite guards;
+15. sixteen executable law suites.
 
 No real regional profile is claimed yet. The exact boundary is recorded in
 `theory/implementation/kernel.md`.

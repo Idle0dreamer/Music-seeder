@@ -30,6 +30,13 @@ void laws();
 
 } // namespace tendency
 
+namespace sequence {
+
+void solve();
+void laws();
+
+} // namespace sequence
+
 namespace grammar {
 
 void laws();

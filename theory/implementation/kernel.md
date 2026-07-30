@@ -25,6 +25,10 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Stable active-set traces | identity-normalized constraints and active identity output |
 | Exact tier predictions | tendency-identity to affine prediction map |
 | Explicit KKT resource failure | bounded active-set enumeration and nested hard-solver limits |
+| Exact lexicographic tendency sequence | prediction-freeze equalities and repeated KKT tiers |
+| Stronger-tier non-degradation | conflicting-target and null-space resolution laws |
+| Stable tier and target identities | global uniqueness validation and trace steps |
+| Explicit sequence resource failure | bounded tier count and per-tier nested limits |
 | Profile rule values and provenance | `Rule`, `Profile` |
 | Seven patch actions | reconstruction implementation and tests |
 | Multiple-parent conflict rejection | profile law tests |
@@ -48,7 +52,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 - `Alt` identity normalization and its normalized associativity law.
 - Recursive production definitions and explicit well-founded budget accounting.
 - Profile-declared choice bands beyond equal minimum-cost outcomes.
-- Multiple lexicographically ordered pitch-tendency tiers.
+- Declarative contextual pitch-field assembly from sourced profile terms.
 - Continuous intonation trajectory basis functions.
 - A sourced real regional profile.
 
@@ -57,9 +61,9 @@ specified under `synthesis/`.
 
 ## Next coherent sequence
 
-1. Preserve every stronger-tier prediction as an exact equality.
-2. Reuse the KKT tier operator for later lexicographic tiers.
-3. Prove multi-tier non-degradation and storage-order invariance.
+1. Define typed contextual pitch terms and named authority tiers.
+2. Assemble terms into hard constraints and tendency tiers.
+3. Solve a neutral calculated field through the full ordering-to-sequence path.
 4. Normalize `Alt` identities and test normalized associativity.
 5. Add recursive production budgets before recursive grammar modules.
 6. Encode one sourced Bayati evidence fixture only after its rule review.
@@ -69,7 +73,7 @@ specified under `synthesis/`.
 Verified in the current workspace:
 
 - optimized GCC C++23 build with warnings as errors;
-- fourteen debug law suites;
+- sixteen debug law suites;
 - undefined-behavior sanitizer;
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails

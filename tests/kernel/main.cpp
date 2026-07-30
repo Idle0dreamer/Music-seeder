@@ -17,6 +17,8 @@ int main() {
         test::constraint();
         test::tendency::solve();
         test::tendency::laws();
+        test::sequence::solve();
+        test::sequence::laws();
         test::path();
         test::grammar::laws();
         test::grammar::relation();
@@ -32,6 +34,8 @@ int main() {
             << "PASS stable hard-constraint identity laws\n"
             << "PASS exact contextual tendency KKT solving\n"
             << "PASS tendency identity, budget, and ordering laws\n"
+            << "PASS exact lexicographic tendency sequencing\n"
+            << "PASS tendency non-degradation and tier-order laws\n"
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS complete grammar branch evaluation\n";
