@@ -19,16 +19,22 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Regional narrowing, prohibition, and exception | profile law tests |
 | Nine tonal/vocabulary operators | `Operation` variant |
 | Exact tonicization evidence thresholds | `Evaluator` |
-| Seeded lexicographic alternative selection | `Choice` |
+| Seeded lexicographic alternative selection | `choice::select` |
 | Storage-order and ineligible-choice stability | choice law tests |
+| Typed `Id`, `Fail`, `Seq`, `Alt`, `Guard`, `Repeat`, `Scope`, and `Bind` terms | `grammar::Term` |
+| Complete finite legal derivations before seed resolution | grammar relation tests |
+| Rejected-branch diagnostics retained beside legal outcomes | grammar relation tests |
+| Lexical binding restoration | grammar non-leakage tests |
+| Explicit state projections and scope exports | scope restoration tests |
+| Typed path source, target, maximum level, and prior-path guards | path graph tests |
+| Missing path graph rejects modulation without fallback | path guard tests |
 
 ## Deliberately not claimed yet
 
-- Full grammar term tree for `Id`, `Fail`, `Seq`, `Alt`, `Guard`, `Repeat`,
-  `Scope`, and `Bind`.
-- Relational evaluation that preserves multiple complete derivations.
 - Phrase, motif, cadence, sayr, ornament, timing, and iqa operator families.
-- Path-conditioned modulation prerequisites beyond named path permission.
+- `Alt` identity normalization and its normalized associativity law.
+- Recursive production definitions and explicit well-founded budget accounting.
+- Profile-declared choice bands beyond equal minimum-cost outcomes.
 - General affine inequalities.
 - Lexicographically ordered soft pitch-constraint tiers.
 - Continuous intonation trajectory basis functions.
@@ -37,11 +43,12 @@ implements. Passing legacy prototype tests does not advance this ledger.
 
 ## Next coherent sequence
 
-1. Implement the grammar term tree and bounded evaluator.
-2. Make `Alt` evaluate complete legal branches before seeded selection.
-3. Implement scope restoration and non-leakage tests.
-4. Add path-state and prerequisite guards.
-5. Extend pitch solving with hard inequalities and ordered soft tiers.
+1. Define exact ordering for symbolic pitch expressions before admitting
+   inequalities.
+2. Extend pitch solving with hard inequality feasibility.
+3. Add lexicographically ordered soft tiers without floating-point authority.
+4. Normalize `Alt` identities and test normalized associativity.
+5. Add recursive production budgets before recursive grammar modules.
 6. Encode one sourced Bayati evidence fixture only after its rule review.
 
 ## Validation environment
@@ -51,7 +58,6 @@ Verified in the current workspace:
 - optimized GCC C++23 build with warnings as errors;
 - debug law suite;
 - undefined-behavior sanitizer;
-- coexistence build and tests for the isolated legacy prototype.
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails
 because the traced environment denies its `/proc/<pid>/task` inspection. This

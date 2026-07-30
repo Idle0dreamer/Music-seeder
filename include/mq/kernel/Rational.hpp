@@ -18,7 +18,7 @@ public:
         return denominator_;
     }
 
-    [[nodiscard]] double toDouble() const noexcept;
+    [[nodiscard]] double decimal() const noexcept;
     [[nodiscard]] std::string str() const;
 
     Rational& operator+=(const Rational& other);
@@ -70,4 +70,3 @@ private:
 };
 
 } // namespace mq::kernel
-

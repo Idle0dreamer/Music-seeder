@@ -3,8 +3,7 @@
 namespace mq::kernel {
 
 std::string Identity::str() const {
-    return nameSpace + ":" + localName + "@" + revision;
+    return domain + ":" + name + "@" + revision;
 }
 
 } // namespace mq::kernel
-

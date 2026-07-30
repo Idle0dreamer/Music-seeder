@@ -9,9 +9,20 @@ inline void require(bool condition, const std::string& message) {
     }
 }
 
-void rationalTests();
-void pitchTests();
-void profileTests();
-void evaluatorTests();
-void choiceTests();
+namespace test {
 
+void rational();
+void pitch();
+void profile();
+void evaluator();
+void choice();
+void path();
+
+namespace grammar {
+
+void laws();
+void relation();
+
+} // namespace grammar
+
+} // namespace test

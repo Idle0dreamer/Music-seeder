@@ -23,8 +23,8 @@ make kernel
 make kernel-test
 ```
 
-`make test` still verifies that the isolated legacy prototype compiles, but its
-passing tests do not establish musical validity.
+`make test` is an alias for the kernel law suite. Rejected legacy prototype
+sources are not part of this checkpoint.
 
 ## Source map
 
@@ -32,8 +32,12 @@ passing tests do not establish musical validity.
 | --- | --- |
 | `theory/algebra` | sorts, operators, semantics, laws, regional reconstruction |
 | `theory/pitch` | exact calculated pitch-field specification |
-| `include/mq/kernel` | public C++23 kernel types |
-| `src/kernel` | exact arithmetic, solver, profiles, operators, evaluator |
+| `include/mq/kernel/grammar` | finite terms, guards, scope policy, derivations |
+| `include/mq/kernel/state` | decomposed musical-state projections |
+| `include/mq/kernel/path` | constrained modulation graph rules |
+| `include/mq/kernel/pitch` | symbolic expressions and equality system |
+| `include/mq/kernel/profile` | rules, patches, and effective profiles |
+| `src/kernel/*` | implementations separated by the same domains |
 | `tests/kernel` | executable algebra and reconstruction laws |
 | legacy directories | rejected generator/synthesizer retained for diagnosis |
 

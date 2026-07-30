@@ -5,7 +5,7 @@
 #include <limits>
 #include <stdexcept>
 
-void rationalTests() {
+void test::rational() {
     using mq::kernel::Rational;
 
     require(Rational(2, 4) == Rational(1, 2), "rational did not normalize");
@@ -19,25 +19,25 @@ void rationalTests() {
         Rational(-3, -5) == Rational(3, 5),
         "rational sign normalization is incorrect");
 
-    bool rejectedUnsafeMinimum = false;
+    bool minimum = false;
     try {
         static_cast<void>(Rational(
             std::numeric_limits<std::int64_t>::min(),
             1));
     } catch (const std::overflow_error&) {
-        rejectedUnsafeMinimum = true;
+        minimum = true;
     }
     require(
-        rejectedUnsafeMinimum,
+        minimum,
         "unsafe rational normalization was not rejected");
 
-    bool rejectedZeroDenominator = false;
+    bool denominator = false;
     try {
         static_cast<void>(Rational(1, 0));
     } catch (const std::invalid_argument&) {
-        rejectedZeroDenominator = true;
+        denominator = true;
     }
     require(
-        rejectedZeroDenominator,
+        denominator,
         "zero rational denominator was not rejected");
 }

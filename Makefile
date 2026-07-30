@@ -2,35 +2,25 @@ CXX ?= g++
 CXXFLAGS := -std=c++23 -O2 -Wall -Wextra -Wpedantic -Werror -Iinclude
 DBGFLAGS := -std=c++23 -O0 -g3 -Wall -Wextra -Wpedantic -Werror -Iinclude
 
-SRC := $(shell find src -name '*.cpp' ! -path 'src/app/main.cpp' | sort)
-APP := $(SRC) src/app/main.cpp
-TEST := $(SRC) tests/main.cpp
 KERNEL_SRC := $(shell find src/kernel -name '*.cpp' | sort)
 KERNEL_TEST := $(shell find tests/kernel -name '*.cpp' | sort)
 KERNEL_APP := $(KERNEL_SRC) apps/kernel/main.cpp
+KERNEL_HDR := $(shell find include/mq/kernel -name '*.hpp' | sort)
+TEST_HDR := $(shell find tests/kernel -name '*.hpp' | sort)
 
-.PHONY: all test kernel kernel-test kernel-sanitize kernel-address clean debug
+.PHONY: all test kernel kernel-test kernel-sanitize kernel-address clean
 
-all: build/maqam
+all: kernel
 
-build/maqam: $(APP)
-	@mkdir -p build
-	$(CXX) $(CXXFLAGS) $(APP) -o $@
-
-build/tests: $(TEST)
-	@mkdir -p build
-	$(CXX) $(DBGFLAGS) $(TEST) -o $@
-
-test: build/tests
-	./build/tests
+test: kernel-test
 
 kernel: build/kernel
 
-build/kernel: $(KERNEL_APP)
+build/kernel: Makefile $(KERNEL_APP) $(KERNEL_HDR)
 	@mkdir -p build
 	$(CXX) $(CXXFLAGS) $(KERNEL_APP) -o $@
 
-build/kernel-tests: $(KERNEL_SRC) $(KERNEL_TEST)
+build/kernel-tests: Makefile $(KERNEL_SRC) $(KERNEL_TEST) $(KERNEL_HDR) $(TEST_HDR)
 	@mkdir -p build
 	$(CXX) $(DBGFLAGS) $(KERNEL_SRC) $(KERNEL_TEST) -o $@
 
@@ -50,10 +40,6 @@ kernel-address:
 		-fno-omit-frame-pointer $(KERNEL_SRC) $(KERNEL_TEST) \
 		-o build/kernel-tests-address
 	ASAN_OPTIONS=detect_leaks=0 ./build/kernel-tests-address
-
-debug:
-	@mkdir -p build
-	$(CXX) $(DBGFLAGS) $(APP) -o build/maqam
 
 clean:
 	@find build -mindepth 1 -maxdepth 1 -type f -delete 2>/dev/null || true

@@ -6,8 +6,8 @@
 namespace mq::kernel {
 
 struct Identity {
-    std::string nameSpace;
-    std::string localName;
+    std::string domain;
+    std::string name;
     std::string revision{"1"};
 
     [[nodiscard]] std::string str() const;
@@ -16,4 +16,3 @@ struct Identity {
 };
 
 } // namespace mq::kernel
-

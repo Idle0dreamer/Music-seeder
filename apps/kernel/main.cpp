@@ -1,31 +1,30 @@
-#include "mq/kernel/Evaluator.hpp"
-#include "mq/kernel/Fixture.hpp"
-#include "mq/kernel/Pitch.hpp"
+#include "mq/kernel/fixture/Set.hpp"
+#include "mq/kernel/pitch/System.hpp"
 
 #include <iostream>
 
 int main() {
     using namespace mq::kernel;
 
-    const auto fixture = makeFixture();
-    if (!fixture) {
-        std::cerr << fixture.error() << '\n';
+    const auto made = fixture::make();
+    if (!made) {
+        std::cerr << made.error() << '\n';
         return 1;
     }
 
     const Identity tonic{"demo.pitch", "tonic", "1"};
     const Identity ghammaz{"demo.pitch", "ghammaz", "1"};
-    PitchSystem field;
-    field.addVariable(tonic);
-    field.addVariable(ghammaz);
-    field.addEquation({
+    pitch::System field;
+    field.add(tonic);
+    field.add(ghammaz);
+    field.add({
         {{tonic, Rational(1)}},
-        PitchExpression::cents(Rational(0)),
+        pitch::Expression::cents(Rational(0)),
         "demo anchor",
     });
-    field.addEquation({
+    field.add({
         {{ghammaz, Rational(1)}, {tonic, Rational(-1)}},
-        PitchExpression::ratio(4, 3),
+        pitch::Expression::ratio(4, 3),
         "demo ratio constraint",
     });
     const auto solution = field.solve();
@@ -36,20 +35,22 @@ int main() {
 
     std::cout
         << "kernel: non-ML typed operator and constraint system\n"
-        << "shared profile rules: " << fixture->shared.rules().size() << '\n'
+        << "shared profile rules: "
+        << made->profile.shared.rules().size() << '\n'
         << "regional A emphasis threshold: "
-        << fixture->regionalA
+        << made->profile.regional.a
                .parameter("threshold.internal.emphasis")
                ->str()
         << '\n'
         << "regional B permits demo path: "
-        << (fixture->regionalB.allows("allow.modulate", fixture->path)
+        << (made->profile.regional.b.allows(
+                "allow.modulate",
+                made->path.direct)
                 ? "yes"
                 : "no")
         << '\n'
         << "symbolic ghammaz: " << solution->values.at(ghammaz).str() << '\n'
-        << "realized cents: " << solution->values.at(ghammaz).toCents()
+        << "realized cents: " << solution->values.at(ghammaz).cents()
         << '\n';
     return 0;
 }
-

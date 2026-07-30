@@ -1,40 +1,8 @@
-#include "mq/kernel/Operator.hpp"
+#include "mq/kernel/operation/Operation.hpp"
 
-namespace mq::kernel {
+namespace mq::kernel::operation {
 
-const char* name(EvidenceKind value) noexcept {
-    switch (value) {
-    case EvidenceKind::Recurrence:
-        return "recurrence";
-    case EvidenceKind::Dwell:
-        return "dwell";
-    case EvidenceKind::Emphasis:
-        return "emphasis";
-    case EvidenceKind::Cell:
-        return "cell";
-    case EvidenceKind::Baggage:
-        return "baggage";
-    case EvidenceKind::Cadence:
-        return "cadence";
-    case EvidenceKind::Register:
-        return "register";
-    }
-    return "unknown";
-}
-
-const char* name(TonicizationLevel value) noexcept {
-    switch (value) {
-    case TonicizationLevel::Color:
-        return "color";
-    case TonicizationLevel::Internal:
-        return "internal";
-    case TonicizationLevel::Maqam:
-        return "maqam";
-    }
-    return "unknown";
-}
-
-const char* name(const Operation& value) noexcept {
+const char* name(const Any& value) noexcept {
     return std::visit(
         [](const auto& operation) -> const char* {
             using T = std::decay_t<decltype(operation)>;
@@ -61,5 +29,5 @@ const char* name(const Operation& value) noexcept {
         value);
 }
 
-} // namespace mq::kernel
+} // namespace mq::kernel::operation
 

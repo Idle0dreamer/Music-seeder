@@ -44,7 +44,7 @@ Rational::Rational(std::int64_t numerator, std::int64_t denominator) {
     denominator_ = denominator / divisor;
 }
 
-double Rational::toDouble() const noexcept {
+double Rational::decimal() const noexcept {
     return static_cast<double>(numerator_) /
            static_cast<double>(denominator_);
 }

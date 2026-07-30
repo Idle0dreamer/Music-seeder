@@ -2,26 +2,12 @@
 
 #include "mq/kernel/Identity.hpp"
 #include "mq/kernel/Rational.hpp"
+#include "mq/kernel/evidence/Kind.hpp"
+#include "mq/kernel/tonicization/Level.hpp"
 
 #include <variant>
 
-namespace mq::kernel {
-
-enum class EvidenceKind {
-    Recurrence,
-    Dwell,
-    Emphasis,
-    Cell,
-    Baggage,
-    Cadence,
-    Register,
-};
-
-enum class TonicizationLevel {
-    Color,
-    Internal,
-    Maqam,
-};
+namespace mq::kernel::operation {
 
 struct Anchor {
     Identity center;
@@ -52,20 +38,20 @@ struct Cadence {
 
 struct Tonicize {
     Identity jins;
-    TonicizationLevel level{TonicizationLevel::Color};
+    tonicization::Level level{tonicization::Level::Color};
 };
 
 struct Modulate {
     Identity path;
-    Identity targetCenter;
-    TonicizationLevel level{TonicizationLevel::Internal};
+    Identity center;
+    tonicization::Level level{tonicization::Level::Internal};
 };
 
 struct Return {
     Identity center;
 };
 
-using Operation = std::variant<
+using Any = std::variant<
     Anchor,
     Enter,
     Emphasize,
@@ -76,9 +62,6 @@ using Operation = std::variant<
     Modulate,
     Return>;
 
-[[nodiscard]] const char* name(EvidenceKind value) noexcept;
-[[nodiscard]] const char* name(TonicizationLevel value) noexcept;
-[[nodiscard]] const char* name(const Operation& value) noexcept;
+[[nodiscard]] const char* name(const Any& value) noexcept;
 
-} // namespace mq::kernel
-
+} // namespace mq::kernel::operation

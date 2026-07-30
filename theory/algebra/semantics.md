@@ -1,15 +1,64 @@
 # Operational semantics
 
-A grammar expression denotes a finite state relation:
+A grammar expression denotes a finite state relation. Evaluation also carries a
+lexical environment \(\Lambda=(\text{scope path},\text{bindings})\):
 
 \[
 \llbracket g\rrbracket_\Gamma :
-\Sigma\rightarrow
-\mathcal{P}_{\!f}(\Sigma\times \operatorname{Trace}\times\operatorname{Cost}).
+(\Sigma,\Lambda)\rightarrow
+\mathcal{P}_{\!f}
+(\Sigma\times\Lambda\times\operatorname{Trace}\times\operatorname{Cost}
+\times\operatorname{Decisions}).
 \]
 
 The result is a finite set of legal outcomes. Illegal branches return no
 outcome plus a diagnostic; they are not assigned a small probability.
+
+`Decisions` is an ordered trace of stable expression, scope-path, and
+alternative identities. It is generation metadata, not musical state.
+
+## Closed combinator semantics
+
+`Id` returns its input with zero cost and no trace addition. `Fail(e)` returns no
+outcome and the diagnostic \(e\).
+
+`Guard(p,g)` evaluates \(g\) only when the typed predicate \(p\) holds over
+\((\Sigma,\Lambda,\Gamma)\). A false guard returns a diagnostic, never a costly
+outcome.
+
+`Alt(a_1,\ldots,a_n)` evaluates every alternative to completion:
+
+\[
+\llbracket\operatorname{Alt}(a_1,\ldots,a_n)\rrbracket(s)=
+\bigcup_i
+\{\,r\oplus(c_i,d_i):r\in\llbracket a_i\rrbracket(s)\,\},
+\]
+
+where \(c_i\) is the declared branch cost and \(d_i\) its stable decision
+identity. Seeded resolution occurs only over these complete legal outcomes.
+Diagnostics from rejected alternatives remain available even when another
+alternative succeeds.
+
+Bounded repetition is a finite union:
+
+\[
+\llbracket\operatorname{Repeat}_{[m,n]}(g)\rrbracket=
+\bigcup_{k=m}^{n}\llbracket g^k\rrbracket,\qquad
+g^0=\operatorname{Id}.
+\]
+
+Each count is a distinct stable decision. A failed iteration removes only the
+affected count and its continuations.
+
+`Bind(x,g)` adds the identity \(x\) to the lexical binding set while evaluating
+\(g\), then restores the prior set. Bindings are presence-typed grammar
+capabilities; they do not mutate musical state. Guards may require a binding.
+
+`Scope(s,E,g)` pushes \(s\) onto the lexical scope path, evaluates \(g\), and
+then restores the parent path and bindings. For each musical component not in
+the explicit export set \(E\), the output projection is restored from the
+input. Trace and decision metadata are append-only evidence and are never
+scope-local musical components.
 
 ## Primitive execution
 
@@ -60,6 +109,10 @@ The resolver first minimizes all declared cost tiers. The seed chooses only
 among alternatives that remain eligible under the profile's choice-band rule.
 It never converts a forbidden expression into a legal one.
 
+For a complete derivation, the final stable component is hashed from its ordered
+decision trace. This keeps draws dependent on expression and scope identities,
+not container iteration order.
+
 ## Evidence
 
 Tonicization evidence is an exact vector, not a neural latent state:
@@ -91,4 +144,3 @@ B=(\text{remaining sections},\text{phrases},\text{cells},\text{time})
 \]
 
 Consequently, evaluation and seeded choice terminate.
-
