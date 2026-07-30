@@ -60,23 +60,15 @@ authority.
 
 ## Conditional terms
 
-The target formula for role \(r\) is assembled from explicit profile terms:
+The target formula for a role is assembled from guarded affine rules described
+in [Contextual pitch-field assembly](field.md). Direction, neighbor, phrase,
+region, repertoire, and performer distinctions are context keys rather than
+hard-coded scale variants.
 
-\[
-x_r=
-\mu(r,J,M)
-\delta_d(r)
-\delta_n(r,n_-,n_+)
-\delta_k(r,\text{cell},\text{cadence})
-\delta_g(r)
-\delta_p(r)
-\delta_\nu(r)
-\epsilon.
-\]
-
-Each \(\delta\) is a declared formula or reviewed measurement table with
-provenance. \(\epsilon\) is an optional bounded, seeded performance deviation,
-not a learned residual.
+Every active adjustment is represented by an explicit equality, inequality, or
+weighted target with provenance. An optional seeded performance deviation is a
+separate bounded tendency at its declared authority tier, not a learned
+residual.
 
 ## Trajectory
 

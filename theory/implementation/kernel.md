@@ -29,6 +29,11 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Stronger-tier non-degradation | conflicting-target and null-space resolution laws |
 | Stable tier and target identities | global uniqueness validation and trace steps |
 | Explicit sequence resource failure | bounded tier count and per-tier nested limits |
+| Guarded pitch-field assembly | exact context subset matching and identity normalization |
+| Explicit contextual coverage | named rule sets with no fallback on a missing match |
+| Named pitch authority | declared tier order and active empty-tier removal |
+| Exact field integration | hard-only witness or full lexicographic tendency solve |
+| Explicit field resource failure | bounded context, rule, coverage, and solver work |
 | Profile rule values and provenance | `Rule`, `Profile` |
 | Seven patch actions | reconstruction implementation and tests |
 | Multiple-parent conflict rejection | profile law tests |
@@ -52,7 +57,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 - `Alt` identity normalization and its normalized associativity law.
 - Recursive production definitions and explicit well-founded budget accounting.
 - Profile-declared choice bands beyond equal minimum-cost outcomes.
-- Declarative contextual pitch-field assembly from sourced profile terms.
+- Typed performance-state projection into pitch-field context.
 - Continuous intonation trajectory basis functions.
 - A sourced real regional profile.
 
@@ -61,9 +66,9 @@ specified under `synthesis/`.
 
 ## Next coherent sequence
 
-1. Define typed contextual pitch terms and named authority tiers.
-2. Assemble terms into hard constraints and tendency tiers.
-3. Solve a neutral calculated field through the full ordering-to-sequence path.
+1. Define the typed facts projected from performance state.
+2. Make fact ownership and lexical restoration explicit.
+3. Request a calculated field from a neutral evaluated grammar branch.
 4. Normalize `Alt` identities and test normalized associativity.
 5. Add recursive production budgets before recursive grammar modules.
 6. Encode one sourced Bayati evidence fixture only after its rule review.
@@ -73,7 +78,7 @@ specified under `synthesis/`.
 Verified in the current workspace:
 
 - optimized GCC C++23 build with warnings as errors;
-- sixteen debug law suites;
+- eighteen debug law suites;
 - undefined-behavior sanitizer;
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails

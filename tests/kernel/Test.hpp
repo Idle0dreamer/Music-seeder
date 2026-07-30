@@ -37,6 +37,13 @@ void laws();
 
 } // namespace sequence
 
+namespace field {
+
+void assembly();
+void solve();
+
+} // namespace field
+
 namespace grammar {
 
 void laws();

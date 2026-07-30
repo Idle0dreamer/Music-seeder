@@ -53,9 +53,9 @@ approximate objective.
 
 Lexicographic tiers unlock explicit precedence among structural convention,
 regional preference, repertoire tendency, performer tendency, and bounded
-surface variation without averaging their authority. The next consumer is the
-pitch-field assembly layer, which assigns sourced terms to named tiers rather
-than one undifferentiated cost.
+surface variation without averaging their authority. The pitch-field assembly
+layer now consumes this ordering by assigning guarded sourced terms to named
+tiers rather than one undifferentiated cost.
 
 ## Laws
 
