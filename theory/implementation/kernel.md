@@ -128,11 +128,15 @@ Verified for the preceding 34-suite descriptor checkpoint:
 - thirty-four debug law suites;
 - undefined-behavior sanitizer;
 
-The current 37-suite sayr checkpoint is intentionally committed before full
-validation. Its new kernel sources compiled without diagnostics, but linking,
-test execution, optimized compilation, sanitizers, and CLI runs remain
-unverified. Use `tools/notebook/Build.ipynb` on an online CPU runtime to
-complete that evidence without desktop memory pressure.
+The current sayr code completed a clean remote GCC 14 debug build, linked, and
+passed all 37 registered suite entry points. Optimized compilation, sanitizers,
+and CLI runs remain unverified. A separate Modal attempt inherited ignored
+desktop build objects, so its partial release and sanitizer results are not
+evidence.
+
+Use `tools/notebook/Build.ipynb` on an online CPU runtime to complete the
+remaining evidence without desktop memory pressure. It installs and probes
+GCC 14, forces that compiler for every target, and validates a clean clone.
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails
 because the traced environment denies its `/proc/<pid>/task` inspection. This

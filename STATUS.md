@@ -67,11 +67,15 @@ Checkpoint validation state:
 
 - the preceding 34-suite descriptor checkpoint passed debug, optimized, and
   undefined-behavior-sanitized builds;
-- the current sayr checkpoint compiled through the new kernel and into the
-  test sources without a compiler diagnostic;
-- the current 37-suite binary was not linked or executed before this commit;
-- optimized, sanitizer, CLI, and full remote validation of the current
-  checkpoint remain unverified.
+- the current sayr checkpoint completed a clean remote GCC 14 debug build,
+  linked, and passed all 37 registered suite entry points;
+- the first Colab attempt failed before project compilation because its
+  default libstdc++ lacked C++23 `<expected>`;
+- `tools/notebook/Build.ipynb` now installs and probes GCC 14, forces that
+  compiler for every target, and starts from a clean clone;
+- optimized, sanitizer, and CLI validation of the current checkpoint remain
+  unverified. A later Modal attempt inherited ignored desktop build objects,
+  so its partial results are deliberately not counted.
 
 No real regional profile is claimed yet. The exact boundary is recorded in
 `theory/implementation/kernel.md`.
