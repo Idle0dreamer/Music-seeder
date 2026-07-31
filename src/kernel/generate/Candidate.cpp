@@ -97,7 +97,11 @@ std::expected<Outcome, Diagnostic> evaluate(
         }
         const bool consistent =
             history.size() == state.sayr.history.size() &&
-            history == state.sayr.completed;
+            [&]() { 
+                std::set<Identity> s; 
+                for (auto& id : state.sayr.completed) s.insert(id.identity); 
+                return history == s; 
+            }()
         if (!consistent ||
             !context.sayr.plan->accepts(state.sayr.history)) {
             const auto rule =

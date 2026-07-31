@@ -33,7 +33,7 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
             using T = std::decay_t<decltype(value)>;
             if constexpr (std::is_same_v<T, operation::Anchor>) {
                 subject = value.center.str();
-                if (!profile_.allows("allow.anchor", value.center)) {
+                if (!profile_.allows("allow.anchor", value.center.identity)) {
                     return std::unexpected(
                         denied(index, label, "allow.anchor", subject));
                 }
@@ -52,7 +52,7 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 return dwell(state, value, index);
             } else if constexpr (std::is_same_v<T, operation::Emit>) {
                 subject = value.cell.str();
-                if (!profile_.allows("allow.emit", value.cell)) {
+                if (!profile_.allows("allow.emit", value.cell.identity)) {
                     return std::unexpected(
                         denied(index, label, "allow.emit", subject));
                 }
@@ -75,7 +75,7 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                         "active gesture must end before tonicization",
                     });
                 }
-                if (!profile_.allows("allow.tonicize", value.jins)) {
+                if (!profile_.allows("allow.tonicize", value.jins.identity)) {
                     return std::unexpected(
                         denied(index, label, "allow.tonicize", subject));
                 }
@@ -83,7 +83,7 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 if (!evidence) {
                     return evidence;
                 }
-                const auto selected = descriptor(value.jins, index, label);
+                const auto selected = descriptor(value.jins.identity, index, label);
                 if (!selected) {
                     return std::unexpected(selected.error());
                 }
@@ -91,7 +91,7 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 state.tonicization.level = value.level;
             } else if constexpr (std::is_same_v<T, operation::Modulate>) {
                 subject = value.path.str();
-                if (!profile_.allows("allow.modulate", value.path)) {
+                if (!profile_.allows("allow.modulate", value.path.identity)) {
                     return std::unexpected(
                         denied(index, label, "allow.modulate", subject));
                 }

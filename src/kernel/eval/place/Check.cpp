@@ -69,25 +69,25 @@ std::expected<void, Violation> check(
                 ? "first event must declare Start"
                 : "continuing event may not declare Start"));
     }
-    if (!descriptor.roles.contains(event.role)) {
+    if (!descriptor.roles.contains(event.role.identity.identity)) {
         return std::unexpected(reject(
             index,
             "jins.role",
             "structural role is outside the active descriptor"));
     }
-    if (!descriptor.regions.contains(event.region)) {
+    if (!descriptor.regions.contains(event.region.identity.identity)) {
         return std::unexpected(reject(
             index,
             "jins.register",
             "register region is outside the active descriptor"));
     }
-    if (!profile.allows("allow.place", event.role)) {
+    if (!profile.allows("allow.place", event.role.identity)) {
         return std::unexpected(reject(
             index,
             "allow.place",
             "profile rejected structural role " + event.role.str()));
     }
-    if (!profile.allows("allow.register", event.region)) {
+    if (!profile.allows("allow.register", event.region.identity)) {
         return std::unexpected(reject(
             index,
             "allow.register",

@@ -37,7 +37,7 @@ Evaluator::descriptor(
             "jins.active",
             "operation requires an active jins descriptor"));
     }
-    return descriptor(*state.jins.active, index, operation);
+    return descriptor(*state.jins.active.identity, index, operation);
 }
 
 } // namespace mq::kernel::eval

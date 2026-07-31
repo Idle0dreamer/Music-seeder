@@ -17,7 +17,7 @@ std::expected<void, Violation> Evaluator::emphasize(
             "jins.emphasis",
             "role is not an emphasis role in the active descriptor"));
     }
-    if (!profile_.allows("allow.emphasize", action.role)) {
+    if (!profile_.allows("allow.emphasize", action.role.identity)) {
         return std::unexpected(jins::reject(
             index,
             "Emphasize",
@@ -43,14 +43,14 @@ std::expected<void, Violation> Evaluator::dwell(
     if (!active) {
         return std::unexpected(active.error());
     }
-    if (!(*active)->roles.contains(action.role)) {
+    if (!(*active)->roles.contains(action.role.identity.identity)) {
         return std::unexpected(jins::reject(
             index,
             "Dwell",
             "jins.role",
             "dwell role is outside the active descriptor"));
     }
-    if (!profile_.allows("allow.dwell", action.role)) {
+    if (!profile_.allows("allow.dwell", action.role.identity)) {
         return std::unexpected(jins::reject(
             index,
             "Dwell",

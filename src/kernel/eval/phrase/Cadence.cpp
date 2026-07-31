@@ -15,7 +15,7 @@ std::expected<void, Violation> Evaluator::cadence(
             "cadence.identity",
             "cadence family identity must be complete"));
     }
-    if (!profile_.allows("allow.cadence", action.family)) {
+    if (!profile_.allows("allow.cadence", action.family.identity)) {
         return std::unexpected(phrase::reject(
             index,
             "Cadence",

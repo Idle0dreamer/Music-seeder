@@ -38,7 +38,7 @@ std::expected<void, Violation> Evaluator::place(
         return std::unexpected(gesture.error());
     }
     if (event.baggage &&
-        !profile_.allows("allow.baggage", *event.baggage)) {
+        !profile_.allows("allow.baggage", event.baggage->identity)) {
         return std::unexpected(place::reject(
             index,
             "allow.baggage",
@@ -58,7 +58,7 @@ std::expected<void, Violation> Evaluator::place(
     if (event.baggage) {
         state.evidence.amount[evidence::Kind::Baggage] += Rational(1);
     }
-    if ((*active)->characteristic.contains(event.region)) {
+    if ((*active)->characteristic.contains(event.region.identity.identity)) {
         state.evidence.amount[evidence::Kind::Register] += Rational(1);
     }
     return {};

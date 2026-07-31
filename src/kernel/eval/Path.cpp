@@ -14,7 +14,7 @@ std::expected<void, Violation> Evaluator::check(
             "no path graph was selected",
         });
     }
-    const auto* rule = context_.path.graph->find(modulation.path);
+    const auto* rule = context_.path.graph->find(modulation.path.identity);
     if (rule == nullptr) {
         return std::unexpected(Violation{
             index,

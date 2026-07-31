@@ -15,17 +15,22 @@
 #include <optional>
 #include <set>
 #include <vector>
+#include "mq/kernel/sort/CellId.hpp"
+#include "mq/kernel/sort/CenterId.hpp"
+#include "mq/kernel/sort/JinsId.hpp"
+#include "mq/kernel/sort/PathId.hpp"
+#include "mq/kernel/sort/ProductionId.hpp"
 
 namespace mq::kernel::state {
 
 struct Center {
-    std::vector<Identity> stack;
+    std::vector<sort::CenterId> stack;
 
     bool operator==(const Center&) const = default;
 };
 
 struct Jins {
-    std::optional<Identity> active;
+    std::optional<sort::JinsId> active;
 
     bool operator==(const Jins&) const = default;
 };
@@ -43,7 +48,7 @@ struct Evidence {
 };
 
 struct Cell {
-    std::map<Identity, std::size_t> occurrences;
+    std::map<sort::CellId, std::size_t> occurrences;
 
     bool operator==(const Cell&) const = default;
 };
@@ -55,7 +60,7 @@ struct Trace {
 };
 
 struct Path {
-    std::set<Identity> completed;
+    std::set<sort::PathId> completed;
 
     bool operator==(const Path&) const = default;
 };
@@ -82,14 +87,14 @@ struct Gesture {
 };
 
 struct Sayr {
-    std::set<Identity> completed;
+    std::set<sort::PathId> completed;
     std::vector<sayr::Completion> history;
 
     bool operator==(const Sayr&) const = default;
 };
 
 struct Grammar {
-    std::map<Identity, std::size_t> budget;
+    std::map<sort::ProductionId, std::size_t> budget;
 
     bool operator==(const Grammar&) const = default;
 };

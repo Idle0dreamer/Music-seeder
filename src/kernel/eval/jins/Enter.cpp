@@ -6,14 +6,14 @@ std::expected<void, Violation> Evaluator::enter(
     state::Snapshot& state,
     const operation::Enter& action,
     std::size_t index) const {
-    if (!jins::complete(action.jins)) {
+    if (!jins::complete(action.jins.identity)) {
         return std::unexpected(jins::reject(
             index,
             "Enter",
             "jins.identity",
             "jins identity must be complete"));
     }
-    if (!profile_.allows("allow.enter", action.jins)) {
+    if (!profile_.allows("allow.enter", action.jins.identity)) {
         return std::unexpected(jins::reject(
             index,
             "Enter",
@@ -27,7 +27,7 @@ std::expected<void, Violation> Evaluator::enter(
             "gesture.active",
             "active gesture must end before entering another jins"));
     }
-    const auto found = descriptor(action.jins, index, "Enter");
+    const auto found = descriptor(action.jins.identity, index, "Enter");
     if (!found) {
         return std::unexpected(found.error());
     }

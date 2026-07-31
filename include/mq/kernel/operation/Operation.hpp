@@ -13,67 +13,77 @@
 
 #include <optional>
 #include <variant>
+#include "mq/kernel/sort/BaggageId.hpp"
+#include "mq/kernel/sort/CellId.hpp"
+#include "mq/kernel/sort/CenterId.hpp"
+#include "mq/kernel/sort/EventId.hpp"
+#include "mq/kernel/sort/FamilyId.hpp"
+#include "mq/kernel/sort/JinsId.hpp"
+#include "mq/kernel/sort/PathId.hpp"
+#include "mq/kernel/sort/PhraseId.hpp"
+#include "mq/kernel/sort/RegionId.hpp"
+#include "mq/kernel/sort/RoleId.hpp"
 
 namespace mq::kernel::operation {
 
 struct Anchor {
-    Identity center;
+    sort::CenterId center;
 };
 
 struct Enter {
-    Identity jins;
+    sort::JinsId jins;
 };
 
 struct Emphasize {
-    Identity role;
+    sort::RoleId role;
     Rational amount{1};
 };
 
 struct Dwell {
-    Identity role;
+    sort::RoleId role;
     Rational amount{1};
 };
 
 struct Emit {
-    Identity cell;
+    sort::CellId cell;
 };
 
 struct Cadence {
-    Identity family;
+    sort::FamilyId family;
     Rational evidence{1};
     Rational strength{1};
 };
 
 struct Tonicize {
-    Identity jins;
+    sort::JinsId jins;
     tonicization::Level level{tonicization::Level::Color};
 };
 
 struct Modulate {
-    Identity path;
-    Identity center;
+    sort::PathId path;
+    sort::CenterId center;
     tonicization::Level level{tonicization::Level::Internal};
 };
 
 struct Return {
-    Identity center;
+    sort::CenterId center;
 };
 
 struct Place {
-    Identity event;
-    Identity role;
+    sort::EventId event;
+    sort::RoleId role;
     motion::Direction direction{motion::Direction::Start};
-    Identity region;
-    std::optional<Identity> baggage;
+    sort::RegionId region;
+    std::optional<sort::BaggageId> baggage;
 };
 
 struct Begin {
-    Identity phrase;
+    sort::PhraseId phrase;
     phrase::Function function;
 };
 
 struct End {
-    Identity phrase;
+    sort::PhraseId phrase;
     phrase::Boundary boundary{phrase::Boundary::Open};
 };
 
