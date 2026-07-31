@@ -1,11 +1,11 @@
 #pragma once
 
-#include "mq/kernel/Identity.hpp"
+#include "mq/kernel/sort/ObligationId.hpp"
 
 namespace mq::kernel::operation::sayr {
 
 struct Fulfill {
-    Identity obligation;
+    sort::ObligationId obligation;
 };
 
 } // namespace mq::kernel::operation::sayr

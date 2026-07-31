@@ -19,7 +19,7 @@ Result prove(
     const mq::kernel::sayr::need::Jins& need,
     const state::Snapshot& state,
     std::size_t index) {
-    if (state.jins.active != need.identity) {
+    if (!state.jins.active || state.jins.active->identity != need.identity) {
         return missing(source, index);
     }
     return Proofs{mq::kernel::sayr::proof::Jins{need.identity}};
@@ -31,7 +31,7 @@ Result prove(
     const state::Snapshot& state,
     std::size_t index) {
     if (state.center.stack.empty() ||
-        state.center.stack.back() != need.identity) {
+        state.center.stack.back().identity != need.identity) {
         return missing(source, index);
     }
     return Proofs{mq::kernel::sayr::proof::Center{need.identity}};
@@ -42,7 +42,7 @@ Result prove(
     const mq::kernel::sayr::need::Path& need,
     const state::Snapshot& state,
     std::size_t index) {
-    if (!state.path.completed.contains(need.identity)) {
+    if (!state.path.completed.contains(sort::PathId{need.identity})) {
         return missing(source, index);
     }
     return Proofs{mq::kernel::sayr::proof::Path{need.identity}};

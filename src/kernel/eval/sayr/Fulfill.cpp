@@ -19,7 +19,7 @@ std::expected<void, Violation> Evaluator::fulfill(
             "sayr completion set and history disagree"));
     }
     const auto* obligation =
-        context_.sayr.plan->find(action.obligation);
+        context_.sayr.plan->find(action.obligation.identity);
     if (obligation == nullptr) {
         return std::unexpected(sayr::reject(
             index,
@@ -27,14 +27,14 @@ std::expected<void, Violation> Evaluator::fulfill(
             "sayr obligation is absent: " +
                 action.obligation.str()));
     }
-    if (state.sayr.completed.contains(action.obligation)) {
+    if (state.sayr.completed.contains(sort::ObligationId{action.obligation.identity})) {
         return std::unexpected(sayr::reject(
             index,
             "sayr.repeat",
             "sayr obligation is already complete"));
     }
     for (const auto& predecessor : obligation->after) {
-        if (!state.sayr.completed.contains(predecessor)) {
+        if (!state.sayr.completed.contains(sort::ObligationId{predecessor})) {
             return std::unexpected(sayr::reject(
                 index,
                 "sayr.order",
@@ -53,7 +53,7 @@ std::expected<void, Violation> Evaluator::fulfill(
             return std::unexpected(proof.error());
         }
         for (auto& item : *proof) {
-            completion.proofs.push_back({
+            completion.proofs.push_back(mq::kernel::sayr::Proof{
                 need.identity,
                 std::move(item),
             });

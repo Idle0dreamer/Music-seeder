@@ -21,10 +21,10 @@ void test::event::laws() {
         fixture.profile.shared,
         fixture.catalog);
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
 
     const operation::Place first{
-        id("first"),
+        mq::kernel::sort::EventId{id("first")},
         fixture.role.root,
         motion::Direction::Start,
         fixture.region.root,
@@ -47,7 +47,7 @@ void test::event::laws() {
         "first structural event was not recorded exactly once");
 
     const operation::Place second{
-        id("second"),
+        mq::kernel::sort::EventId{id("second")},
         fixture.role.ghammaz,
         motion::Direction::Rise,
         fixture.region.upper,
@@ -58,13 +58,13 @@ void test::event::laws() {
     require(
         continued &&
             continued->melody.history.size() == 2 &&
-            continued->melody.history.back().identity == second.event &&
+            continued->melody.history.back().identity == second.event.identity &&
             continued->trace.events.back().operation == "Place",
         "continuing structural event lost identity, history, or trace");
 
     const std::vector<operation::Any> wrongFirst{
         operation::Place{
-            id("wrong-first"),
+            mq::kernel::sort::EventId{id("wrong-first")},
             fixture.role.root,
             motion::Direction::Rise,
             fixture.region.root,
@@ -79,10 +79,10 @@ void test::event::laws() {
 
     const std::vector<operation::Any> restarted{
         operation::Place{
-            id("restart"),
-            fixture.role.root,
+            mq::kernel::sort::EventId{id("restart")},
+            mq::kernel::sort::RoleId{fixture.role.root},
             motion::Direction::Start,
-            fixture.region.root,
+            mq::kernel::sort::RegionId{fixture.region.root},
             std::nullopt,
         },
     };
@@ -94,12 +94,12 @@ void test::event::laws() {
 
     const std::vector<operation::Any> repeated{
         operation::Place{
-            first.event.identity,
-            fixture.role.root,
-            motion::Direction::Same,
-            fixture.region.root,
-            std::nullopt,
-        },
+                    mq::kernel::sort::EventId{first.event.identity},
+                    mq::kernel::sort::RoleId{fixture.role.root},
+                    motion::Direction::Same,
+                    mq::kernel::sort::RegionId{fixture.region.root},
+                    std::nullopt,
+                },
     };
     const auto duplicate = evaluator.run(*started, repeated);
     require(
@@ -108,10 +108,10 @@ void test::event::laws() {
 
     const std::vector<operation::Any> forbidden{
         operation::Place{
-            id("forbidden"),
-            id("unknown-role"),
+            mq::kernel::sort::EventId{id("forbidden")},
+            mq::kernel::sort::RoleId{id("unknown-role")},
             motion::Direction::Start,
-            fixture.region.root,
+            mq::kernel::sort::RegionId{fixture.region.root},
             std::nullopt,
         },
     };
@@ -122,10 +122,10 @@ void test::event::laws() {
 
     const std::vector<operation::Any> outside{
         operation::Place{
-            id("outside-register"),
-            fixture.role.root,
+            mq::kernel::sort::EventId{id("outside-register")},
+            mq::kernel::sort::RoleId{fixture.role.root},
             motion::Direction::Start,
-            id("unknown-register"),
+            mq::kernel::sort::RegionId{id("unknown-register")},
             std::nullopt,
         },
     };

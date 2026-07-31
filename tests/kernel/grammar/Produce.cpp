@@ -29,10 +29,10 @@ void test::grammar::produce() {
     
     const auto anchor = kg::Term::atom(
         id("anchor"),
-        operation::Anchor{fixture.center.root});
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}});
     const auto emphasis = kg::Term::atom(
         id("emphasis"),
-        operation::Emphasize{fixture.role.root, Rational(1)});
+        operation::Emphasize{mq::kernel::sort::RoleId{fixture.role.root}, Rational(1)});
     const auto rec = kg::Term::produce(id("rec"), p_id);
     
     const auto body = kg::Term::alt(
@@ -52,7 +52,7 @@ void test::grammar::produce() {
         catalog);
 
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
     // Set budget to 2 for this production
     initial.grammar.budget[p_id] = 2;
     

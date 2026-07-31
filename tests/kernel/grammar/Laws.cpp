@@ -24,13 +24,13 @@ void test::grammar::laws() {
 
     const auto anchor = kg::Term::atom(
         id("anchor"),
-        operation::Anchor{fixture.center.root});
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}});
     const auto enter = kg::Term::atom(
         id("enter"),
-        operation::Enter{fixture.jins.root});
+        operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}});
     const auto emphasis = kg::Term::atom(
         id("emphasis"),
-        operation::Emphasize{fixture.role.root, Rational(1)});
+        operation::Emphasize{mq::kernel::sort::RoleId{fixture.role.root}, Rational(1)});
     const auto identity = kg::Term::id(id("id"));
 
     const auto left = evaluator.derive(
@@ -76,7 +76,7 @@ void test::grammar::laws() {
         emphasis);
     require(repeated.has_value(), repeated.error_or("Repeat rejected bounds"));
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
     const auto repetitions = evaluator.derive(*repeated, initial);
     require(
         repetitions.outcomes.size() == 3,

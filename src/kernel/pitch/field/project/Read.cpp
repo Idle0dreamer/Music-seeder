@@ -90,7 +90,7 @@ std::expected<std::optional<Fact>, Error> read(
                 return std::optional<Fact>{{reader.key, *value}};
             } else if constexpr (std::same_as<Type, path::Read>) {
                 const bool completed =
-                    state.path.completed.contains(reader.path);
+                    state.path.completed.contains(sort::PathId{reader.path});
                 return std::optional<Fact>{{
                     reader.key,
                     completed ? reader.complete : reader.incomplete,

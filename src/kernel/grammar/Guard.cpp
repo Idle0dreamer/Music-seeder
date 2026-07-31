@@ -15,9 +15,9 @@ bool holds(
                 return bindings.contains(value.binding);
             } else if constexpr (std::is_same_v<T, Center>) {
                 return !state.center.stack.empty() &&
-                       state.center.stack.back() == value.identity;
+                       state.center.stack.back().identity == value.identity;
             } else if constexpr (std::is_same_v<T, Jins>) {
-                return state.jins.active == value.identity;
+                return state.jins.active && state.jins.active->identity == value.identity;
             } else {
                 const auto found = state.evidence.amount.find(value.kind);
                 const auto actual = found == state.evidence.amount.end()

@@ -35,7 +35,7 @@ std::expected<void, Violation> Evaluator::begin(
     }
     const auto repeated = std::ranges::find(
         state.phrase.completed,
-        action.phrase,
+        action.phrase.identity,
         &mq::kernel::phrase::Span::identity);
     if (repeated != state.phrase.completed.end()) {
         return std::unexpected(phrase::reject(

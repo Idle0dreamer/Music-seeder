@@ -50,40 +50,34 @@ void test::path() {
         "gated path rule failed");
 
     const std::vector<operation::Any> evidence{
-        operation::Anchor{fixture.center.root},
-        operation::Enter{fixture.jins.root},
-        operation::Emphasize{fixture.role.ghammaz, Rational(2)},
-        operation::Dwell{fixture.role.ghammaz, Rational(2)},
-        operation::Emit{fixture.cell},
-        operation::Begin{
-            Identity{"test.path.phrase", "evidence", "1"},
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}},
+        operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
+        operation::Emphasize{mq::kernel::sort::RoleId{fixture.role.ghammaz}, Rational(2)},
+        operation::Dwell{mq::kernel::sort::RoleId{fixture.role.ghammaz}, Rational(2)},
+        operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+        operation::Begin{mq::kernel::sort::PhraseId{Identity{"test.path.phrase", "evidence", "1"}},
             mq::kernel::phrase::Function{fixture.phrase.function},
         },
         operation::Place{
-            Identity{"test.path.event", "cadence", "1"},
-            fixture.role.root,
-            motion::Direction::Start,
-            fixture.region.root,
-            std::nullopt,
-        },
-        operation::Cadence{
-            fixture.cadence,
+                    mq::kernel::sort::EventId{Identity{"test.path.event", "cadence", "1"}},
+                    mq::kernel::sort::RoleId{fixture.role.root},
+                    motion::Direction::Start,
+                    mq::kernel::sort::RegionId{fixture.region.root},
+                    std::nullopt,
+                },
+        operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
             Rational(1),
             Rational(1),
         },
-        operation::End{
-            Identity{"test.path.phrase", "evidence", "1"},
+        operation::End{mq::kernel::sort::PhraseId{Identity{"test.path.phrase", "evidence", "1"}},
             mq::kernel::phrase::Boundary::Closed,
         },
-        operation::Tonicize{
-            fixture.jins.branch,
+        operation::Tonicize{mq::kernel::sort::JinsId{fixture.jins.branch},
             tonicization::Level::Internal,
         },
     };
     auto premature = evidence;
-    premature.push_back(operation::Modulate{
-        gated,
-        fixture.center.branch,
+    premature.push_back(operation::Modulate{mq::kernel::sort::PathId{gated}, mq::kernel::sort::CenterId{fixture.center.branch}, 
         tonicization::Level::Internal,
     });
     const eval::Evaluator evaluator(
@@ -96,15 +90,11 @@ void test::path() {
         "path prerequisite was not enforced");
 
     auto complete = evidence;
-    complete.push_back(operation::Modulate{
-        first,
-        fixture.center.branch,
+    complete.push_back(operation::Modulate{mq::kernel::sort::PathId{first}, mq::kernel::sort::CenterId{fixture.center.branch}, 
         tonicization::Level::Internal,
     });
-    complete.push_back(operation::Return{fixture.center.root});
-    complete.push_back(operation::Modulate{
-        gated,
-        fixture.center.branch,
+    complete.push_back(operation::Return{mq::kernel::sort::CenterId{fixture.center.root}});
+    complete.push_back(operation::Modulate{mq::kernel::sort::PathId{gated}, mq::kernel::sort::CenterId{fixture.center.branch}, 
         tonicization::Level::Internal,
     });
     const auto accepted = evaluator.run({}, complete);

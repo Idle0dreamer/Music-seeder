@@ -19,6 +19,7 @@
 #include "mq/kernel/sort/CenterId.hpp"
 #include "mq/kernel/sort/JinsId.hpp"
 #include "mq/kernel/sort/PathId.hpp"
+#include "mq/kernel/sort/ObligationId.hpp"
 #include "mq/kernel/sort/ProductionId.hpp"
 
 namespace mq::kernel::state {
@@ -87,7 +88,7 @@ struct Gesture {
 };
 
 struct Sayr {
-    std::set<sort::PathId> completed;
+    std::set<sort::ObligationId> completed;
     std::vector<sayr::Completion> history;
 
     bool operator==(const Sayr&) const = default;

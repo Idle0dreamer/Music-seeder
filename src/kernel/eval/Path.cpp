@@ -24,7 +24,7 @@ std::expected<void, Violation> Evaluator::check(
         });
     }
     if (state.center.stack.empty() ||
-        state.center.stack.back() != rule->source) {
+        state.center.stack.back().identity != rule->source) {
         return std::unexpected(Violation{
             index,
             "Modulate",
@@ -32,7 +32,7 @@ std::expected<void, Violation> Evaluator::check(
             "active center does not match path source",
         });
     }
-    if (modulation.center != rule->target) {
+    if (modulation.center.identity != rule->target) {
         return std::unexpected(Violation{
             index,
             "Modulate",
@@ -49,7 +49,7 @@ std::expected<void, Violation> Evaluator::check(
         });
     }
     for (const auto& required : rule->prior) {
-        if (!state.path.completed.contains(required)) {
+        if (!state.path.completed.contains(sort::PathId{required})) {
             return std::unexpected(Violation{
                 index,
                 "Modulate",

@@ -16,25 +16,24 @@ kg::Term body(const mq::kernel::fixture::Set& fixture) {
     const auto phrase = id("phrase");
     const auto begin = kg::Term::atom(
         id("begin"),
-        operation::Begin{
-            phrase,
+        operation::Begin{mq::kernel::sort::PhraseId{phrase},
             mq::kernel::phrase::Function{fixture.phrase.function},
         });
     const auto place = kg::Term::atom(
         id("place"),
         operation::Place{
-            id("event"),
-            fixture.role.root,
+            mq::kernel::sort::EventId{id("event")},
+            mq::kernel::sort::RoleId{fixture.role.root},
             motion::Direction::Start,
-            fixture.region.root,
+            mq::kernel::sort::RegionId{fixture.region.root},
             std::nullopt,
         });
     const auto cadence = kg::Term::atom(
         id("cadence"),
-        operation::Cadence{fixture.cadence, Rational(1), Rational(1)});
+        operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence}, Rational(1), Rational(1)});
     const auto end = kg::Term::atom(
         id("end"),
-        operation::End{phrase, mq::kernel::phrase::Boundary::Closed});
+        operation::End{mq::kernel::sort::PhraseId{phrase}, mq::kernel::phrase::Boundary::Closed});
     return kg::Term::seq(
         id("head"),
         begin,
@@ -57,7 +56,7 @@ void test::phrase::scope() {
         fixture.catalog);
     const auto phraseBody = body(fixture);
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
 
     const auto hidden = kg::Term::scope(
         id("hidden"),

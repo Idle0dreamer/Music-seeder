@@ -18,16 +18,16 @@ void test::request::run() {
         fixture.profile.shared,
         fixture.catalog);
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
 
     const std::vector<operation::Any> firstProgram{
         operation::Place{
-            value.first,
-            fixture.role.root,
-            motion::Direction::Start,
-            fixture.region.root,
-            std::nullopt,
-        },
+                    mq::kernel::sort::EventId{value.first},
+                    mq::kernel::sort::RoleId{fixture.role.root},
+                    motion::Direction::Start,
+                    mq::kernel::sort::RegionId{fixture.region.root},
+                    std::nullopt,
+                },
     };
     const auto firstState = evaluator.run(initial, firstProgram);
     require(
@@ -46,12 +46,12 @@ void test::request::run() {
 
     const std::vector<operation::Any> secondProgram{
         operation::Place{
-            value.second,
-            fixture.role.ghammaz,
-            motion::Direction::Rise,
-            fixture.region.upper,
-            std::nullopt,
-        },
+                    mq::kernel::sort::EventId{value.second},
+                    mq::kernel::sort::RoleId{fixture.role.ghammaz},
+                    motion::Direction::Rise,
+                    mq::kernel::sort::RegionId{fixture.region.upper},
+                    std::nullopt,
+                },
     };
     const auto secondState = evaluator.run(*firstState, secondProgram);
     require(

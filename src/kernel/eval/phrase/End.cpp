@@ -23,7 +23,7 @@ std::expected<void, Violation> Evaluator::end(
             "no phrase is active"));
     }
     const auto& frame = *state.phrase.active;
-    if (frame.identity != action.phrase) {
+    if (frame.identity != action.phrase.identity) {
         return std::unexpected(phrase::reject(
             index,
             "End",

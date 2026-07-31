@@ -60,7 +60,7 @@ std::expected<std::optional<performance::Gesture>, Violation> match(
     if (!step.roles.contains(event.role.identity) ||
         !step.regions.contains(event.region.identity) ||
         !step.directions.contains(event.direction) ||
-        (step.baggage && event.baggage != step.baggage)) {
+        (step.baggage && (!event.baggage || event.baggage->identity != *step.baggage))) {
         return std::unexpected(reject(
             index,
             "gesture.step",

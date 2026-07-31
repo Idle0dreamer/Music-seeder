@@ -31,7 +31,7 @@ std::expected<void, Violation> Evaluator::enter(
     if (!found) {
         return std::unexpected(found.error());
     }
-    state.jins.active = (*found)->identity;
+    state.jins.active = sort::JinsId{(*found)->identity};
     return {};
 }
 

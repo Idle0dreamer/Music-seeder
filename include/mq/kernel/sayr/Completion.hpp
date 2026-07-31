@@ -1,13 +1,14 @@
 #pragma once
 
 #include "mq/kernel/sayr/Proof.hpp"
+#include "mq/kernel/sort/ObligationId.hpp"
 
 #include <vector>
 
 namespace mq::kernel::sayr {
 
 struct Completion {
-    Identity obligation;
+    sort::ObligationId obligation;
     std::vector<Proof> proofs;
 
     bool operator==(const Completion&) const = default;

@@ -13,10 +13,9 @@ std::vector<generate::Stage> travel(
         {
             id(name + ".stage.1"),
             {
-                operation::Anchor{fixture.center.root},
-                operation::Enter{fixture.jins.root},
-                operation::Begin{
-                    phrase,
+                operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}},
+                operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
+                operation::Begin{mq::kernel::sort::PhraseId{phrase},
                     mq::kernel::phrase::Function{
                         fixture.phrase.function,
                     },
@@ -26,10 +25,10 @@ std::vector<generate::Stage> travel(
                     fixture.gesture.ascent,
                 },
                 operation::Place{
-                    id(name + ".event.1"),
-                    fixture.role.root,
+                    mq::kernel::sort::EventId{id(name + ".event.1")},
+                    mq::kernel::sort::RoleId{fixture.role.root},
                     motion::Direction::Start,
-                    fixture.region.root,
+                    mq::kernel::sort::RegionId{fixture.region.root},
                     std::nullopt,
                 },
             },
@@ -38,71 +37,55 @@ std::vector<generate::Stage> travel(
             id(name + ".stage.2"),
             {
                 operation::Place{
-                    id(name + ".event.2"),
-                    fixture.role.ghammaz,
+                    mq::kernel::sort::EventId{id(name + ".event.2")},
+                    mq::kernel::sort::RoleId{fixture.role.ghammaz},
                     motion::Direction::Rise,
-                    fixture.region.upper,
+                    mq::kernel::sort::RegionId{fixture.region.upper},
                     std::nullopt,
                 },
-                operation::Emphasize{
-                    fixture.role.ghammaz,
+                operation::Emphasize{mq::kernel::sort::RoleId{fixture.role.ghammaz},
                     Rational(3),
                 },
-                operation::Dwell{
-                    fixture.role.ghammaz,
+                operation::Dwell{mq::kernel::sort::RoleId{fixture.role.ghammaz},
                     Rational(2),
                 },
-                operation::Emit{fixture.cell},
+                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
             },
         },
         {
             id(name + ".stage.3"),
             {
                 operation::Place{
-                    id(name + ".event.3"),
-                    fixture.role.baggage,
+                    mq::kernel::sort::EventId{id(name + ".event.3")},
+                    mq::kernel::sort::RoleId{fixture.role.baggage},
                     motion::Direction::Rise,
-                    fixture.region.upper,
-                    fixture.baggage,
+                    mq::kernel::sort::RegionId{fixture.region.upper},
+                    mq::kernel::sort::BaggageId{fixture.baggage},
                 },
                 operation::gesture::End{ascent},
-                operation::Cadence{
-                    fixture.cadence,
+                operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
                     Rational(1),
                     Rational(1),
                 },
-                operation::End{
-                    phrase,
+                operation::End{mq::kernel::sort::PhraseId{phrase},
                     mq::kernel::phrase::Boundary::Closed,
                 },
-                operation::sayr::Fulfill{
-                    fixture.sayr.obligation.establish,
-                },
-                operation::sayr::Fulfill{
-                    fixture.sayr.obligation.expand,
-                },
-                operation::sayr::Fulfill{
-                    fixture.sayr.obligation.climax,
-                },
-                operation::Tonicize{
-                    fixture.jins.branch,
+                operation::sayr::Fulfill{mq::kernel::sort::ObligationId{fixture.sayr.obligation.establish}},
+                operation::sayr::Fulfill{mq::kernel::sort::ObligationId{fixture.sayr.obligation.expand}},
+                operation::sayr::Fulfill{mq::kernel::sort::ObligationId{fixture.sayr.obligation.climax}},
+                operation::Tonicize{mq::kernel::sort::JinsId{fixture.jins.branch},
                     tonicization::Level::Internal,
                 },
-                operation::Modulate{
-                    fixture.path.direct,
-                    fixture.center.branch,
+                operation::Modulate{mq::kernel::sort::PathId{fixture.path.direct}, mq::kernel::sort::CenterId{fixture.center.branch}, 
                     tonicization::Level::Internal,
                 },
-                operation::sayr::Fulfill{
-                    fixture.sayr.obligation.travel,
-                },
+                operation::sayr::Fulfill{mq::kernel::sort::ObligationId{fixture.sayr.obligation.travel}},
             },
         },
         {
             id(name + ".stage.4"),
             {
-                operation::Begin{
-                    returning,
+                operation::Begin{mq::kernel::sort::PhraseId{returning},
                     mq::kernel::phrase::Function{
                         fixture.phrase.function,
                     },
@@ -112,10 +95,10 @@ std::vector<generate::Stage> travel(
                     fixture.gesture.descent,
                 },
                 operation::Place{
-                    id(name + ".event.4"),
-                    fixture.role.ghammaz,
+                    mq::kernel::sort::EventId{id(name + ".event.4")},
+                    mq::kernel::sort::RoleId{fixture.role.ghammaz},
                     motion::Direction::Fall,
-                    fixture.region.upper,
+                    mq::kernel::sort::RegionId{fixture.region.upper},
                     std::nullopt,
                 },
             },
@@ -124,27 +107,23 @@ std::vector<generate::Stage> travel(
             id(name + ".stage.5"),
             {
                 operation::Place{
-                    id(name + ".event.5"),
-                    fixture.role.root,
+                    mq::kernel::sort::EventId{id(name + ".event.5")},
+                    mq::kernel::sort::RoleId{fixture.role.root},
                     motion::Direction::Fall,
-                    fixture.region.root,
+                    mq::kernel::sort::RegionId{fixture.region.root},
                     std::nullopt,
                 },
                 operation::gesture::End{descent},
-                operation::Cadence{
-                    fixture.cadence,
+                operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
                     Rational(1),
                     Rational(1),
                 },
-                operation::End{
-                    returning,
+                operation::End{mq::kernel::sort::PhraseId{returning},
                     mq::kernel::phrase::Boundary::Closed,
                 },
-                operation::Return{fixture.center.root},
-                operation::Enter{fixture.jins.root},
-                operation::sayr::Fulfill{
-                    fixture.sayr.obligation.restore,
-                },
+                operation::Return{mq::kernel::sort::CenterId{fixture.center.root}},
+                operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
+                operation::sayr::Fulfill{mq::kernel::sort::ObligationId{fixture.sayr.obligation.restore}},
             },
         },
     };

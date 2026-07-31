@@ -57,7 +57,7 @@ void test::jins::catalog() {
         "catalog accepted a dangling gesture baggage reference");
 
     const std::vector<operation::Any> enter{
-        operation::Enter{fixture.jins.root},
+        operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
     };
     const auto noCatalog =
         eval::Evaluator(fixture.profile.shared).run({}, enter);

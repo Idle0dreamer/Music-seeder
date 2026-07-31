@@ -93,9 +93,9 @@ bool Plan::accepts(
     const std::vector<Completion>& history) const {
     std::set<Identity> completed;
     for (const auto& completion : history) {
-        const auto* obligation = find(completion.obligation);
+        const auto* obligation = find(completion.obligation.identity);
         if (obligation == nullptr ||
-            completed.contains(completion.obligation) ||
+            completed.contains(completion.obligation.identity) ||
             !detail::valid(*obligation, completion) ||
             !std::ranges::all_of(
                 obligation->after,
@@ -104,7 +104,7 @@ bool Plan::accepts(
                 })) {
             return false;
         }
-        completed.insert(completion.obligation);
+        completed.insert(completion.obligation.identity);
     }
     return std::ranges::any_of(
         routes_,

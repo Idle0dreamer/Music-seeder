@@ -66,7 +66,7 @@ void test::gesture::scope() {
         fixture.profile.shared,
         fixture.catalog);
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
     const auto gesture = body(fixture);
 
     const auto hidden = evaluator.derive(

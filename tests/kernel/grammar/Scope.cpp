@@ -24,13 +24,13 @@ void test::grammar::relation() {
 
     const auto anchor = kg::Term::atom(
         id("anchor"),
-        operation::Anchor{fixture.center.root});
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}});
     const auto enter = kg::Term::atom(
         id("enter"),
-        operation::Enter{fixture.jins.root});
+        operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}});
     const auto denied = kg::Term::atom(
         id("denied"),
-        operation::Anchor{fixture.center.branch});
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.branch}});
 
     const auto alternatives = kg::Term::alt(
         id("alt"),

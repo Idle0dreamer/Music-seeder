@@ -39,28 +39,25 @@ void test::phrase::projection() {
         fixture.profile.shared,
         fixture.catalog);
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
     const auto phraseId = id("phrase");
     const auto eventId = id("event");
     const std::vector<operation::Any> program{
-        operation::Begin{
-            phraseId,
+        operation::Begin{mq::kernel::sort::PhraseId{phraseId},
             mq::kernel::phrase::Function{fixture.phrase.function},
         },
         operation::Place{
-            eventId,
-            fixture.role.root,
-            motion::Direction::Start,
-            fixture.region.root,
-            std::nullopt,
-        },
-        operation::Cadence{
-            fixture.cadence,
+                    mq::kernel::sort::EventId{eventId},
+                    mq::kernel::sort::RoleId{fixture.role.root},
+                    motion::Direction::Start,
+                    mq::kernel::sort::RegionId{fixture.region.root},
+                    std::nullopt,
+                },
+        operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
             Rational(1),
             Rational(3, 4),
         },
-        operation::End{
-            phraseId,
+        operation::End{mq::kernel::sort::PhraseId{phraseId},
             mq::kernel::phrase::Boundary::Closed,
         },
     };

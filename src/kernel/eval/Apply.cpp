@@ -87,7 +87,7 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 if (!selected) {
                     return std::unexpected(selected.error());
                 }
-                state.jins.active = (*selected)->identity;
+                state.jins.active = sort::JinsId{(*selected)->identity};
                 state.tonicization.level = value.level;
             } else if constexpr (std::is_same_v<T, operation::Modulate>) {
                 subject = value.path.str();

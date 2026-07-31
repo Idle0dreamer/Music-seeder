@@ -83,7 +83,7 @@ std::size_t minimum(
 bool valid(
     const Obligation& obligation,
     const Completion& completion) {
-    if (completion.obligation != obligation.identity) {
+    if (completion.obligation.identity != obligation.identity) {
         return false;
     }
     for (const auto& need : obligation.needs) {

@@ -22,7 +22,7 @@ void test::event::scope() {
         fixture.profile.shared,
         fixture.catalog);
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
     const auto event = kg::Term::atom(
         id("place"),
         operation::Place{

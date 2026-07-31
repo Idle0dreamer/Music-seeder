@@ -91,7 +91,7 @@ std::expected<Outcome, Diagnostic> evaluate(
         });
     }
     if (context.sayr.plan != nullptr) {
-        std::set<sort::PathId> history;
+        std::set<sort::ObligationId> history;
         for (const auto& completion : state.sayr.history) {
             history.insert(completion.obligation);
         }

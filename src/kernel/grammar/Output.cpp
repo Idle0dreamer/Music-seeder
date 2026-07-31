@@ -98,7 +98,7 @@ Batch Runner::produce(
         };
     }
 
-    auto budget_it = frame.outcome.state.grammar.budget.find(form.production);
+    auto budget_it = frame.outcome.state.grammar.budget.find(sort::ProductionId{form.production});
     if (budget_it == frame.outcome.state.grammar.budget.end() || budget_it->second == 0) {
         return Batch{
             {},
@@ -110,7 +110,7 @@ Batch Runner::produce(
     }
 
     // Deduct one from the budget
-    frame.outcome.state.grammar.budget[form.production] -= 1;
+    frame.outcome.state.grammar.budget[sort::ProductionId{form.production}] -= 1;
 
     // Evaluate the production term
     return run(*production_term, std::move(frame));

@@ -33,13 +33,13 @@ void test::project::scope() {
         {id("scope"), kg::scope::Part::None},
         kg::Term::atom(
             id("term.enter"),
-            operation::Enter{fixture.jins.branch}));
+            operation::Enter{mq::kernel::sort::JinsId{fixture.jins.branch}}));
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
     const auto grammar = evaluator.derive(local, initial);
     require(
         grammar.outcomes.size() == 1 &&
-            grammar.outcomes.front().state.jins.active ==
+            grammar.outcomes.front().state.jins.active->identity ==
                 fixture.jins.root &&
             !grammar.outcomes.front().state.trace.events.empty(),
         "grammar fixture did not restore scoped jins state");

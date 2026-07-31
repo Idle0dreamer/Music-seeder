@@ -21,7 +21,7 @@ void test::phrase::laws() {
         fixture.profile.shared,
         fixture.catalog);
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
     const auto phraseId = id("span");
     const auto eventId = id("event");
     const operation::Begin begin{

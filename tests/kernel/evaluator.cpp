@@ -36,10 +36,9 @@ void test::evaluator() {
     };
 
     const std::vector<operation::Any> premature{
-        operation::Anchor{fixture.center.root},
-        operation::Enter{fixture.jins.root},
-        operation::Tonicize{
-            fixture.jins.branch,
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}},
+        operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
+        operation::Tonicize{mq::kernel::sort::JinsId{fixture.jins.branch},
             tonicization::Level::Internal,
         },
     };
@@ -50,47 +49,41 @@ void test::evaluator() {
         "tonicization failure did not identify missing evidence");
 
     const std::vector<operation::Any> established{
-        operation::Anchor{fixture.center.root},
-        operation::Enter{fixture.jins.root},
-        operation::Emphasize{fixture.role.ghammaz, Rational(2)},
-        operation::Dwell{fixture.role.ghammaz, Rational(2)},
-        operation::Emit{fixture.cell},
-        operation::Begin{
-            Identity{"test.phrase", "establish", "1"},
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}},
+        operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
+        operation::Emphasize{mq::kernel::sort::RoleId{fixture.role.ghammaz}, Rational(2)},
+        operation::Dwell{mq::kernel::sort::RoleId{fixture.role.ghammaz}, Rational(2)},
+        operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+        operation::Begin{mq::kernel::sort::PhraseId{Identity{"test.phrase", "establish", "1"}},
             mq::kernel::phrase::Function{fixture.phrase.function},
         },
         operation::Place{
-            Identity{"test.event", "cadence", "1"},
-            fixture.role.root,
-            motion::Direction::Start,
-            fixture.region.root,
-            std::nullopt,
-        },
-        operation::Cadence{
-            fixture.cadence,
+                    mq::kernel::sort::EventId{Identity{"test.event", "cadence", "1"}},
+                    mq::kernel::sort::RoleId{fixture.role.root},
+                    motion::Direction::Start,
+                    mq::kernel::sort::RegionId{fixture.region.root},
+                    std::nullopt,
+                },
+        operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
             Rational(1),
             Rational(1),
         },
-        operation::End{
-            Identity{"test.phrase", "establish", "1"},
+        operation::End{mq::kernel::sort::PhraseId{Identity{"test.phrase", "establish", "1"}},
             mq::kernel::phrase::Boundary::Closed,
         },
-        operation::Tonicize{
-            fixture.jins.branch,
+        operation::Tonicize{mq::kernel::sort::JinsId{fixture.jins.branch},
             tonicization::Level::Internal,
         },
-        operation::Modulate{
-            fixture.path.direct,
-            fixture.center.branch,
+        operation::Modulate{mq::kernel::sort::PathId{fixture.path.direct}, mq::kernel::sort::CenterId{fixture.center.branch}, 
             tonicization::Level::Internal,
         },
-        operation::Return{fixture.center.root},
+        operation::Return{mq::kernel::sort::CenterId{fixture.center.root}},
     };
     const auto accepted = evaluator.shared.run({}, established);
     require(accepted.has_value(), "legal neutral program was rejected");
     require(
         accepted->center.stack.size() == 1 &&
-            accepted->center.stack.back() == fixture.center.root,
+            accepted->center.stack.back().identity == fixture.center.root,
         "return did not restore the established center");
 
     const auto a = evaluator.regional.a.run({}, established);

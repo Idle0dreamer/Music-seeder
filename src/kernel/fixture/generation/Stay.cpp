@@ -9,34 +9,27 @@ generate::Stage stay(
     return {
         id(name + ".stage"),
         {
-            operation::Anchor{fixture.center.root},
-            operation::Enter{fixture.jins.root},
-            operation::Begin{
-                phrase,
+            operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}},
+            operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
+            operation::Begin{mq::kernel::sort::PhraseId{phrase},
                 mq::kernel::phrase::Function{fixture.phrase.function},
             },
             operation::Place{
-                id(name + ".event"),
-                fixture.role.root,
-                motion::Direction::Start,
-                fixture.region.root,
-                std::nullopt,
-            },
-            operation::Cadence{
-                fixture.cadence,
+                    mq::kernel::sort::EventId{id(name + ".event")},
+                    mq::kernel::sort::RoleId{fixture.role.root},
+                    motion::Direction::Start,
+                    mq::kernel::sort::RegionId{fixture.region.root},
+                    std::nullopt,
+                },
+            operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
                 Rational(1),
                 Rational(1),
             },
-            operation::End{
-                phrase,
+            operation::End{mq::kernel::sort::PhraseId{phrase},
                 mq::kernel::phrase::Boundary::Closed,
             },
-            operation::sayr::Fulfill{
-                fixture.sayr.obligation.establish,
-            },
-            operation::sayr::Fulfill{
-                fixture.sayr.obligation.settle,
-            },
+            operation::sayr::Fulfill{mq::kernel::sort::ObligationId{fixture.sayr.obligation.establish}},
+            operation::sayr::Fulfill{mq::kernel::sort::ObligationId{fixture.sayr.obligation.settle}},
         },
     };
 }

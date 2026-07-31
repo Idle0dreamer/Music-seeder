@@ -23,28 +23,28 @@ void test::gesture::laws() {
         fixture.profile.shared,
         fixture.catalog);
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
 
     const auto occurrence = id("occurrence");
     const operation::Place root{
-        id("root"),
-        fixture.role.root,
+        mq::kernel::sort::EventId{id("root")},
+        mq::kernel::sort::RoleId{fixture.role.root},
         motion::Direction::Start,
-        fixture.region.root,
+        mq::kernel::sort::RegionId{fixture.region.root},
         std::nullopt,
     };
     const operation::Place ghammaz{
-        id("ghammaz"),
-        fixture.role.ghammaz,
+        mq::kernel::sort::EventId{id("ghammaz")},
+        mq::kernel::sort::RoleId{fixture.role.ghammaz},
         motion::Direction::Rise,
-        fixture.region.upper,
+        mq::kernel::sort::RegionId{fixture.region.upper},
         std::nullopt,
     };
     const operation::Place baggage{
-        id("baggage"),
-        fixture.role.baggage,
+        mq::kernel::sort::EventId{id("baggage")},
+        mq::kernel::sort::RoleId{fixture.role.baggage},
         motion::Direction::Rise,
-        fixture.region.upper,
+        mq::kernel::sort::RegionId{fixture.region.upper},
         fixture.baggage,
     };
     const std::vector<operation::Any> open{
@@ -70,7 +70,7 @@ void test::gesture::laws() {
         "gesture ended before its ordered steps were complete");
 
     auto wrong = ghammaz;
-    wrong.region = fixture.region.root;
+    wrong.region = mq::kernel::sort::RegionId{fixture.region.root};
     const auto mismatch = evaluator.run(
         *first,
         std::vector<operation::Any>{wrong});
@@ -137,26 +137,26 @@ void test::gesture::laws() {
             fixture.gesture.ascent,
         },
         operation::Place{
-            id("narrowed.root"),
-            fixture.role.root,
-            motion::Direction::Start,
-            fixture.region.root,
-            std::nullopt,
-        },
+        mq::kernel::sort::EventId{id("narrowed.root")},
+        mq::kernel::sort::RoleId{fixture.role.root},
+        motion::Direction::Start,
+        mq::kernel::sort::RegionId{fixture.region.root},
+        std::nullopt,
+    },
         operation::Place{
-            id("narrowed.ghammaz"),
-            fixture.role.ghammaz,
-            motion::Direction::Rise,
-            fixture.region.upper,
-            std::nullopt,
-        },
+        mq::kernel::sort::EventId{id("narrowed.ghammaz")},
+        mq::kernel::sort::RoleId{fixture.role.ghammaz},
+        motion::Direction::Rise,
+        mq::kernel::sort::RegionId{fixture.region.upper},
+        std::nullopt,
+    },
         operation::Place{
-            id("narrowed.baggage"),
-            fixture.role.baggage,
-            motion::Direction::Rise,
-            fixture.region.upper,
-            fixture.baggage,
-        },
+        mq::kernel::sort::EventId{id("narrowed.baggage")},
+        mq::kernel::sort::RoleId{fixture.role.baggage},
+        motion::Direction::Rise,
+        mq::kernel::sort::RegionId{fixture.region.upper},
+        fixture.baggage,
+    },
     };
     const auto forbidden = narrowed.run(initial, full);
     require(

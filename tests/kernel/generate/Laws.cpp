@@ -55,7 +55,7 @@ void test::generate::laws() {
             stayed->plan.targets.front().center == pitch::Expression{} &&
             stayed->state.gesture.completed.empty() &&
             stayed->state.sayr.completed.contains(
-                set.sayr.obligation.settle) &&
+                mq::kernel::sort::ObligationId{set.sayr.obligation.settle}) &&
             traveled != result->legal.end() &&
             traveled->plan.targets.size() == 5 &&
             traveled->plan.targets[0].center == pitch::Expression{} &&
@@ -76,9 +76,9 @@ void test::generate::laws() {
             traveled->state.gesture.completed.back().last ==
                 traveled->plan.targets.back().event.identity &&
             traveled->state.sayr.completed.contains(
-                set.sayr.obligation.restore) &&
-            traveled->state.center.stack.back() == set.center.root &&
-            traveled->state.jins.active == set.jins.root &&
+                mq::kernel::sort::ObligationId{set.sayr.obligation.restore}) &&
+            traveled->state.center.stack.back().identity == set.center.root &&
+            traveled->state.jins.active->identity == set.jins.root &&
             std::ranges::all_of(
                 result->legal,
                 [](const auto& outcome) {
@@ -122,10 +122,10 @@ void test::generate::laws() {
     auto malformed = value.program.stay;
     malformed.identity = id("malformed");
     malformed.stages.front().actions.push_back(operation::Place{
-        id("extra"),
-        set.role.root,
+        mq::kernel::sort::EventId{id("extra")},
+        mq::kernel::sort::RoleId{set.role.root},
         motion::Direction::Same,
-        set.region.root,
+        mq::kernel::sort::RegionId{set.region.root},
         std::nullopt,
     });
     const std::vector invalid{malformed};

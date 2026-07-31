@@ -16,7 +16,7 @@ Violation reject(
 
 bool consistent(
     const state::Sayr& state) {
-    std::set<sort::PathId> history;
+    std::set<sort::ObligationId> history;
     for (const auto& completion : state.history) {
         if (!history.insert(completion.obligation).second) {
             return false;

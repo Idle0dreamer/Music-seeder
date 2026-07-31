@@ -15,12 +15,12 @@ std::expected<mq::kernel::state::Snapshot, mq::kernel::eval::Violation> place(
     const mq::kernel::Identity& region) {
     const std::vector<mq::kernel::operation::Any> program{
         mq::kernel::operation::Place{
-            event,
-            role,
-            direction,
-            region,
-            std::nullopt,
-        },
+                    mq::kernel::sort::EventId{event},
+                    mq::kernel::sort::RoleId{role},
+                    direction,
+                    mq::kernel::sort::RegionId{region},
+                    std::nullopt,
+                },
     };
     return evaluator.run(std::move(state), program);
 }
@@ -39,7 +39,7 @@ void test::request::motion() {
         fixture.profile.shared,
         fixture.catalog);
     state::Snapshot initial;
-    initial.jins.active = fixture.jins.root;
+    initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
 
     auto firstState = place(
         evaluator,
