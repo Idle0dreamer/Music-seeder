@@ -8,7 +8,7 @@ std::expected<void, Violation> Evaluator::cadence(
     state::Snapshot& state,
     const operation::Cadence& action,
     std::size_t index) const {
-    if (!phrase::complete(action.family)) {
+    if (!phrase::complete(action.family.identity)) {
         return std::unexpected(phrase::reject(
             index,
             "Cadence",
@@ -59,7 +59,7 @@ std::expected<void, Violation> Evaluator::cadence(
     }
 
     state.phrase.active->cadences.push_back({
-        action.family,
+        action.family.identity,
         event,
         action.strength,
     });

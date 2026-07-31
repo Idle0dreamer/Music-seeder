@@ -35,9 +35,9 @@ std::expected<void, Violation> check(
     const profile::Set& profile,
     const state::Snapshot& state,
     std::size_t index) {
-    if (!complete(event.event) ||
-        !complete(event.role) ||
-        !complete(event.region)) {
+    if (!complete(event.event.identity) ||
+        !complete(event.role.identity) ||
+        !complete(event.region.identity)) {
         return std::unexpected(reject(
             index,
             "event.identity",
@@ -69,13 +69,13 @@ std::expected<void, Violation> check(
                 ? "first event must declare Start"
                 : "continuing event may not declare Start"));
     }
-    if (!descriptor.roles.contains(event.role.identity.identity)) {
+    if (!descriptor.roles.contains(event.role.identity)) {
         return std::unexpected(reject(
             index,
             "jins.role",
             "structural role is outside the active descriptor"));
     }
-    if (!descriptor.regions.contains(event.region.identity.identity)) {
+    if (!descriptor.regions.contains(event.region.identity)) {
         return std::unexpected(reject(
             index,
             "jins.register",
@@ -85,13 +85,13 @@ std::expected<void, Violation> check(
         return std::unexpected(reject(
             index,
             "allow.place",
-            "profile rejected structural role " + event.role.str()));
+            "profile rejected structural role " + event.role.identity.str()));
     }
     if (!profile.allows("allow.register", event.region.identity)) {
         return std::unexpected(reject(
             index,
             "allow.register",
-            "profile rejected register region " + event.region.str()));
+            "profile rejected register region " + event.region.identity.str()));
     }
     return {};
 }

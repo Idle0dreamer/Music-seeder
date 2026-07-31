@@ -27,7 +27,7 @@ std::shared_ptr<profile::Set> build_profile() {
         }
     );
     if (!p) {
-        return std::unexpected(p.error());
+        return nullptr;
     }
     return std::make_shared<profile::Set>(*p);
 }

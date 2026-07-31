@@ -8,7 +8,7 @@ std::expected<void, Violation> Evaluator::end(
     state::Snapshot& state,
     const operation::End& action,
     std::size_t index) const {
-    if (!phrase::complete(action.phrase)) {
+    if (!phrase::complete(action.phrase.identity)) {
         return std::unexpected(phrase::reject(
             index,
             "End",

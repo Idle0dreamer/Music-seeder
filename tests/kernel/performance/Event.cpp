@@ -36,11 +36,11 @@ void test::event::laws() {
         started &&
             started->melody.current ==
                 performance::Event{
-                    first.event,
-                    first.role,
+                    first.event.identity,
+                    first.role.identity,
                     first.direction,
-                    first.region,
-                    first.baggage,
+                    first.region.identity,
+                    first.baggage ? std::optional(first.baggage->identity) : std::nullopt,
                     std::nullopt,
                 } &&
             started->melody.history.size() == 1,
@@ -94,7 +94,7 @@ void test::event::laws() {
 
     const std::vector<operation::Any> repeated{
         operation::Place{
-            first.event,
+            first.event.identity,
             fixture.role.root,
             motion::Direction::Same,
             fixture.region.root,

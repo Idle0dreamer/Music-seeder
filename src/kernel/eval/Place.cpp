@@ -21,7 +21,7 @@ std::expected<void, Violation> Evaluator::place(
     }
     const auto repeated = std::ranges::find(
         state.melody.history,
-        event.event,
+        event.event.identity,
         &performance::Event::identity);
     if (repeated != state.melody.history.end()) {
         return std::unexpected(place::reject(
@@ -46,11 +46,11 @@ std::expected<void, Violation> Evaluator::place(
     }
 
     performance::Event placed{
-        event.event,
-        event.role,
+        event.event.identity,
+        event.role.identity,
         event.direction,
-        event.region,
-        event.baggage,
+        event.region.identity,
+        event.baggage ? std::optional(event.baggage->identity) : std::nullopt,
         *gesture,
     };
     state.melody.current = placed;
@@ -58,7 +58,7 @@ std::expected<void, Violation> Evaluator::place(
     if (event.baggage) {
         state.evidence.amount[evidence::Kind::Baggage] += Rational(1);
     }
-    if ((*active)->characteristic.contains(event.region.identity.identity)) {
+    if ((*active)->characteristic.contains(event.region.identity)) {
         state.evidence.amount[evidence::Kind::Register] += Rational(1);
     }
     return {};

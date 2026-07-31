@@ -35,14 +35,14 @@ std::expected<std::optional<Fact>, Error> read(
                     reader.place == center::Place::Root
                         ? state.center.stack.front()
                         : state.center.stack.back();
-                return std::optional<Fact>{{reader.key, value}};
+                return std::optional<Fact>{{reader.key, value.identity}};
             } else if constexpr (std::same_as<Type, jins::Read>) {
                 if (!state.jins.active) {
                     return absent(reader.key, reader.presence);
                 }
                 return std::optional<Fact>{{
                     reader.key,
-                    *state.jins.active,
+                    (*state.jins.active).identity,
                 }};
             } else if constexpr (std::same_as<Type, role::Read>) {
                 if (!state.melody.current) {

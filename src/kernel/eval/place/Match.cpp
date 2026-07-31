@@ -11,10 +11,10 @@ std::expected<void, Violation> baggage(
     if (!event.baggage) {
         return {};
     }
-    const auto found = descriptor.baggage.find(*event.baggage.identity);
+    const auto found = descriptor.baggage.find((*event.baggage).identity);
     if (found == descriptor.baggage.end() ||
-        found->second.role != event.role ||
-        !found->second.regions.contains(event.region) ||
+        found->second.role != event.role.identity ||
+        !found->second.regions.contains(event.region.identity) ||
         !found->second.directions.contains(event.direction)) {
         return std::unexpected(reject(
             index,
@@ -57,8 +57,8 @@ std::expected<std::optional<performance::Gesture>, Violation> match(
             "gesture has no remaining step for this event"));
     }
     const auto& step = found->second.steps[frame.next];
-    if (!step.roles.contains(event.role.identity.identity) ||
-        !step.regions.contains(event.region.identity.identity) ||
+    if (!step.roles.contains(event.role.identity) ||
+        !step.regions.contains(event.region.identity) ||
         !step.directions.contains(event.direction) ||
         (step.baggage && event.baggage != step.baggage)) {
         return std::unexpected(reject(

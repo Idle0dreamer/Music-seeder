@@ -10,7 +10,7 @@ std::expected<void, Violation> Evaluator::emphasize(
     if (!active) {
         return std::unexpected(active.error());
     }
-    if (!(*active)->emphasis.contains(action.role)) {
+    if (!(*active)->emphasis.contains(action.role.identity)) {
         return std::unexpected(jins::reject(
             index,
             "Emphasize",
@@ -22,7 +22,7 @@ std::expected<void, Violation> Evaluator::emphasize(
             index,
             "Emphasize",
             "allow.emphasize",
-            "profile rejected emphasis role " + action.role.str()));
+            "profile rejected emphasis role " + action.role.identity.str()));
     }
     if (action.amount <= Rational(0)) {
         return std::unexpected(jins::reject(
@@ -43,7 +43,7 @@ std::expected<void, Violation> Evaluator::dwell(
     if (!active) {
         return std::unexpected(active.error());
     }
-    if (!(*active)->roles.contains(action.role.identity.identity)) {
+    if (!(*active)->roles.contains(action.role.identity)) {
         return std::unexpected(jins::reject(
             index,
             "Dwell",
@@ -55,7 +55,7 @@ std::expected<void, Violation> Evaluator::dwell(
             index,
             "Dwell",
             "allow.dwell",
-            "profile rejected dwell role " + action.role.str()));
+            "profile rejected dwell role " + action.role.identity.str()));
     }
     if (action.amount <= Rational(0)) {
         return std::unexpected(jins::reject(

@@ -91,17 +91,13 @@ std::expected<Outcome, Diagnostic> evaluate(
         });
     }
     if (context.sayr.plan != nullptr) {
-        std::set<Identity> history;
+        std::set<sort::PathId> history;
         for (const auto& completion : state.sayr.history) {
             history.insert(completion.obligation);
         }
         const bool consistent =
             history.size() == state.sayr.history.size() &&
-            [&]() { 
-                std::set<Identity> s; 
-                for (auto& id : state.sayr.completed) s.insert(id.identity); 
-                return history == s; 
-            }()
+            history == state.sayr.completed;
         if (!consistent ||
             !context.sayr.plan->accepts(state.sayr.history)) {
             const auto rule =

@@ -8,7 +8,7 @@ std::expected<void, Violation> Evaluator::begin(
     state::Snapshot& state,
     const operation::Begin& action,
     std::size_t index) const {
-    if (!phrase::complete(action.phrase) ||
+    if (!phrase::complete(action.phrase.identity) ||
         !phrase::complete(action.function.identity)) {
         return std::unexpected(phrase::reject(
             index,
@@ -47,7 +47,7 @@ std::expected<void, Violation> Evaluator::begin(
     }
 
     state.phrase.active = mq::kernel::phrase::Frame{
-        action.phrase,
+        action.phrase.identity,
         action.function,
         state.melody.history.size(),
         {},
