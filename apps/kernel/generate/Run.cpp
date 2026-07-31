@@ -23,19 +23,14 @@ int run(std::uint64_t seed) {
         return 1;
     }
     
-    // Wire grammar catalog correctly
-    grammar::Catalog catalog;
-    const auto p_id = Identity{"fixture.generation", "recursive_prod", "1"};
-    if (!catalog.add(p_id, model->production)) {
-        std::cerr << "failed to add recursive production to catalog\n";
-        return 1;
-    }
+    // The CLI currently runs the neutral fixture's finite grammar
+    // without recursive productions.
     
     const eval::Context context{
         .jins = {&set->catalog},
         .path = {&set->path.graph},
         .sayr = {&set->sayr.plan},
-        .grammar = {&catalog},
+        .grammar = {nullptr},
     };
     const mq::kernel::generate::Engine engine(
         set->profile.shared,
@@ -43,7 +38,6 @@ int run(std::uint64_t seed) {
     
     // Specify initial snapshot and budget
     state::Snapshot initial;
-    initial.grammar.budget[p_id] = 3;
 
     const auto result = engine.run(
         seed,

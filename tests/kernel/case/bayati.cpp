@@ -18,8 +18,6 @@ using namespace mq::kernel;
 void test::bayati_case() {
     using namespace mq::kernel;
     auto scaffold = maqam::make_bayati();
-    require(scaffold.has_value(), scaffold.error_or("failed to construct bayati scaffold"));
-    
-    // As per assessment, Bayati is currently an explicit non-generative scaffold.
-    // It should not claim to be a functional generator or test non-existent stages yet.
+    require(!scaffold.has_value(), "Bayati scaffold should fail without sourced sayr route");
+    require(scaffold.error() == "missing sourced sayr route for Bayati", "expected incomplete sayr error");
 }

@@ -26,13 +26,13 @@ std::shared_ptr<profile::Set> build_profile() {
             {profile::Patch::Action::Define, "bayati.intonation.sikah", profile::Rule{Rational(-50, 100), {"bayati.md", "research"}}}, // Approximate baseline
         }
     );
-    if (p) {
-        return std::make_shared<profile::Set>(*p);
+    if (!p) {
+        return std::unexpected(p.error());
     }
-    return std::make_shared<profile::Set>(base);
+    return std::make_shared<profile::Set>(*p);
 }
 
-jins::Catalog build_ajnas() {
+std::expected<jins::Catalog, std::string> build_ajnas() {
     jins::Catalog catalog;
     // Jins Bayati on D
     jins::Descriptor bayati{
@@ -51,7 +51,7 @@ jins::Catalog build_ajnas() {
         {}, // gestures
         {}  // provenance
     };
-    auto r1 = catalog.add(bayati);
+    if (auto r = catalog.add(bayati); !r) return std::unexpected(r.error());
     
     // Jins Nahawand on G (Nawa)
     jins::Descriptor nahawand{
@@ -64,7 +64,7 @@ jins::Catalog build_ajnas() {
         {id("role.nawa")},
         {}, {}, {}, {}, {}, {}, {}
     };
-    auto r2 = catalog.add(nahawand);
+    if (auto r = catalog.add(nahawand); !r) return std::unexpected(r.error());
 
     // Jins Rast on G (Nawa)
     jins::Descriptor rast{
@@ -77,7 +77,7 @@ jins::Catalog build_ajnas() {
         {id("role.nawa")},
         {}, {}, {}, {}, {}, {}, {}
     };
-    auto r3 = catalog.add(rast);
+    if (auto r = catalog.add(rast); !r) return std::unexpected(r.error());
 
     return catalog;
 }
@@ -95,19 +95,7 @@ std::expected<path::Graph, std::string> build_graph() {
 }
 
 std::expected<sayr::Plan, std::string> build_sayr() {
-    auto plan = sayr::Plan::make(
-        id("plan.bayati"),
-        {
-            sayr::Obligation{id("obl.establish_root"), {sayr::Need{id("need.root_jins"), sayr::need::Jins{id("jins.bayati")}}}, {}},
-            sayr::Obligation{id("obl.ghammaz_travel"), {sayr::Need{id("need.nahawand"), sayr::need::Jins{id("jins.nahawand")}}}, {id("obl.establish_root")}},
-            sayr::Obligation{id("obl.return"), {sayr::Need{id("need.return_jins"), sayr::need::Jins{id("jins.bayati")}}}, {id("obl.ghammaz_travel")}},
-        },
-        {
-            sayr::Route{id("route.journey"), {id("obl.return")}}
-        } // adding valid dummy route with terminals so it isn't rejected by `Plan::make`
-    );
-    if (!plan) return std::unexpected(plan.error());
-    return *plan;
+    return std::unexpected("missing sourced sayr route for Bayati");
 }
 
 } // namespace
@@ -119,7 +107,9 @@ std::expected<Scaffold, std::string> make_bayati() {
     if (!profile) return std::unexpected("failed to build profile");
     scaffold.profile = profile;
     
-    scaffold.ajnas = build_ajnas();
+    auto ajnas = build_ajnas();
+    if (!ajnas) return std::unexpected(ajnas.error());
+    scaffold.ajnas = *ajnas;
     
     auto graph = build_graph();
     if (!graph) return std::unexpected(graph.error());
