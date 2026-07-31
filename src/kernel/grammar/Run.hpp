@@ -52,6 +52,10 @@ private:
         const Term& term,
         const Candidate& form,
         Frame frame) const;
+    [[nodiscard]] Batch produce(
+        const Term& term,
+        const Produce& form,
+        Frame frame) const;
 };
 
 void append(Batch& target, Batch source);

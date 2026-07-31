@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "mq/kernel/grammar/Catalog.hpp"
+
 namespace mq::kernel::grammar::detail {
 namespace {
 
@@ -69,6 +71,49 @@ Batch Runner::candidate(
         output.frames.push_back(std::move(item));
     }
     return output;
+}
+
+Batch Runner::produce(
+    const Term& term,
+    const Produce& form,
+    Frame frame) const {
+    if (!context_.grammar.catalog) {
+        return Batch{
+            {},
+            {failure(
+                term,
+                frame,
+                "missing grammar catalog for recursive production")},
+        };
+    }
+
+    const auto* production_term = context_.grammar.catalog->find(form.production);
+    if (!production_term) {
+        return Batch{
+            {},
+            {failure(
+                term,
+                frame,
+                "grammar production not found: " + form.production.str())},
+        };
+    }
+
+    auto budget_it = frame.outcome.state.grammar.budget.find(form.production);
+    if (budget_it == frame.outcome.state.grammar.budget.end() || budget_it->second == 0) {
+        return Batch{
+            {},
+            {failure(
+                term,
+                frame,
+                "grammar production budget exhausted: " + form.production.str())},
+        };
+    }
+
+    // Deduct one from the budget
+    frame.outcome.state.grammar.budget[form.production] -= 1;
+
+    // Evaluate the production term
+    return run(*production_term, std::move(frame));
 }
 
 } // namespace mq::kernel::grammar::detail

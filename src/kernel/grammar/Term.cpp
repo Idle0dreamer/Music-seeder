@@ -39,8 +39,33 @@ std::expected<Term, std::string> Term::alt(
     if (branches.empty()) {
         return std::unexpected("Alt requires at least one branch");
     }
-    std::set<Identity> identities;
+    
+    std::vector<Branch> flattened;
     for (const auto& branch : branches) {
+        if (std::holds_alternative<detail::Alt>(branch.body.node_->form)) {
+            const auto& inner = std::get<detail::Alt>(branch.body.node_->form);
+            for (const auto& inner_branch : inner.branches) {
+                auto cost = choice::sum(branch.cost, inner_branch.cost);
+                if (!cost) {
+                    return std::unexpected(cost.error());
+                }
+                flattened.push_back({
+                    Identity{
+                        branch.identity.domain,
+                        branch.identity.name + "." + inner_branch.identity.name,
+                        branch.identity.revision,
+                    },
+                    *cost,
+                    inner_branch.body,
+                });
+            }
+        } else {
+            flattened.push_back(branch);
+        }
+    }
+
+    std::set<Identity> identities;
+    for (const auto& branch : flattened) {
         if (!identities.insert(branch.identity).second) {
             return std::unexpected(
                 "Alt branch identity is duplicated: " + branch.identity.str());
@@ -48,7 +73,7 @@ std::expected<Term, std::string> Term::alt(
     }
     return Term(std::make_shared<detail::Node>(detail::Node{
         std::move(identity),
-        detail::Alt{std::move(branches)},
+        detail::Alt{std::move(flattened)},
     }));
 }
 
@@ -109,6 +134,15 @@ Term Term::candidate(
     return Term(std::make_shared<detail::Node>(detail::Node{
         std::move(identity),
         detail::Candidate{std::move(candidate), std::move(body)},
+    }));
+}
+
+Term Term::produce(
+    Identity identity,
+    Identity production) {
+    return Term(std::make_shared<detail::Node>(detail::Node{
+        std::move(identity),
+        detail::Produce{std::move(production)},
     }));
 }
 

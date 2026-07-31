@@ -43,6 +43,7 @@ struct Draw {
     std::uint64_t seed,
     const Identity& expression,
     std::span<const Identity> scope,
-    std::span<const Candidate> candidates);
+    std::span<const Candidate> candidates,
+    const Cost& band = Cost{});
 
 } // namespace mq::kernel::choice

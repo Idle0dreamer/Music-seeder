@@ -1,6 +1,6 @@
 #include "Run.hpp"
 
-#include "mq/kernel/fixture/generation/Set.hpp"
+#include "mq/kernel/maqam/Bayati.hpp"
 #include "mq/kernel/generate/Engine.hpp"
 
 #include <algorithm>
@@ -11,28 +11,30 @@ namespace app::generate {
 int run(std::uint64_t seed) {
     using namespace mq::kernel;
 
-    const auto set = fixture::make();
-    if (!set) {
-        std::cerr << set.error() << '\n';
-        return 1;
-    }
-    const auto model = fixture::generation::make(*set);
+    const auto model = maqam::make_bayati();
     if (!model) {
         std::cerr << model.error() << '\n';
         return 1;
     }
     const eval::Context context{
-        .jins = {&set->catalog},
-        .path = {&set->path.graph},
-        .sayr = {&set->sayr.plan},
+        .jins = {&model->ajnas},
+        .path = {&model->graph},
+        .sayr = {&model->sayr},
+        .grammar = {},
     };
     const mq::kernel::generate::Engine engine(
-        set->profile.shared,
+        *model->profile,
         context);
+    
+    if (!model->production) {
+        std::cerr << "missing recursive production rule\n";
+        return 1;
+    }
+
     const auto result = engine.run(
         seed,
         model->choice,
-        model->production,
+        *model->production,
         model->projection,
         model->schema);
     if (!result) {

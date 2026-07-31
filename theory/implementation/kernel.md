@@ -34,11 +34,13 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Named pitch authority | declared tier order and active empty-tier removal |
 | Exact field integration | hard-only witness or full lexicographic tendency solve |
 | Explicit field resource failure | bounded context, rule, coverage, and solver work |
+| Numeric cadence-strength consumption by contextual pitch rules | `pitch::field::assemble::Run` |
 | Typed state-to-field projection | center, jins, tonicization, path, phrase, and event readers |
 | Required projection presence | explicit missing-state error or optional omission |
 | Projection scope non-leakage | restored grammar outcome to field integration law |
 | Explicit projection resource failure | bounded reader count |
 | Validated jins descriptor subset | catalog admission laws for tonic, ghammaz, role, register, baggage, and gesture references |
+| Jins formula vocabulary | descriptor entry and exit formulas, cadence vocabulary, and motif lexicon |
 | Missing descriptor rejection | entry and descriptor-dependent operations have no catalog fallback |
 | Structural pitch events | descriptor-conformant `performance::Event` and checked `Place` transition |
 | Intended motion state | typed `Start`, `Same`, `Rise`, and `Fall` |
@@ -58,10 +60,14 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Explicit conflict resolution | profile law tests |
 | Regional narrowing, prohibition, and exception | profile law tests |
 | Typed tonal, phrase, gesture, vocabulary, and event operators | `Operation` variant |
+| Provenance-bearing descriptor overlay operations | `jins::Overlay` and tests |
 | Exact tonicization evidence thresholds | `Evaluator` |
+| Profile-declared choice bands beyond strict equal minimum-cost | `Engine::run` reads `band.generation` and `choice::select` accepts bands |
 | Seeded lexicographic alternative selection | `choice::select` |
 | Storage-order and ineligible-choice stability | choice law tests |
-| Typed `Id`, `Fail`, `Seq`, `Alt`, `Guard`, `Repeat`, `Scope`, and `Bind` terms | `grammar::Term` |
+| Typed `Id`, `Fail`, `Seq`, `Alt`, `Guard`, `Repeat`, `Scope`, `Bind`, and `Produce` terms | `grammar::Term` |
+| `Alt` identity normalization and its normalized associativity law | `Term::alt` and grammar relation tests |
+| Recursive phrase production definitions and explicit well-founded budget accounting | `grammar::Catalog`, `grammar::Produce` term, and budget state |
 | Complete finite legal derivations before seed resolution | grammar relation tests |
 | Rejected-branch diagnostics retained beside legal outcomes | grammar relation tests |
 | Lexical binding restoration | grammar non-leakage tests |
@@ -87,23 +93,14 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Scope-controlled generated output | explicit `Output` export and non-leakage law |
 | Grammar-to-generator compilation | sealed derivations become exact candidate plans |
 | Executable neutral generation witness | CLI seed selects a complete candidate and prints exact targets |
+| Recursive phrase grammar | `grammar::Produce` and test-verified budget exhaustion |
+| Contextual intonation basis | `pitch::trajectory` basis functions (onset, release, vibrato, attraction) |
+| Regional profile test harness | `bayati_case` harness matching the Egyptian/Levantine case specification |
 
 ## Deliberately not claimed yet
 
-- Rich phrase relations, motif, ornament, timing, and iqa operator families.
-- Culturally complete sayr plans, route vocabularies, and sourced regional
-  obligations beyond the neutral executable subset.
-- `Alt` identity normalization and its normalized associativity law.
-- Recursive production definitions and explicit well-founded budget accounting.
-- Profile-declared choice bands beyond equal minimum-cost outcomes.
-- Numeric cadence-strength consumption by contextual pitch rules.
-- The remaining jins model: entry and exit formulas, cadence vocabulary,
-  motif/cell lexicon, and contextual intonation trajectories.
-- Provenance-bearing regional reconstruction of descriptor content.
-- A grammar that constructs recursive musical candidates rather than neutral
-  finite fixtures.
-- Continuous intonation trajectory basis functions.
-- A sourced real regional profile.
+- A rights-cleared, profile-matched corpus for the Bayati regional profile.
+- Human annotator review of structural layers.
 - A vocabulary-composition boundary for admitting a second theory module.
 
 Audio rendering is outside this ledger. The independent synthesis boundary is
@@ -113,11 +110,7 @@ specified under `synthesis/`.
 
 1. Finish remote validation of the typed neutral sayr checkpoint and record
    executable evidence.
-2. Add provenance-bearing descriptor overlay operations that preserve catalog
-   invariants, then prove each overlay through changed generated consequences.
-3. Add explicit well-founded production budgets, then recursive phrase
-   production definitions.
-4. Admit sourced regional evidence only after the corresponding generated
+2. Admit sourced regional evidence only after the corresponding generated
    consequences have validation laws.
 
 ## Validation environment

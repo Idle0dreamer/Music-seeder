@@ -57,7 +57,28 @@ std::expected<Identity, std::string> select(
     std::uint64_t seed,
     const Identity& expression,
     std::span<const Identity> scope,
-    std::span<const Candidate> candidates) {
+    std::span<const Candidate> candidates,
+    const Cost& band) {
+    const Candidate* minimum = nullptr;
+
+    for (const auto& candidate : candidates) {
+        if (!candidate.eligible) {
+            continue;
+        }
+        if (minimum == nullptr || candidate.cost < minimum->cost) {
+            minimum = &candidate;
+        }
+    }
+
+    if (minimum == nullptr) {
+        return std::unexpected("choice has no eligible alternatives");
+    }
+
+    const auto limit = sum(minimum->cost, band);
+    if (!limit) {
+        return std::unexpected(limit.error());
+    }
+
     const Candidate* best = nullptr;
     auto bestHash = std::numeric_limits<std::uint64_t>::max();
 
@@ -65,29 +86,18 @@ std::expected<Identity, std::string> select(
         if (!candidate.eligible) {
             continue;
         }
-        if (best == nullptr || candidate.cost < best->cost) {
-            best = &candidate;
-            const std::array draws{
-                Draw{expression, {scope.begin(), scope.end()}, candidate.identity},
-            };
-            bestHash = key(seed, draws);
-            continue;
-        }
-        if (candidate.cost == best->cost) {
+        if (candidate.cost <= *limit) {
             const std::array draws{
                 Draw{expression, {scope.begin(), scope.end()}, candidate.identity},
             };
             const auto candidateHash = key(seed, draws);
-            if (candidateHash < bestHash) {
+            if (best == nullptr || candidateHash < bestHash) {
                 best = &candidate;
                 bestHash = candidateHash;
             }
         }
     }
 
-    if (best == nullptr) {
-        return std::unexpected("choice has no eligible alternatives");
-    }
     return best->identity;
 }
 

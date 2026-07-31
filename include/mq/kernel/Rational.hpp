@@ -1,5 +1,6 @@
 #pragma once
 
+#include <compare>
 #include <cstdint>
 #include <string>
 
@@ -48,21 +49,14 @@ public:
 
     friend constexpr bool operator==(const Rational&, const Rational&) = default;
 
-    friend bool operator<(const Rational& left, const Rational& right) {
-        return (left - right).numerator_ < 0;
+    friend auto operator<=>(const Rational& left, const Rational& right) {
+        const auto diff = left - right;
+        if (diff.numerator_ < 0) return std::strong_ordering::less;
+        if (diff.numerator_ > 0) return std::strong_ordering::greater;
+        return std::strong_ordering::equal;
     }
 
-    friend bool operator>(const Rational& left, const Rational& right) {
-        return right < left;
-    }
 
-    friend bool operator<=(const Rational& left, const Rational& right) {
-        return !(right < left);
-    }
-
-    friend bool operator>=(const Rational& left, const Rational& right) {
-        return !(left < right);
-    }
 
 private:
     std::int64_t numerator_{};

@@ -16,6 +16,10 @@ struct Descriptor {
     std::set<Identity> regions;
     std::set<Identity> characteristic;
     std::set<Identity> emphasis;
+    std::set<Identity> entry;
+    std::set<Identity> exit;
+    std::set<Identity> cadences;
+    std::set<Identity> motifs;
     std::map<Identity, Baggage> baggage;
     std::map<Identity, gesture::Definition> gestures;
 

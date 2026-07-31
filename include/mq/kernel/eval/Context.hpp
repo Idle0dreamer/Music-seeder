@@ -4,6 +4,10 @@
 #include "mq/kernel/path/Graph.hpp"
 #include "mq/kernel/sayr/Plan.hpp"
 
+namespace mq::kernel::grammar {
+class Catalog;
+}
+
 namespace mq::kernel::eval {
 
 struct Context {
@@ -18,6 +22,10 @@ struct Context {
     struct Sayr {
         const mq::kernel::sayr::Plan* plan{};
     } sayr;
+
+    struct Grammar {
+        const mq::kernel::grammar::Catalog* catalog{};
+    } grammar;
 };
 
 } // namespace mq::kernel::eval

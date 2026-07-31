@@ -8,7 +8,7 @@
 
 namespace mq::kernel::pitch::field::assemble::detail {
 
-using Facts = std::map<Identity, Identity>;
+using Facts = std::map<Identity, Fact>;
 
 [[nodiscard]] bool complete(const Identity& value);
 
@@ -38,7 +38,7 @@ using Facts = std::map<Identity, Identity>;
 
 [[nodiscard]] Identity identity(const Rule& rule);
 
-[[nodiscard]] bool match(
+[[nodiscard]] std::optional<Rational> match(
     const Guard& guard,
     const Facts& context);
 

@@ -13,6 +13,7 @@ namespace test {
 
 void rational();
 void pitch();
+void trajectory();
 void profile();
 void evaluator();
 void choice();
@@ -38,7 +39,6 @@ void laws();
 } // namespace sequence
 
 namespace field {
-
 void assembly();
 void solve();
 
@@ -78,12 +78,14 @@ namespace generate {
 void laws();
 void profile();
 void grammar();
+void overlay();
 
 } // namespace generate
 
 namespace jins {
 
 void catalog();
+void overlay();
 
 } // namespace jins
 
@@ -106,7 +108,10 @@ namespace grammar {
 
 void laws();
 void relation();
+void produce();
 
 } // namespace grammar
+
+void bayati_case();
 
 } // namespace test

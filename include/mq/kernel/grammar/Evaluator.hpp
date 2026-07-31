@@ -21,6 +21,14 @@ public:
         const profile::Set& profile,
         const jins::Catalog& catalog,
         const path::Graph& paths);
+    Evaluator(
+        const profile::Set& profile,
+        const jins::Catalog& catalog,
+        const path::Graph& paths,
+        const Catalog& grammar);
+    Evaluator(
+        const profile::Set& profile,
+        const Catalog& grammar);
 
     [[nodiscard]] Result derive(
         const Term& term,

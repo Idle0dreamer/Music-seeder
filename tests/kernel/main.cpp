@@ -15,6 +15,7 @@ int main() {
         test::feasibility_limits();
         test::witness();
         test::constraint();
+        test::trajectory();
         test::tendency::solve();
         test::tendency::laws();
         test::sequence::solve();
@@ -24,6 +25,7 @@ int main() {
         test::project::run();
         test::project::scope();
         test::jins::catalog();
+        test::jins::overlay();
         test::event::laws();
         test::event::scope();
         test::gesture::laws();
@@ -39,9 +41,12 @@ int main() {
         test::generate::laws();
         test::generate::profile();
         test::generate::grammar();
+        test::generate::overlay();
         test::path();
         test::grammar::laws();
         test::grammar::relation();
+        test::grammar::produce();
+        test::bayati_case();
         std::cout
             << "PASS exact rational arithmetic\n"
             << "PASS symbolic calculated pitch fields\n"
@@ -52,6 +57,7 @@ int main() {
             << "PASS exact affine inequality feasibility\n"
             << "PASS exact hard-constraint witness construction\n"
             << "PASS stable hard-constraint identity laws\n"
+            << "PASS continuous intonation trajectory basis functions\n"
             << "PASS exact contextual tendency KKT solving\n"
             << "PASS tendency identity, budget, and ordering laws\n"
             << "PASS exact lexicographic tendency sequencing\n"
@@ -61,6 +67,7 @@ int main() {
             << "PASS typed state-to-field projection laws\n"
             << "PASS scoped grammar-to-field integration\n"
             << "PASS validated jins descriptor catalog laws\n"
+            << "PASS provenance-bearing descriptor overlay operations\n"
             << "PASS structural event transition laws\n"
             << "PASS structural event scope laws\n"
             << "PASS ordered jins gesture and baggage laws\n"
@@ -78,7 +85,8 @@ int main() {
             << "PASS typed grammar-to-generation laws\n"
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
-            << "PASS complete grammar branch evaluation\n";
+            << "PASS well-founded recursive phrase production budgets\n"
+            << "PASS bayati regional case generative harness\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "FAIL " << error.what() << '\n';

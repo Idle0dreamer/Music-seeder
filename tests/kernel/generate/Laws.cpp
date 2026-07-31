@@ -26,6 +26,7 @@ void test::generate::laws() {
         .jins = {&set.catalog},
         .path = {&set.path.graph},
         .sayr = {&set.sayr.plan},
+        .grammar = {},
     };
     const mq::kernel::generate::Engine engine(
         set.profile.shared,

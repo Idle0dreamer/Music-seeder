@@ -15,7 +15,7 @@ void test::field::assembly() {
     const Identity extraValue{
         "test.field.context.value", "middle", "1"};
     pitch::field::Context context{{
-        {value.direction, value.up},
+        {value.direction, value.up, Rational(2)},
         {extraKey, extraValue},
     }};
     const auto first = pa::run(value.schema, context);
@@ -28,8 +28,10 @@ void test::field::assembly() {
             std::ranges::find(first->rules, value.rising) !=
                 first->rules.end() &&
             std::ranges::find(first->rules, value.falling) ==
-                first->rules.end(),
-        "context did not select and order the exact active rule set");
+                first->rules.end() &&
+            first->tiers[0].targets.size() == 1 &&
+            first->tiers[0].targets[0].weight == Rational(2),
+        "context did not select and order the exact active rule set or apply weights");
 
     const auto minimal = pa::run(
         value.schema,

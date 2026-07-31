@@ -88,6 +88,12 @@ struct Sayr {
     bool operator==(const Sayr&) const = default;
 };
 
+struct Grammar {
+    std::map<Identity, std::size_t> budget;
+
+    bool operator==(const Grammar&) const = default;
+};
+
 struct Snapshot {
     Center center;
     Jins jins;
@@ -100,6 +106,7 @@ struct Snapshot {
     Gesture gesture;
     Sayr sayr;
     Trace trace;
+    Grammar grammar;
 
     bool operator==(const Snapshot&) const = default;
 };

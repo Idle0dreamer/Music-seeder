@@ -19,6 +19,7 @@ void test::sayr::laws() {
         .jins = {&fixture.catalog},
         .path = {&fixture.path.graph},
         .sayr = {&fixture.sayr.plan},
+        .grammar = {},
     };
     const eval::Evaluator evaluator(fixture.profile.shared, context);
     const operation::sayr::Fulfill establish{

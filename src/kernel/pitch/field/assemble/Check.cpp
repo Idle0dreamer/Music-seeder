@@ -49,7 +49,7 @@ std::expected<void, Error> check(
                 fact.key));
         }
         if (result != nullptr) {
-            result->emplace(fact.key, fact.value);
+            result->emplace(fact.key, fact);
         }
     }
     return {};

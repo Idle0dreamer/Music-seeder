@@ -2,16 +2,18 @@
 
 namespace mq::kernel::pitch::field::assemble::detail {
 
-bool match(
+std::optional<Rational> match(
     const Guard& guard,
     const Facts& context) {
+    Rational weight = 1;
     for (const auto& fact : guard.all) {
         const auto found = context.find(fact.key);
-        if (found == context.end() || found->second != fact.value) {
-            return false;
+        if (found == context.end() || found->second.value != fact.value) {
+            return std::nullopt;
         }
+        weight *= found->second.weight;
     }
-    return true;
+    return weight;
 }
 
 } // namespace mq::kernel::pitch::field::assemble::detail

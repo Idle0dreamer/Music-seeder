@@ -25,6 +25,7 @@ void test::sayr::scope() {
         .jins = {&fixture.catalog},
         .path = {&fixture.path.graph},
         .sayr = {&fixture.sayr.plan},
+        .grammar = {},
     };
     auto actions = generated->program.stay.stages.front().actions;
     actions.resize(actions.size() - 2);

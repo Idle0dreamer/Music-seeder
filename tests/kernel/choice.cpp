@@ -71,4 +71,17 @@ void test::choice() {
                 std::expected<Identity, std::string>(preferred.identity),
             "seed overrode a stronger cost tier");
     }
+
+    // Choice band allows picking the costly candidate if it is within the band.
+    const choice::Cost band{{0, 1, 0, 0}};
+    bool band_picked_costly = false;
+    for (std::uint64_t seed = 0; seed < 64; ++seed) {
+        const auto result = choice::select(seed, expression, scope, ranked, band);
+        require(result.has_value(), result.error_or("choice band failed"));
+        if (*result == costly.identity) {
+            band_picked_costly = true;
+            break;
+        }
+    }
+    require(band_picked_costly, "choice band did not permit selecting costly candidate");
 }

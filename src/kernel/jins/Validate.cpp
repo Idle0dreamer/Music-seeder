@@ -78,6 +78,17 @@ std::expected<void, std::string> validate(
             }
         }
     }
+    auto validReference = [&](const std::set<Identity>& refs) {
+        return std::ranges::all_of(refs, [&](const auto& ref) {
+            return descriptor.gestures.contains(ref);
+        });
+    };
+    if (!validReference(descriptor.entry) ||
+        !validReference(descriptor.exit) ||
+        !validReference(descriptor.cadences) ||
+        !validReference(descriptor.motifs)) {
+        return fail("jins formula references an unknown gesture");
+    }
     for (const auto& [identity, baggage] : descriptor.baggage) {
         if (identity != baggage.identity ||
             !complete(identity) ||

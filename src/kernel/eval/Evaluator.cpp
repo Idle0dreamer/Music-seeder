@@ -18,6 +18,7 @@ Evaluator::Evaluator(const profile::Set& profile, const path::Graph& paths)
               .jins = {},
               .path = {&paths},
               .sayr = {},
+              .grammar = {},
           }) {}
 
 Evaluator::Evaluator(
@@ -29,6 +30,7 @@ Evaluator::Evaluator(
               .jins = {&catalog},
               .path = {},
               .sayr = {},
+              .grammar = {},
           }) {}
 
 Evaluator::Evaluator(
@@ -41,6 +43,7 @@ Evaluator::Evaluator(
               .jins = {&catalog},
               .path = {&paths},
               .sayr = {},
+              .grammar = {},
           }) {}
 
 std::expected<state::Snapshot, Violation> Evaluator::run(

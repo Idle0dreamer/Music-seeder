@@ -65,6 +65,10 @@ jins::Descriptor descriptor(
         {fixture.region.root, fixture.region.upper},
         {fixture.region.root, fixture.region.upper},
         {fixture.role.root, fixture.role.ghammaz},
+        {},
+        {},
+        {},
+        {},
         {{baggage.identity, baggage}},
         {
             {ascent.identity, ascent},

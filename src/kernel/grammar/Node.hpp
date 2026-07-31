@@ -55,6 +55,10 @@ struct Candidate {
     Term body;
 };
 
+struct Produce {
+    Identity production;
+};
+
 using Form = std::variant<
     Id,
     Fail,
@@ -66,7 +70,8 @@ using Form = std::variant<
     Scope,
     Bind,
     Stage,
-    Candidate>;
+    Candidate,
+    Produce>;
 
 struct Node {
     Identity identity;

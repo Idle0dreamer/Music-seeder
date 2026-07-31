@@ -59,7 +59,7 @@ std::expected<std::optional<Fact>, Error> read(
     if (found == cadences->end()) {
         return phrase::absent(source.key, source.presence);
     }
-    return std::optional<Fact>{{source.key, found->family}};
+    return std::optional<Fact>{{source.key, found->family, found->strength}};
 }
 
 std::expected<std::optional<Fact>, Error> read(

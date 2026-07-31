@@ -32,7 +32,8 @@ std::expected<Model, Error> run(
     std::map<Identity, std::vector<tendency::Target>> targets;
     std::set<Identity> active;
     for (const auto* rule : ordered) {
-        if (!detail::match(rule->when, *checked)) {
+        const auto matched = detail::match(rule->when, *checked);
+        if (!matched) {
             continue;
         }
         const auto ruleIdentity = detail::identity(*rule);
@@ -46,7 +47,9 @@ std::expected<Model, Error> run(
                 } else if constexpr (std::same_as<Type, Inequality>) {
                     result.inequalities.push_back(effect);
                 } else {
-                    targets[effect.tier].push_back(effect.target);
+                    auto target = effect.target;
+                    target.weight *= *matched;
+                    targets[effect.tier].push_back(std::move(target));
                 }
             },
             rule->effect);

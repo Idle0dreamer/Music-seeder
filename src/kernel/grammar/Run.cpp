@@ -71,6 +71,8 @@ Batch Runner::run(const Term& term, Frame frame) const {
                 return stage(term, form, std::move(frame));
             } else if constexpr (std::is_same_v<T, Candidate>) {
                 return candidate(term, form, std::move(frame));
+            } else if constexpr (std::is_same_v<T, Produce>) {
+                return produce(term, form, std::move(frame));
             } else if constexpr (std::is_same_v<T, Guard>) {
                 if (!guard::holds(
                         form.predicate,

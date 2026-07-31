@@ -27,6 +27,7 @@ void test::generate::grammar() {
         .jins = {&set.catalog},
         .path = {&set.path.graph},
         .sayr = {&set.sayr.plan},
+        .grammar = {},
     };
     const struct {
         mq::kernel::generate::Engine a;

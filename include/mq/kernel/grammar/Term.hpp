@@ -59,6 +59,9 @@ public:
         Identity identity,
         Identity candidate,
         Term body);
+    static Term produce(
+        Identity identity,
+        Identity production);
 
     [[nodiscard]] const Identity& identity() const noexcept;
 

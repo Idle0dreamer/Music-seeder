@@ -22,6 +22,7 @@ Engine::Engine(
               .jins = {},
               .path = {&paths},
               .sayr = {},
+              .grammar = {},
           }) {}
 
 Engine::Engine(
@@ -33,6 +34,7 @@ Engine::Engine(
               .jins = {&catalog},
               .path = {},
               .sayr = {},
+              .grammar = {},
           }) {}
 
 Engine::Engine(
@@ -45,6 +47,7 @@ Engine::Engine(
               .jins = {&catalog},
               .path = {&paths},
               .sayr = {},
+              .grammar = {},
           }) {}
 
 std::expected<Result, Error> Engine::run(
@@ -94,8 +97,17 @@ std::expected<Result, Error> Engine::run(
             {},
         });
     }
+    choice::Cost band{};
+    if (auto param = profile_.parameter("band.generation")) {
+        // Assuming the parameter specifies the maximum allowed extra cost in the lowest tier.
+        // It's a Rational. We extract the integer part.
+        if (param->denominator() == 1 && param->numerator() > 0) {
+            band.tiers[3] = param->numerator();
+        }
+    }
+
     const auto selected =
-        choice::select(seed, expression, {}, choices);
+        choice::select(seed, expression, {}, choices, band);
     if (!selected) {
         return std::unexpected(Error{
             Error::Code::Choice,

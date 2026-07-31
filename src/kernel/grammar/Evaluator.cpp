@@ -22,6 +22,7 @@ Evaluator::Evaluator(const profile::Set& profile, const path::Graph& paths)
               .jins = {},
               .path = {&paths},
               .sayr = {},
+              .grammar = {},
           }) {}
 
 Evaluator::Evaluator(
@@ -33,6 +34,7 @@ Evaluator::Evaluator(
               .jins = {&catalog},
               .path = {},
               .sayr = {},
+              .grammar = {},
           }) {}
 
 Evaluator::Evaluator(
@@ -45,6 +47,33 @@ Evaluator::Evaluator(
               .jins = {&catalog},
               .path = {&paths},
               .sayr = {},
+              .grammar = {},
+          }) {}
+
+Evaluator::Evaluator(
+    const profile::Set& profile,
+    const jins::Catalog& catalog,
+    const path::Graph& paths,
+    const Catalog& grammar)
+    : Evaluator(
+          profile,
+          eval::Context{
+              .jins = {&catalog},
+              .path = {&paths},
+              .sayr = {},
+              .grammar = {&grammar},
+          }) {}
+
+Evaluator::Evaluator(
+    const profile::Set& profile,
+    const Catalog& grammar)
+    : Evaluator(
+          profile,
+          eval::Context{
+              .jins = {},
+              .path = {},
+              .sayr = {},
+              .grammar = {&grammar},
           }) {}
 
 Result Evaluator::derive(
