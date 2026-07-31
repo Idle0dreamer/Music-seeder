@@ -18,18 +18,13 @@
 
 namespace mq::kernel::maqam {
 
-struct Configuration {
+struct Scaffold {
     jins::Catalog ajnas;
     path::Graph graph;
     sayr::Plan sayr;
     std::shared_ptr<profile::Set> profile;
-    
-    Identity choice;
-    std::optional<grammar::Term> production;
-    pitch::field::project::Plan projection;
-    pitch::field::Schema schema;
 };
 
-std::expected<Configuration, std::string> make_bayati();
+std::expected<Scaffold, std::string> make_bayati();
 
 } // namespace mq::kernel::maqam

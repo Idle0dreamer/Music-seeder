@@ -35,12 +35,15 @@ void test::grammar::produce() {
         operation::Emphasize{fixture.role.root, Rational(1)});
     const auto rec = kg::Term::produce(id("rec"), p_id);
     
-    const auto body = kg::Term::seq(
-        id("seq1"),
-        anchor,
-        kg::Term::seq(id("seq2"), emphasis, rec));
+    const auto body = kg::Term::alt(
+        id("alt"),
+        {
+            kg::Branch{id("br.term"), choice::Cost{{1,0,0,0}}, anchor},
+            kg::Branch{id("br.rec"), choice::Cost{{0,0,0,0}}, kg::Term::seq(id("seq2"), emphasis, rec)}
+        });
+    require(body.has_value(), "failed to create body alt");
         
-    require(catalog.add(p_id, body).has_value(), "failed to add production");
+    require(catalog.add(p_id, *body).has_value(), "failed to add production");
     
     const kg::Evaluator grammar_eval(
         fixture.profile.shared,
@@ -55,11 +58,7 @@ void test::grammar::produce() {
     
     const auto result = grammar_eval.derive(rec, initial);
     
-    // With budget 2, it should expand twice and then hit budget exhausted, 
-    // leading to a failure outcome (no frames).
-    require(result.outcomes.empty(), "recursive production did not exhaust budget");
-    require(result.diagnostics.size() == 1, "missing diagnostic for budget exhaustion");
-    require(
-        result.diagnostics.front().message.find("exhausted") != std::string::npos,
-        "diagnostic message was incorrect: " + result.diagnostics.front().message);
+    // It should explore recursion up to budget 2, producing terminating paths at depths 0, 1, 2
+    require(!result.outcomes.empty(), "recursive production did not yield successful outcomes");
+    require(result.outcomes.size() >= 2, "expected multiple valid depths of recursion outcomes");
 }

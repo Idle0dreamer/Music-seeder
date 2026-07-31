@@ -20,12 +20,12 @@ std::expected<Set, std::string> make(
     auto production = grammar::Term::alt(
         detail::id("production"),
         {
-            {
+            grammar::Branch{
                 detail::id("branch.stay"),
                 program.stay.cost,
                 detail::candidate(program.stay, "stay"),
             },
-            {
+            grammar::Branch{
                 detail::id("branch.travel"),
                 program.travel.cost,
                 detail::candidate(program.travel, "travel"),

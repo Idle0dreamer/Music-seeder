@@ -6,6 +6,9 @@
 namespace mq::kernel::pitch::trajectory {
 
 struct Basis {
+    struct Hertz { double value; };
+    struct Cents { double value; };
+
     struct Stable {};
     
     struct Onset {
@@ -17,12 +20,12 @@ struct Basis {
     };
     
     struct Vibrato {
-        double rate;
-        double extent;
+        Hertz rate;
+        Cents extent;
     };
 
     struct Attraction {
-        double amount;
+        Cents amount;
         double skew;
     };
 

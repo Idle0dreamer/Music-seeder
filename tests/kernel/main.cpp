@@ -86,7 +86,7 @@ int main() {
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS well-founded recursive phrase production budgets\n"
-            << "PASS bayati regional case generative harness\n";
+            << "PASS bayati non-generative integration scaffold\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "FAIL " << error.what() << '\n';

@@ -57,8 +57,12 @@ std::expected<Descriptor, std::string> reconstruct(
                 } else if constexpr (std::is_same_v<T, Overlay::ProhibitMotif>) {
                     base.motifs.erase(action.gesture);
                 }
-            },
+        },
             overlay.action);
+        base.provenance.insert(
+            base.provenance.end(),
+            overlay.provenance.begin(),
+            overlay.provenance.end());
     }
     const auto valid = detail::validate(base);
     if (!valid) {

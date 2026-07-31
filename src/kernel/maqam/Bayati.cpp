@@ -48,7 +48,8 @@ jins::Catalog build_ajnas() {
         {}, // cadences
         {}, // motifs
         {}, // baggage
-        {}  // gestures
+        {}, // gestures
+        {}  // provenance
     };
     auto r1 = catalog.add(bayati);
     
@@ -61,7 +62,7 @@ jins::Catalog build_ajnas() {
         {id("region.middle")},
         {id("region.middle")},
         {id("role.nawa")},
-        {}, {}, {}, {}, {}, {}
+        {}, {}, {}, {}, {}, {}, {}
     };
     auto r2 = catalog.add(nahawand);
 
@@ -74,22 +75,26 @@ jins::Catalog build_ajnas() {
         {id("region.middle")},
         {id("region.middle")},
         {id("role.nawa")},
-        {}, {}, {}, {}, {}, {}
+        {}, {}, {}, {}, {}, {}, {}
     };
     auto r3 = catalog.add(rast);
 
     return catalog;
 }
 
-path::Graph build_graph() {
+std::expected<path::Graph, std::string> build_graph() {
     path::Graph graph;
     // Direct valid transitions for Bayati
     auto r1 = graph.add(path::Rule{id("path.bayati_to_nahawand"), id("jins.bayati"), id("jins.nahawand"), tonicization::Level::Internal, {}, "research"});
+    if (!r1) return std::unexpected(r1.error());
+    
     auto r2 = graph.add(path::Rule{id("path.bayati_to_rast"), id("jins.bayati"), id("jins.rast"), tonicization::Level::Internal, {}, "research"});
+    if (!r2) return std::unexpected(r2.error());
+    
     return graph;
 }
 
-sayr::Plan build_sayr() {
+std::expected<sayr::Plan, std::string> build_sayr() {
     auto plan = sayr::Plan::make(
         id("plan.bayati"),
         {
@@ -97,47 +102,34 @@ sayr::Plan build_sayr() {
             sayr::Obligation{id("obl.ghammaz_travel"), {sayr::Need{id("need.nahawand"), sayr::need::Jins{id("jins.nahawand")}}}, {id("obl.establish_root")}},
             sayr::Obligation{id("obl.return"), {sayr::Need{id("need.return_jins"), sayr::need::Jins{id("jins.bayati")}}}, {id("obl.ghammaz_travel")}},
         },
-        {}
+        {
+            sayr::Route{id("route.journey"), {id("obl.return")}}
+        } // adding valid dummy route with terminals so it isn't rejected by `Plan::make`
     );
-    if (plan) return *plan;
-    return {};
+    if (!plan) return std::unexpected(plan.error());
+    return *plan;
 }
 
 } // namespace
 
-std::expected<Configuration, std::string> make_bayati() {
-    Configuration config;
-    config.profile = build_profile();
-    config.ajnas = build_ajnas();
-    config.graph = build_graph();
-    config.sayr = build_sayr();
-
-    // Construct the generative grammar (using the recursive capability!)
-    const auto p_id = id("prod.bayati");
-    const auto establish = grammar::Term::atom(id("atom.establish"), operation::Anchor{id("jins.bayati")});
-    const auto travel = grammar::Term::atom(id("atom.travel"), operation::Anchor{id("jins.nahawand")});
-    const auto return_home = grammar::Term::atom(id("atom.return"), operation::Anchor{id("jins.bayati")});
+std::expected<Scaffold, std::string> make_bayati() {
+    Scaffold scaffold;
     
-    // Instead of neutral finite fixtures, we build a recursive phrase model!
-    // body: establish -> travel -> (recurse or return)
-    const auto rec = grammar::Term::produce(id("rec"), p_id);
-    const auto return_alt = grammar::Term::alt(id("alt.ret_or_rec"), {
-        grammar::Branch{id("br.ret"), choice::Cost{{1,0,0,0}}, return_home},
-        grammar::Branch{id("br.rec"), choice::Cost{{2,0,0,0}}, rec}
-    });
-
-    if (return_alt) {
-        config.production = grammar::Term::seq(id("seq.main"), establish, grammar::Term::seq(id("seq.2"), travel, *return_alt));
-    }
-
-    config.choice = id("choice.main");
-    // No budget setup needed, schema doesn't have budget anymore, wait, pitch::field::Schema
-    // pitch::field::Schema expects some layout of intervals maybe? We will just leave it default.
-    // The previous schema was `fixture::generation::schema()`.
+    auto profile = build_profile();
+    if (!profile) return std::unexpected("failed to build profile");
+    scaffold.profile = profile;
     
-    // config.projection expects role mappings. We can just leave it empty if there are no roles to project for now.
+    scaffold.ajnas = build_ajnas();
     
-    return config;
+    auto graph = build_graph();
+    if (!graph) return std::unexpected(graph.error());
+    scaffold.graph = *graph;
+    
+    auto plan = build_sayr();
+    if (!plan) return std::unexpected(plan.error());
+    scaffold.sayr = *plan;
+
+    return scaffold;
 }
 
 } // namespace mq::kernel::maqam

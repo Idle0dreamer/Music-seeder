@@ -22,6 +22,7 @@ struct Descriptor {
     std::set<Identity> motifs;
     std::map<Identity, Baggage> baggage;
     std::map<Identity, gesture::Definition> gestures;
+    std::vector<std::string> provenance;
 
     bool operator==(const Descriptor&) const = default;
 };

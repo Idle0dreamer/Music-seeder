@@ -59,6 +59,12 @@ std::expected<Identity, std::string> select(
     std::span<const Identity> scope,
     std::span<const Candidate> candidates,
     const Cost& band) {
+    for (const auto val : band.tiers) {
+        if (val < 0) {
+            return std::unexpected("cost band cannot be negative");
+        }
+    }
+
     const Candidate* minimum = nullptr;
 
     for (const auto& candidate : candidates) {
@@ -96,6 +102,10 @@ std::expected<Identity, std::string> select(
                 bestHash = candidateHash;
             }
         }
+    }
+
+    if (best == nullptr) {
+        return std::unexpected("cost band eliminated all candidates");
     }
 
     return best->identity;
