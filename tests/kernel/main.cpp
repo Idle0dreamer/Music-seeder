@@ -47,6 +47,8 @@ int main() {
         test::grammar::laws();
         test::grammar::relation();
         test::grammar::produce();
+        test::maqam_catalog();
+        test::rast_case();
         test::bayati_case();
         std::cout
             << "PASS exact rational arithmetic\n"
@@ -88,6 +90,8 @@ int main() {
             << "PASS path history and prerequisite guards\n"
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS well-founded recursive phrase production budgets\n"
+            << "PASS declared maqam catalog refuses incomplete packages\n"
+            << "PASS executable Rast routes and timed plans\n"
             << "PASS executable provisional Bayati routes and timed plans\n";
         return 0;
     } catch (const std::exception& error) {

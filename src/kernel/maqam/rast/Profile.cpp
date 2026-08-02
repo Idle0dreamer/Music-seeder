@@ -1,0 +1,102 @@
+#include "Internal.hpp"
+
+namespace mq::kernel::maqam::rast::detail {
+namespace {
+
+profile::Patch define(
+    std::string key,
+    profile::Domain value,
+    const std::string& source) {
+    return {
+        profile::Patch::Action::Define,
+        std::move(key),
+        profile::Rule{std::move(value), {source}},
+    };
+}
+
+profile::Patch parameter(
+    std::string key,
+    Rational value,
+    const std::string& source) {
+    return {
+        profile::Patch::Action::Define,
+        std::move(key),
+        profile::Rule{value, {source}},
+    };
+}
+
+} // namespace
+
+std::expected<std::shared_ptr<profile::Set>, std::string>
+profile(const Key& key) {
+    const std::string source =
+        "MaqamWorld:maqam-rast;MaqamWorld:jins-rast;"
+        "scope:canonical-arabic-repertoire-v1";
+    profile::Set base("maqam.rast.base");
+    const std::vector<profile::Patch> rules{
+        define("allow.anchor", {key.centerRoot}, source),
+        define("allow.enter", {
+            key.jinsRoot,
+            key.jinsUpperRast,
+            key.jinsUpperNahawand,
+        }, source),
+        define("allow.emphasize", {key.roleGhammaz}, source),
+        define("allow.dwell", {key.roleGhammaz}, source),
+        define("allow.emit", {
+            key.cellEstablish,
+            key.cellDevelop,
+            key.cellClimax,
+            key.cellReturn,
+        }, source),
+        define("allow.variation", {
+            key.formulaEstablish,
+            key.formulaDevelop,
+            key.formulaDevelopVariation,
+            key.formulaClimax,
+            key.formulaReturn,
+        }, source),
+        define("allow.cadence", {key.cadenceLocal, key.cadenceReturn}, source),
+        define("allow.tonicize", {
+            key.jinsUpperRast,
+            key.jinsUpperNahawand,
+        }, source),
+        define("allow.modulate", {
+            key.pathUpperRast,
+            key.pathNahawand,
+        }, source),
+        define("allow.place", {
+            key.roleTonic,
+            key.roleGhammaz,
+            key.roleUpper,
+            key.roleExtension,
+        }, source),
+        define("allow.register", {key.regionRoot, key.regionUpper}, source),
+        define("allow.baggage", {key.baggageExtension}, source),
+        define("allow.gesture", {
+            key.gestureEstablish,
+            key.gestureAscent,
+            key.gestureDescent,
+            key.gestureResolution,
+        }, source),
+        define("allow.phrase.function", {
+            key.phraseQuestion,
+            key.phraseResponse,
+        }, source),
+        parameter("threshold.internal.emphasis", Rational(2), source),
+        parameter("threshold.internal.dwell", Rational(2), source),
+        parameter("threshold.internal.cell", Rational(1), source),
+        parameter("threshold.internal.baggage", Rational(1), source),
+        parameter("threshold.internal.cadence", Rational(1), source),
+        parameter("band.generation", Rational(8), source),
+    };
+    auto result = profile::reconstruct(
+        "maqam.rast.arabic.canonical.v1",
+        {base},
+        rules);
+    if (!result) {
+        return std::unexpected(result.error());
+    }
+    return std::make_shared<profile::Set>(std::move(*result));
+}
+
+} // namespace mq::kernel::maqam::rast::detail
