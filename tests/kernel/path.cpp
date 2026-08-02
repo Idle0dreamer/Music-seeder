@@ -64,7 +64,10 @@ void test::path() {
                     mq::kernel::sort::RegionId{fixture.region.root},
                     std::nullopt,
                 },
-        operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+        operation::Emit{
+            mq::kernel::sort::CellId{fixture.cell},
+            std::nullopt,
+        },
         operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
             Rational(1),
             Rational(1),

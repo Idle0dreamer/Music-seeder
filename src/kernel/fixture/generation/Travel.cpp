@@ -31,7 +31,10 @@ std::vector<generate::Stage> travel(
                     mq::kernel::sort::RegionId{fixture.region.root},
                     std::nullopt,
                 },
-                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+                operation::Emit{
+                    mq::kernel::sort::CellId{fixture.cell},
+                    std::nullopt,
+                },
             },
         },
         {
@@ -50,7 +53,10 @@ std::vector<generate::Stage> travel(
                 operation::Dwell{mq::kernel::sort::RoleId{fixture.role.ghammaz},
                     Rational(2),
                 },
-                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+                operation::Emit{
+                    mq::kernel::sort::CellId{fixture.cell},
+                    std::nullopt,
+                },
             },
         },
         {
@@ -63,7 +69,10 @@ std::vector<generate::Stage> travel(
                     mq::kernel::sort::RegionId{fixture.region.upper},
                     mq::kernel::sort::BaggageId{fixture.baggage},
                 },
-                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+                operation::Emit{
+                    mq::kernel::sort::CellId{fixture.cell},
+                    std::nullopt,
+                },
                 operation::gesture::End{ascent},
                 operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
                     Rational(1),
@@ -103,7 +112,10 @@ std::vector<generate::Stage> travel(
                     mq::kernel::sort::RegionId{fixture.region.upper},
                     std::nullopt,
                 },
-                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+                operation::Emit{
+                    mq::kernel::sort::CellId{fixture.cell},
+                    std::nullopt,
+                },
             },
         },
         {
@@ -116,7 +128,10 @@ std::vector<generate::Stage> travel(
                     mq::kernel::sort::RegionId{fixture.region.root},
                     std::nullopt,
                 },
-                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+                operation::Emit{
+                    mq::kernel::sort::CellId{fixture.cell},
+                    std::nullopt,
+                },
                 operation::gesture::End{descent},
                 operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
                     Rational(1),

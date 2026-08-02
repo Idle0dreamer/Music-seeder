@@ -43,7 +43,7 @@ Stage establishment(
             operation::Enter{sort::JinsId{key.jinsRoot}},
             operation::Begin{
                 sort::PhraseId{p},
-                mq::kernel::phrase::Function{key.phraseEstablish},
+                mq::kernel::phrase::Function{key.phraseQuestion},
             },
             operation::gesture::Begin{g, key.gestureAscent},
             operation::Place{
@@ -53,7 +53,10 @@ Stage establishment(
                 sort::RegionId{key.regionRoot},
                 std::nullopt,
             },
-            operation::Emit{sort::CellId{key.cellEstablish}},
+            operation::Emit{
+                sort::CellId{key.cellEstablish},
+                sort::FormulaId{key.formulaEstablish},
+            },
         });
 }
 
@@ -73,7 +76,10 @@ Stage development(
             },
             operation::Emphasize{sort::RoleId{key.roleGhammaz}, Rational(3)},
             operation::Dwell{sort::RoleId{key.roleGhammaz}, Rational(2)},
-            operation::Emit{sort::CellId{key.cellDevelop}},
+            operation::Emit{
+                sort::CellId{key.cellDevelop},
+                sort::FormulaId{key.formulaDevelop},
+            },
             operation::Cadence{
                 sort::FamilyId{key.cadenceLocal},
                 Rational(1),
@@ -99,12 +105,15 @@ Stage climax(
                 sort::RegionId{key.regionUpper},
                 sort::BaggageId{key.baggageExtension},
             },
-            operation::Emit{sort::CellId{key.cellClimax}},
+            operation::Emit{
+                sort::CellId{key.cellClimax},
+                sort::FormulaId{key.formulaClimax},
+            },
             operation::gesture::End{occurrence(candidate, "ascent")},
             operation::Cadence{
                 sort::FamilyId{key.cadenceLocal},
                 Rational(1),
-                Rational(1),
+                Rational(3, 4),
             },
             operation::End{
                 sort::PhraseId{p},
@@ -150,7 +159,7 @@ Stage branchDescent(
         {
             operation::Begin{
                 sort::PhraseId{p},
-                mq::kernel::phrase::Function{key.phraseReturn},
+                mq::kernel::phrase::Function{key.phraseResponse},
             },
             operation::gesture::Begin{
                 occurrence(candidate, "descent"),
@@ -163,7 +172,10 @@ Stage branchDescent(
                 sort::RegionId{key.regionUpper},
                 std::nullopt,
             },
-            operation::Emit{sort::CellId{key.cellDevelop}},
+            operation::Emit{
+                sort::CellId{key.cellDevelop},
+                sort::FormulaId{key.formulaDevelopVariation},
+            },
         });
 }
 
@@ -188,7 +200,10 @@ Stage restore(
                 sort::RegionId{key.regionRoot},
                 std::nullopt,
             },
-            operation::Emit{sort::CellId{key.cellReturn}},
+            operation::Emit{
+                sort::CellId{key.cellReturn},
+                sort::FormulaId{key.formulaReturn},
+            },
             operation::gesture::End{resolution},
             operation::Cadence{
                 sort::FamilyId{key.cadenceReturn},
@@ -340,7 +355,7 @@ pitch::field::Schema schema(const Key& key) {
     };
     addAim(
         {{key.keyRole, key.roleTonic},
-         {key.keyFunction, key.phraseEstablish},
+         {key.keyFunction, key.phraseQuestion},
          {key.keyCadence, key.cadenceLocal},
          {key.keyBoundary, key.boundaryClosed}},
         departure,
@@ -450,7 +465,7 @@ std::expected<Generation, std::string> generation(const Key& key) {
             operation::Enter{sort::JinsId{key.jinsRoot}},
             operation::Begin{
                 sort::PhraseId{phrase(stay, "establish")},
-                mq::kernel::phrase::Function{key.phraseEstablish},
+                mq::kernel::phrase::Function{key.phraseQuestion},
             },
             operation::Place{
                 sort::EventId{event(stay, "tonic")},
@@ -459,7 +474,10 @@ std::expected<Generation, std::string> generation(const Key& key) {
                 sort::RegionId{key.regionRoot},
                 std::nullopt,
             },
-            operation::Emit{sort::CellId{key.cellEstablish}},
+            operation::Emit{
+                sort::CellId{key.cellEstablish},
+                sort::FormulaId{key.formulaEstablish},
+            },
             operation::Cadence{
                 sort::FamilyId{key.cadenceLocal},
                 Rational(1),

@@ -43,13 +43,13 @@ ks::Obligation restore(
             }),
             need(name + ".tonic", ks::need::Role{key.roleTonic, 2}),
             need(name + ".establish-phrase", ks::need::Phrase{
-                key.phraseEstablish,
+                key.phraseQuestion,
                 closed,
                 key.cadenceLocal,
                 1,
             }),
             need(name + ".return-phrase", ks::need::Phrase{
-                key.phraseReturn,
+                key.phraseResponse,
                 closed,
                 key.cadenceReturn,
                 1,
@@ -73,7 +73,7 @@ std::expected<sayr::Plan, std::string> sayr(const Key& key) {
                     need("establish.jins", ks::need::Jins{key.jinsRoot}),
                     need("establish.tonic", ks::need::Role{key.roleTonic, 1}),
                     need("establish.phrase", ks::need::Phrase{
-                        key.phraseEstablish,
+                        key.phraseQuestion,
                         closed,
                         key.cadenceLocal,
                         1,

@@ -32,7 +32,8 @@ profile(const Key& key) {
     // The evidence envelope is deliberately scoped: Egypt and the Levant,
     // literature-derived, provisional, and not a regional authenticity claim.
     const std::string source =
-        "AbuShumays2013:pp.3-6,22-24;MaqamWorld:maqam-bayati";
+        "AbuShumays2013:pp.3-6,22-24;MaqamWorld:maqam-bayati;"
+        "engineering:bayati-provisional-question-response-v1";
     profile::Set base("maqam.bayati.base");
     const std::vector<profile::Patch> rules{
         define("allow.anchor", {key.centerRoot}, source),
@@ -49,6 +50,13 @@ profile(const Key& key) {
             key.cellDevelop,
             key.cellClimax,
             key.cellReturn,
+        }, source),
+        define("allow.variation", {
+            key.formulaEstablish,
+            key.formulaDevelop,
+            key.formulaDevelopVariation,
+            key.formulaClimax,
+            key.formulaReturn,
         }, source),
         define("allow.cadence", {key.cadenceLocal, key.cadenceReturn}, source),
         define("allow.tonicize", {
@@ -78,8 +86,8 @@ profile(const Key& key) {
             key.gestureResolution,
         }, source),
         define("allow.phrase.function", {
-            key.phraseEstablish,
-            key.phraseReturn,
+            key.phraseQuestion,
+            key.phraseResponse,
         }, source),
         parameter("threshold.internal.emphasis", Rational(2), source),
         parameter("threshold.internal.dwell", Rational(2), source),

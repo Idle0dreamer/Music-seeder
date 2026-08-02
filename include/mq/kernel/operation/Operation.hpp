@@ -18,6 +18,7 @@
 #include "mq/kernel/sort/CenterId.hpp"
 #include "mq/kernel/sort/EventId.hpp"
 #include "mq/kernel/sort/FamilyId.hpp"
+#include "mq/kernel/sort/FormulaId.hpp"
 #include "mq/kernel/sort/JinsId.hpp"
 #include "mq/kernel/sort/PathId.hpp"
 #include "mq/kernel/sort/PhraseId.hpp"
@@ -46,6 +47,7 @@ struct Dwell {
 
 struct Emit {
     sort::CellId cell;
+    std::optional<sort::FormulaId> variation;
 };
 
 struct Cadence {

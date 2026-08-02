@@ -63,7 +63,10 @@ void test::evaluator() {
                     mq::kernel::sort::RegionId{fixture.region.root},
                     std::nullopt,
                 },
-        operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+        operation::Emit{
+            mq::kernel::sort::CellId{fixture.cell},
+            std::nullopt,
+        },
         operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
             Rational(1),
             Rational(1),
@@ -85,18 +88,45 @@ void test::evaluator() {
         accepted->center.stack.size() == 1 &&
             accepted->center.stack.back().identity == fixture.center.root &&
             accepted->cell.owners.size() == 1 &&
-            accepted->cell.owners.begin()->second.identity == fixture.cell,
+            accepted->cell.owners.begin()->second.cell.identity == fixture.cell &&
+            !accepted->cell.owners.begin()->second.variation,
         "return did not restore the established center");
 
     const std::vector<operation::Any> unbound{
         operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}},
         operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
-        operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+        operation::Emit{
+            mq::kernel::sort::CellId{fixture.cell},
+            std::nullopt,
+        },
     };
     const auto rejectedCell = evaluator.shared.run({}, unbound);
     require(
         !rejectedCell && rejectedCell.error().rule == "cell.event",
         "cell emission without an event was accepted");
+
+    const std::vector<operation::Any> unapprovedVariation{
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}},
+        operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
+        operation::Place{
+            mq::kernel::sort::EventId{Identity{"test.event", "variation", "1"}},
+            mq::kernel::sort::RoleId{fixture.role.root},
+            motion::Direction::Start,
+            mq::kernel::sort::RegionId{fixture.region.root},
+            std::nullopt,
+        },
+        operation::Emit{
+            mq::kernel::sort::CellId{fixture.cell},
+            mq::kernel::sort::FormulaId{Identity{
+                "test.formula", "unapproved", "1"}},
+        },
+    };
+    const auto rejectedVariation = evaluator.shared.run(
+        {}, unapprovedVariation);
+    require(
+        !rejectedVariation &&
+            rejectedVariation.error().rule == "allow.variation",
+        "unapproved cell variation was accepted");
 
     const auto a = evaluator.regional.a.run({}, established);
     require(

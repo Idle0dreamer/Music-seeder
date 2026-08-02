@@ -18,6 +18,7 @@
 #include "mq/kernel/sort/CellId.hpp"
 #include "mq/kernel/sort/CenterId.hpp"
 #include "mq/kernel/sort/EventId.hpp"
+#include "mq/kernel/sort/FormulaId.hpp"
 #include "mq/kernel/sort/JinsId.hpp"
 #include "mq/kernel/sort/PathId.hpp"
 #include "mq/kernel/sort/ObligationId.hpp"
@@ -50,8 +51,15 @@ struct Evidence {
 };
 
 struct Cell {
+    struct Owner {
+        sort::CellId cell;
+        std::optional<sort::FormulaId> variation;
+
+        bool operator==(const Owner&) const = default;
+    };
+
     std::map<sort::CellId, std::size_t> occurrences;
-    std::map<sort::EventId, sort::CellId> owners;
+    std::map<sort::EventId, Owner> owners;
 
     bool operator==(const Cell&) const = default;
 };
