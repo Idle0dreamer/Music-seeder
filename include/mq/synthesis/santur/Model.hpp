@@ -9,7 +9,7 @@ namespace mq::synthesis::santur {
 struct Config {
     std::uint32_t sample_rate{48'000};
     double tonic_hz{146.8323839587};
-    double seconds_per_unit{0.42};
+    double seconds_per_unit{};
     std::uint64_t seed{};
 };
 

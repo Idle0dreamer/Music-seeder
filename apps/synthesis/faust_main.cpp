@@ -39,7 +39,11 @@ int main(int argc, char** argv) {
     }
     const auto rendered = mq::synthesis::render_faust_wav(
         generated->plan,
-        mq::synthesis::RenderConfig{.seed = seed},
+        mq::synthesis::RenderConfig{
+            .seconds_per_unit = timing->seconds_per_unit.decimal(),
+            .tail_seconds = timing->tail_seconds.decimal(),
+            .seed = seed,
+        },
         output);
     if (!rendered) {
         std::cerr << rendered.error().message << '\n';

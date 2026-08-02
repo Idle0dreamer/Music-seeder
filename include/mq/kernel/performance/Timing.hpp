@@ -3,6 +3,7 @@
 #include "mq/kernel/Rational.hpp"
 #include "mq/kernel/motion/Direction.hpp"
 #include "mq/kernel/performance/Articulation.hpp"
+#include "mq/kernel/performance/Ornament.hpp"
 
 #include <string>
 #include <cstddef>
@@ -16,6 +17,7 @@ struct TimingIntent {
     Articulation articulation;
     Rational release_duration;
     Articulation release_articulation;
+    OrnamentTiming ornament_timing;
 
     [[nodiscard]] bool well_formed() const {
         bool known_articulation = false;
@@ -36,7 +38,7 @@ struct TimingIntent {
         }
         return duration > Rational(0) && intensity >= Rational(0) &&
                release_duration >= Rational(0) && known_articulation &&
-               known_release_articulation;
+               known_release_articulation && ornament_timing.well_formed();
     }
 
     bool operator==(const TimingIntent&) const = default;
@@ -62,6 +64,8 @@ struct Timing {
     Rational intensity_variation;
     Rational open_pause;
     Rational closed_pause;
+    Rational seconds_per_unit;
+    Rational tail_seconds;
     std::string provenance;
 
     [[nodiscard]] bool well_formed() const {
@@ -73,7 +77,8 @@ struct Timing {
                duration_variation < Rational(1) &&
                intensity_variation >= Rational(0) &&
                intensity_variation < Rational(1) && open_pause >= Rational(0) &&
-               closed_pause >= Rational(0) && !provenance.empty();
+               closed_pause >= Rational(0) && seconds_per_unit > Rational(0) &&
+               tail_seconds >= Rational(0) && !provenance.empty();
     }
 
     [[nodiscard]] const TimingIntent& for_direction(

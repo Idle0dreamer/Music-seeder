@@ -6,6 +6,22 @@
 
 namespace mq::kernel::performance {
 
+// Fractions of the host event occupied by the ornament's attack, active
+// motion, and release. These are performance-profile data, not maqam facts.
+struct OrnamentTiming {
+    Rational onset;
+    Rational duration;
+    Rational release;
+
+    [[nodiscard]] bool well_formed() const {
+        return onset >= Rational(0) && duration > Rational(0) &&
+               release >= Rational(0) &&
+               onset + duration + release <= Rational(1);
+    }
+
+    bool operator==(const OrnamentTiming&) const = default;
+};
+
 enum class OrnamentKind {
     Approach,
     Oscillation,
@@ -16,6 +32,7 @@ struct Ornament {
     OrnamentKind kind{OrnamentKind::Approach};
     pitch::Expression extent{};
     Rational cycles{1};
+    OrnamentTiming timing;
     std::string provenance;
 
     [[nodiscard]] bool well_formed() const {
@@ -26,7 +43,7 @@ struct Ornament {
             known = true;
             break;
         }
-        return known && cycles > Rational(0) &&
+        return known && cycles > Rational(0) && timing.well_formed() &&
                !family.domain.empty() && !family.name.empty() &&
                !family.revision.empty() && !provenance.empty();
     }

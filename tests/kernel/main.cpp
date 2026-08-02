@@ -55,6 +55,7 @@ int main() {
         test::nikriz_case();
         test::rast_case();
         test::bayati_case();
+        test::validation::casebook();
         std::cout
             << "PASS exact rational arithmetic\n"
             << "PASS symbolic calculated pitch fields\n"
@@ -102,7 +103,8 @@ int main() {
             << "PASS executable Nahawand routes and timed plans\n"
             << "PASS executable Nikriz routes and timed plans\n"
             << "PASS executable Rast routes and timed plans\n"
-            << "PASS executable provisional Bayati routes and timed plans\n";
+            << "PASS executable provisional Bayati routes and timed plans\n"
+            << "PASS exact corpus timing, release, ornament, pause, and variation validation\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "FAIL " << error.what() << '\n';

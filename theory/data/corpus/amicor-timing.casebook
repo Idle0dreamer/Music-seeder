@@ -1,0 +1,49 @@
+# Native casebook shape fixture keyed to the public AMICOR symbolic corpus.
+# Values exercise the exact validation boundary; they are not source
+# measurements and cannot support a regional or performer claim.
+provenance=AMICOR;https://github.com/FadiGhawanmeh/AMICOR;symbolic-duration-observations
+
+record=amicor.mawwal.oud.001
+profile=arab-maqam.mawwal
+performer=amicor.oud.session-a
+recording=amicor.oud.001
+split=train
+observations=1/4:1/8:1/4;1/2:1/8:0;1/8:1/16:1/4
+pauses=1/8
+source=https://github.com/FadiGhawanmeh/AMICOR
+location=Clean corpus/oud.txt:1
+rights=repository-published-symbolic-data;verify-before-redistribution
+scope=test-fixture;AMICOR-schema-pointer;not-source-measurement
+annotator=AMICOR-dataset-team
+confidence=3/4
+disagreement=1/4
+
+record=amicor.mawwal.vocal.002
+profile=arab-maqam.mawwal
+performer=amicor.vocal.session-b
+recording=amicor.vocal.002
+split=development
+observations=1/8:1/16:0;1/4:1/8:1/8;3/4:1/4:1/4
+pauses=1/4
+source=https://github.com/FadiGhawanmeh/AMICOR
+location=Clean corpus/vocal.txt:2
+rights=repository-published-symbolic-data;verify-before-redistribution
+scope=test-fixture;AMICOR-schema-pointer;not-source-measurement
+annotator=AMICOR-dataset-team
+confidence=3/4
+disagreement=1/4
+
+record=amicor.mawwal.oud.003
+profile=arab-maqam.mawwal
+performer=amicor.oud.session-c
+recording=amicor.oud.003
+split=test
+observations=1/2:1/8:1/8;1/4:1/16:1/4;1/8:1/8:0
+pauses=1/8
+source=https://github.com/FadiGhawanmeh/AMICOR
+location=Clean corpus/oud.txt:3
+rights=repository-published-symbolic-data;verify-before-redistribution
+scope=test-fixture;AMICOR-schema-pointer;not-source-measurement
+annotator=AMICOR-dataset-team
+confidence=3/4
+disagreement=1/4

@@ -131,4 +131,10 @@ void nikriz_case();
 void rast_case();
 void maqam_catalog();
 
+namespace validation {
+
+void casebook();
+
+} // namespace validation
+
 } // namespace test

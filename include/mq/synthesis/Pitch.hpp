@@ -40,12 +40,33 @@ namespace mq::synthesis::pitch {
     double ornament = 0.0;
     if (event.ornament && event.ornament->kind ==
                               ::mq::kernel::performance::OrnamentKind::Oscillation) {
-        ornament = event.ornament->extent.cents() * std::sin(
-            2.0 * std::numbers::pi_v<double> *
-            event.ornament->cycles.decimal() * std::clamp(position, 0.0, 1.0));
+        const auto& timing = event.ornament->timing;
+        const double start = timing.onset.decimal();
+        const double end = start + timing.duration.decimal();
+        const double clamped = std::clamp(position, 0.0, 1.0);
+        if (clamped >= start && clamped <= end && end > start) {
+            const double local = (clamped - start) / (end - start);
+            ornament = event.ornament->extent.cents() * std::sin(
+                2.0 * std::numbers::pi_v<double> *
+                event.ornament->cycles.decimal() * local);
+        }
+    }
+    double contour_position = std::clamp(position, 0.0, 1.0);
+    if (event.ornament && event.ornament->kind ==
+                              ::mq::kernel::performance::OrnamentKind::Approach) {
+        const auto& timing = event.ornament->timing;
+        const double start = timing.onset.decimal();
+        const double end = start + timing.duration.decimal();
+        if (contour_position <= start) {
+            contour_position = 0.0;
+        } else if (contour_position >= end) {
+            contour_position = 1.0;
+        } else if (end > start) {
+            contour_position = (contour_position - start) / (end - start);
+        }
     }
     return tonic_hz * std::exp2(
-        (event.target.center.cents() + contour_cents(event, position) +
+        (event.target.center.cents() + contour_cents(event, contour_position) +
          ornament) /
         1200.0);
 }

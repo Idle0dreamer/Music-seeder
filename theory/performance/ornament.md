@@ -64,3 +64,8 @@ synthesis adapter must either map the intent explicitly or reject it.
 - Repeated attacks carry explicit continuation or rearticulation intent.
 - Pitch-fluctuation intent is described without assuming a physical mechanism.
 - Ornament timing is generated jointly with the carrier gesture.
+
+The performance boundary carries exact host fractions for ornament onset,
+active motion, and release. Those fractions are loaded from the external
+execution profile and consumed by the pitch adapters; they are not fixed by a
+maqam package. Missing fractions are malformed profile input.

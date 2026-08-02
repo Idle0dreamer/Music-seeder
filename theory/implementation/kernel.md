@@ -90,6 +90,9 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Exact staged performance plans | one target per committed structural event, including exact `4:3` and `3:2` relations |
 | Exact monophonic timed performance plan | `performance::Plan::events` derives rational onsets and validates duration, intensity, articulation, release, typed strand, optional exact pitch contours, ornament intent, and explicit pause spans |
 | Profile-driven hierarchical execution timing | `performance::Timing` resolves phrase start/body/end rates, seeded bounded performer variation, release intent, and boundary pauses from external data; maqam packages and the shared family builder do not own fixed timing values |
+| Profile-owned ornament host timing | Exact onset, active-duration, and release fractions are loaded with each direction intent and consumed by approach and oscillation adapters |
+| External physical execution timing | Seconds-per-unit and render-tail values are required from the external timing profile rather than hard-coded in the renderer |
+| Native corpus casebook validation | `validation::Casebook` parses evidence envelopes, exact observations, split coverage, pauses, releases, ornament coverage, and performer variation with an exact release gate |
 | Executable profile comparison | reconstructed baggage prohibition changes the legal generation set |
 | Typed grammar output | `Stage` and `Candidate` term forms |
 | Scope-controlled generated output | explicit `Output` export and non-leakage law |
@@ -110,6 +113,9 @@ implements. Passing legacy prototype tests does not advance this ledger.
 
 - A rights-cleared, profile-matched corpus for the Bayati regional profile.
 - Human annotator review of structural layers.
+- The checked-in casebook is a schema fixture keyed to AMICOR, not measured
+  corpus data; profile-matched source segments and independent review are still
+  required for phrase-rate, pause, release, ornament, and performer claims.
 - A vocabulary-composition boundary for admitting a second theory module.
 
 Audio rendering is outside this ledger. The independent synthesis boundary is
@@ -120,7 +126,8 @@ coupled-course model, not a named-instrument or regional-authenticity result.
 
 1. Replace the engineering timing profile with performer/corpus-derived rate,
    pause, release, and ornament distributions while preserving exact symbolic
-   plan laws.
+   plan laws. The casebook validator is now the ingestion and claim gate for
+   that replacement; its AMICOR-keyed fixture is not a Bayati authenticity pass.
 2. Validate and refine the coupled-course santur physical model against
    isolated-course and overlap measurements while preserving the one-way
    `performance::Plan::events` boundary.

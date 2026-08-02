@@ -98,15 +98,21 @@ Implemented so far:
 52. an external timing-profile parser carries exact rational durations,
     intensities, articulation, phrase-rate selection, seeded bounded variation,
     explicit release intent, and boundary pauses through generation;
-53. synthesis consumes explicit release spans in the independent coupled-course
+53. ornament host timing is an explicit profile fraction and is realized by
+    both approach and oscillation pitch adapters;
+54. render seconds-per-unit and tail duration are required external execution
+    profile values rather than renderer defaults;
+55. native C++ casebook parsing and exact timing/release/ornament/pause/
+    performer-variation validation with provenance and disagreement fields;
+56. synthesis consumes explicit release spans in the independent coupled-course
     model while preserving the one-way instrument-neutral plan boundary;
 
 Checkpoint validation state:
 
 - the current working tree passes `make kernel-test` with GCC debug flags,
-  all 50 test-function invocations, and 47 summary lines;
+  all 51 test-function invocations, and 48 summary lines;
 - the current working tree passes `make kernel` with `-O2 -Werror`;
-- the current working tree passes `make kernel-sanitize` with UBSan and all 47
+- the current working tree passes `make kernel-sanitize` with UBSan and all 48
   summary lines;
 - `./build/kernel 1` emits the five-event neutral travel candidate with exact
   onsets `0`, `1`, `2`, `3`, and `4`; `./build/kernel 2` emits the one-event

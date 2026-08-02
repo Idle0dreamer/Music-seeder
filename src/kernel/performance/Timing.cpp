@@ -48,6 +48,7 @@ TimingIntent Timing::resolve(
         base.articulation,
         base.release_duration * rate(*this, context),
         base.release_articulation,
+        base.ornament_timing,
     };
 }
 

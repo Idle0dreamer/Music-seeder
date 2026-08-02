@@ -65,7 +65,10 @@ void print_timed(const mq::kernel::performance::TimedEvent& timed) {
     if (timed.ornament) {
         std::cout << " ornament " << ornament_name(timed.ornament->kind)
                   << " family " << timed.ornament->family.str()
-                  << " extent " << timed.ornament->extent.str();
+                  << " extent " << timed.ornament->extent.str()
+                  << " timing " << timed.ornament->timing.onset.str()
+                  << "/" << timed.ornament->timing.duration.str()
+                  << "/" << timed.ornament->timing.release.str();
     }
     if (timed.release) {
         std::cout << " release + " << timed.release->duration.str();

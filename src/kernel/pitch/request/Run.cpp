@@ -139,6 +139,7 @@ std::expected<Result, Error> run(
             performance::OrnamentKind::Approach,
             *previous - center->second,
             Rational(1),
+            timing.ornament_timing,
             "derived:structural-motion;profile-may-refine",
         };
     }

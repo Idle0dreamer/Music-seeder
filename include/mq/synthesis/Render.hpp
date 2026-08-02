@@ -12,8 +12,8 @@ namespace mq::synthesis {
 struct RenderConfig {
     std::uint32_t sample_rate{48'000};
     double tonic_hz{146.8323839587};
-    double seconds_per_unit{0.42};
-    double tail_seconds{1.25};
+    double seconds_per_unit{};
+    double tail_seconds{};
     std::uint64_t seed{};
 };
 

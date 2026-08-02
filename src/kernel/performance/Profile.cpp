@@ -17,6 +17,9 @@ struct Fields {
     std::optional<Articulation> articulation;
     std::optional<Rational> release_duration;
     std::optional<Articulation> release_articulation;
+    std::optional<Rational> ornament_onset;
+    std::optional<Rational> ornament_duration;
+    std::optional<Rational> ornament_release;
 };
 
 std::string trim(std::string_view value) {
@@ -83,7 +86,9 @@ std::expected<TimingIntent, std::string> finish(
     const Fields& fields,
     std::string_view direction) {
     if (!fields.duration || !fields.intensity || !fields.articulation ||
-        !fields.release_duration || !fields.release_articulation) {
+        !fields.release_duration || !fields.release_articulation ||
+        !fields.ornament_onset || !fields.ornament_duration ||
+        !fields.ornament_release) {
         return std::unexpected(
             "timing profile is missing fields for " + std::string(direction));
     }
@@ -93,6 +98,11 @@ std::expected<TimingIntent, std::string> finish(
         *fields.articulation,
         *fields.release_duration,
         *fields.release_articulation,
+        OrnamentTiming{
+            *fields.ornament_onset,
+            *fields.ornament_duration,
+            *fields.ornament_release,
+        },
     };
     if (!intent.well_formed()) {
         return std::unexpected(
@@ -115,6 +125,8 @@ std::expected<Timing, std::string> parse_timing_profile(
     std::optional<Rational> intensity_variation;
     std::optional<Rational> open_pause;
     std::optional<Rational> closed_pause;
+    std::optional<Rational> seconds_per_unit;
+    std::optional<Rational> tail_seconds;
     std::istringstream input{std::string(text)};
     std::string line;
     std::size_t line_number{};
@@ -161,6 +173,8 @@ std::expected<Timing, std::string> parse_timing_profile(
             std::pair{"performer.intensity-variation", std::ref(intensity_variation)},
             std::pair{"boundary.open-pause", std::ref(open_pause)},
             std::pair{"boundary.closed-pause", std::ref(closed_pause)},
+            std::pair{"render.seconds-per-unit", std::ref(seconds_per_unit)},
+            std::pair{"render.tail-seconds", std::ref(tail_seconds)},
         };
         bool handled_global = false;
         for (const auto& [name, destination] : globals) {
@@ -210,6 +224,21 @@ std::expected<Timing, std::string> parse_timing_profile(
             const auto parsed = articulation(value);
             if (!parsed) return std::unexpected(parsed.error());
             destination.release_articulation = *parsed;
+        } else if (field == "ornament-onset") {
+            if (destination.ornament_onset) return std::unexpected("timing profile repeats " + key);
+            const auto parsed = rational(value);
+            if (!parsed) return std::unexpected(parsed.error());
+            destination.ornament_onset = *parsed;
+        } else if (field == "ornament-duration") {
+            if (destination.ornament_duration) return std::unexpected("timing profile repeats " + key);
+            const auto parsed = rational(value);
+            if (!parsed) return std::unexpected(parsed.error());
+            destination.ornament_duration = *parsed;
+        } else if (field == "ornament-release") {
+            if (destination.ornament_release) return std::unexpected("timing profile repeats " + key);
+            const auto parsed = rational(value);
+            if (!parsed) return std::unexpected(parsed.error());
+            destination.ornament_release = *parsed;
         } else {
             return std::unexpected("unknown timing profile key: " + key);
         }
@@ -227,7 +256,7 @@ std::expected<Timing, std::string> parse_timing_profile(
     if (!fall) return std::unexpected(fall.error());
     if (!phrase_start_rate || !phrase_body_rate || !phrase_end_rate ||
         !duration_variation || !intensity_variation || !open_pause ||
-        !closed_pause) {
+        !closed_pause || !seconds_per_unit || !tail_seconds) {
         return std::unexpected("timing profile is missing global timing fields");
     }
     return Timing{
@@ -242,6 +271,8 @@ std::expected<Timing, std::string> parse_timing_profile(
         *intensity_variation,
         *open_pause,
         *closed_pause,
+        *seconds_per_unit,
+        *tail_seconds,
         std::move(provenance),
     };
 }

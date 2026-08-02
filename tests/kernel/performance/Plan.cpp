@@ -51,6 +51,11 @@ void test::timed::plan() {
         mq::kernel::performance::OrnamentKind::Oscillation,
         pitch::Expression::ratio(1, 100),
         Rational(2),
+        performance::OrnamentTiming{
+            Rational(1, 8),
+            Rational(1, 4),
+            Rational(1, 8),
+        },
         "test:exact-ornament-law",
     };
     require(plan.well_formed(), "exact ornament intent was rejected");
@@ -63,6 +68,13 @@ void test::timed::plan() {
 
     auto timing = test::timing_profile();
     require(timing.well_formed(), "timing profile was rejected");
+    require(
+        timing.rise.ornament_timing.duration == Rational(1, 4),
+        "external ornament timing was not loaded");
+    require(
+        timing.seconds_per_unit == Rational(21, 50) &&
+            timing.tail_seconds == Rational(5, 4),
+        "external render timing was not loaded");
     auto invalid = timing;
     invalid.rise.duration = mq::kernel::Rational(0);
     require(!invalid.well_formed(), "invalid timing policy was accepted");

@@ -81,3 +81,9 @@ The checked-in engineering profile is input data, not a maqam default. Smooth
 rate fields, ornament/carrier time allocation, breath and cycle alignment,
 performer distributions, and measured free-time evidence remain required for
 the full performance model.
+
+The current executable seam now also carries exact ornament host fractions and
+external physical render timing. The engineering profile and small
+AMICOR-keyed validation fixture exercise these laws, but measured
+profile-matched distributions and corpus validation for named maqam profiles
+remain release blockers.

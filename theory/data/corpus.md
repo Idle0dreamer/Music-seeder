@@ -35,6 +35,21 @@ Every derived claim links back to the exact evidence segments that support it.
 
 No automated layer is promoted to ground truth without expert review.
 
+## Executable casebook boundary
+
+The first native boundary is
+[`theory/data/corpus/amicor-timing.casebook`](../data/corpus/amicor-timing.casebook).
+`validation::Casebook` preserves source, location, rights, scope, annotator,
+confidence, disagreement, performer, recording, split, exact relative event
+durations, releases, ornament fractions, and pauses. Its report computes exact
+means and refuses the complete timing gate when profile, split, performer,
+release, ornament, or pause coverage is absent.
+
+The fixture is keyed to the public AMICOR symbolic corpus and deliberately
+marks its values as test data rather than source measurements. It exercises the
+ingestion and validation seam; it is not a substitute for the profile-matched
+Bayati audio/casebook needed for a full-depth regional claim.
+
 ## Disagreement
 
 Annotations are distributions:
