@@ -53,6 +53,7 @@ Stage establishment(
                 sort::RegionId{key.regionRoot},
                 std::nullopt,
             },
+            operation::Emit{sort::CellId{key.cellEstablish}},
         });
 }
 
@@ -156,6 +157,7 @@ Stage branchDescent(
                 sort::RegionId{key.regionUpper},
                 std::nullopt,
             },
+            operation::Emit{sort::CellId{key.cellDevelop}},
         });
 }
 
@@ -180,6 +182,7 @@ Stage restore(
                 sort::RegionId{key.regionRoot},
                 std::nullopt,
             },
+            operation::Emit{sort::CellId{key.cellReturn}},
             operation::gesture::End{resolution},
             operation::Cadence{
                 sort::FamilyId{key.cadenceReturn},
@@ -450,6 +453,7 @@ std::expected<Generation, std::string> generation(const Key& key) {
                 sort::RegionId{key.regionRoot},
                 std::nullopt,
             },
+            operation::Emit{sort::CellId{key.cellEstablish}},
             operation::Cadence{
                 sort::FamilyId{key.cadenceLocal},
                 Rational(1),

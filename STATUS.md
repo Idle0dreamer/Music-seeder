@@ -41,7 +41,7 @@ Implemented so far:
     pitch fields;
 21. exact instrument-neutral pitch targets with plan-prefix validation;
 22. exact rational monophonic timed performance events with typed strands,
-    duration, intensity, and articulation intent;
+    duration, intensity, articulation intent, and optional exact pitch contours;
 23. exact `Same`, `Rise`, and `Fall` order certificates;
 24. event-bounded phrase spans with exact cadence evidence and strength;
 25. typed phrase function, cadence, and boundary pitch projections;
@@ -66,7 +66,7 @@ Implemented so far:
     baggage step while retaining the diagnostic;
 38. typed sayr plans, dependency-ordered obligations, proof-bearing
     fulfillment, route completion, and scope restoration;
-39. forty-two registered executable test-function invocations (39 summary
+39. forty-three registered executable test-function invocations (40 summary
     lines).
 40. a sourced, explicitly provisional Bayati profile with root Bayati,
     Nahawand, Rast, and Hijaz upper-jins routes;
@@ -76,13 +76,13 @@ Implemented so far:
     variation;
 43. a separate C++ synthesis target with a provisional coupled-course santur
     model that consumes timed plans and writes deterministic mono PCM WAV;
-44. a Faust-generated C++ renderer target with explicit frequency, intensity,
-    and strike mapping plus refusal for unsupported articulation;
+44. a Faust-generated C++ renderer target with exact-contour frequency updates,
+    intensity, strike, and neutral/connected/detached attack-force mapping;
 
 Checkpoint validation state:
 
 - the current working tree passes `make kernel-test` with GCC debug flags,
-  all 42 test-function invocations, and 39 summary lines;
+  all 43 test-function invocations, and 40 summary lines;
 - the current working tree passes `make kernel` with `-O2 -Werror`;
 - `./build/kernel 1` emits the five-event neutral travel candidate with exact
   onsets `0`, `1`, `2`, `3`, and `4`; `./build/kernel 2` emits the one-event
@@ -92,11 +92,11 @@ Checkpoint validation state:
 - `make synthesis` and `./build/synthesis-render 17 /tmp/bayati.wav` produce a
   non-silent valid 48 kHz PCM WAV from the provisional coupled-course model;
   repeated renders have the same SHA-256;
-- `.github/workflows/kernel.yml` now compiles both pinned Faust-generated C++
+- `.github/workflows/kernel.yml` compiles both pinned Faust-generated C++
   sources and exercises both the independent and Faust runtime renderers
-  online; this workflow has not yet run for the current local tree;
-- this evidence is for the current working tree, not a claim that pristine
-  remote commit `310cfa8` contains the uncommitted fixes;
+  online; the latest run for `9038e84` is still in progress;
+- this evidence is for the current working tree and does not replace the
+  exact-head remote result;
 - `.github/workflows/kernel.yml` provides the free remote debug, release, CLI,
   and undefined-behavior validation path on GitHub Actions;
 - AddressSanitizer remains a separate environmental check and is not counted
@@ -108,10 +108,10 @@ scope and remaining corpus/annotator debt are recorded in
 `theory/implementation/kernel.md` and `theory/case/bayati.md`.
 
 The neutral fixture remains finite and intentionally limited. The Bayati
-profile now executes four finite sourced route candidates, but it is not yet a
-recursive phrase, motif, phrase-conditioned timing, or ornament generator, and
-its sayr vocabulary is not culturally complete. The santur renderer is an
-unvalidated provisional physical model, not a regional or instrument-authentic
-claim.
+profile now executes four finite sourced route candidates with onset-to-target
+pitch contours, but it is not yet a recursive phrase, motif, or ornament
+generator, and its sayr vocabulary is not culturally complete. The santur
+renderer is an unvalidated provisional physical model, not a regional or
+instrument-authentic claim.
 
 The normative model remains under `theory/`.

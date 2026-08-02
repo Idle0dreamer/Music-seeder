@@ -72,6 +72,10 @@ void test::request::run() {
                 pitch::Expression::ratio(4, 3) &&
             second->plan.events.back().onset == Rational(1) &&
             second->plan.events.back().duration == Rational(1) &&
+            second->plan.events.back().contour &&
+            second->plan.events.back().contour->well_formed() &&
+            second->plan.events.back().contour->points.front().offset ==
+                pitch::Expression::ratio(3, 4) &&
             second->plan.well_formed() &&
             second->direction &&
             second->direction->relation ==

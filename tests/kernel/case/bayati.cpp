@@ -41,7 +41,8 @@ void test::bayati_case() {
                 return item.plan.well_formed() &&
                        !item.state.phrase.active &&
                        !item.state.gesture.active &&
-                       !item.state.center.stack.empty();
+                       !item.state.center.stack.empty() &&
+                       item.state.cell.occurrences.size() >= 1;
             }),
         "Bayati routes did not produce complete timed plans");
 }

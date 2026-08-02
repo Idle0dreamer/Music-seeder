@@ -44,7 +44,11 @@ profile(const Key& key) {
         }, source),
         define("allow.emphasize", {key.roleGhammaz}, source),
         define("allow.dwell", {key.roleGhammaz}, source),
-        define("allow.emit", {key.cellEstablish, key.cellDevelop}, source),
+        define("allow.emit", {
+            key.cellEstablish,
+            key.cellDevelop,
+            key.cellReturn,
+        }, source),
         define("allow.cadence", {key.cadenceLocal, key.cadenceReturn}, source),
         define("allow.tonicize", {
             key.jinsNahawand,

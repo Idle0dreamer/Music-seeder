@@ -60,10 +60,24 @@ std::expected<Result, Error> run(
         return std::unexpected(proof.error());
     }
 
+    const auto previous = prefix.events.empty()
+                              ? std::optional<pitch::Expression>{}
+                              : std::optional<pitch::Expression>{
+                                    prefix.events.back().target.center};
     prefix.append(performance::Target{
         **current,
         center->second,
     });
+    if (previous &&
+        ((*current)->direction == motion::Direction::Rise ||
+         (*current)->direction == motion::Direction::Fall)) {
+        prefix.events.back().contour = performance::PitchContour{
+            {
+                {Rational(0), *previous - center->second},
+                {Rational(1), pitch::Expression{}},
+            },
+        };
+    }
     return Result{
         std::move(prefix),
         std::move(*context),

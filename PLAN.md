@@ -14,10 +14,11 @@ model with three detuned courses, stiff-string partials, hammer-contact attack,
 bridge/soundboard modes, and sympathetic tails. It renders a deterministic WAV.
 
 The Faust side now has both a modal probe and a coupled-course source, plus a
-dedicated generated-C++ runtime target that drives frequency, intensity, and
-strike controls and writes through the shared WAV boundary. It is not yet
-remotely verified. Bayati phrase/motif/ornament coverage, instrument
-measurements, and remote workflow evidence also remain open.
+dedicated generated-C++ runtime target that drives exact-contour frequency,
+intensity, articulation, and strike controls through the shared WAV boundary.
+The latest exact-head remote workflow is still running. Bayati
+phrase/motif/ornament coverage, instrument measurements, and remote workflow
+evidence remain open.
 
 ## Completion standard
 
@@ -157,8 +158,8 @@ Deliverables:
 - phrase-conditioned score and performed time maps;
 - duration, pause, release, dynamics, articulation, ornament, and strand
   intents;
-- continuous pitch trajectory authority with explicit numeric conversion
-  boundary;
+- continuous pitch trajectory authority with exact control points and explicit
+  numeric conversion boundary;
 - adapter coverage matrix and refusal trace;
 - independent synthesis seed partition.
 

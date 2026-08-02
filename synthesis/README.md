@@ -46,7 +46,7 @@ The first provisional santur adapter is implemented and renders a deterministic
 WAV. It includes three detuned course strings, stiff-string partials, a
 hammer-contact attack, bridge and soundboard modes, and sympathetic tails. The
 Faust-generated coupled-course renderer is implemented as a separate target;
-its clean remote build and artifact are still pending. Neither is yet a
+its latest clean remote build and artifact are still pending. Neither is yet a
 validated instrument reproduction: geometry, material parameters, measurements,
 and perceptual comparison remain open.
 

@@ -88,7 +88,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Sayr scope restoration | explicit grammar scope component and non-leakage law |
 | Complete candidate evaluation | legal outcomes and retained diagnostics before seed |
 | Exact staged performance plans | one target per committed structural event, including exact `4:3` and `3:2` relations |
-| Exact monophonic timed performance plan | `performance::Plan::events` derives contiguous rational onsets and validates duration, intensity, articulation, and typed strand |
+| Exact monophonic timed performance plan | `performance::Plan::events` derives contiguous rational onsets and validates duration, intensity, articulation, typed strand, and optional exact pitch contours |
 | Executable profile comparison | reconstructed baggage prohibition changes the legal generation set |
 | Typed grammar output | `Stage` and `Candidate` term forms |
 | Scope-controlled generated output | explicit `Output` export and non-leakage law |
@@ -126,9 +126,9 @@ Verified for the preceding 34-suite descriptor checkpoint:
 - thirty-four debug law suites;
 - undefined-behavior sanitizer;
 
-The current working tree passes a local GCC debug suite with 42 test-function
+The current working tree passes a local GCC debug suite with 43 test-function
 invocations, an optimized build, and CLI generation for seeds 1 and 2. This is
-not evidence for pristine remote `310cfa8`; the repair set is still local.
+not a substitute for the exact-head remote workflow result.
 `.github/workflows/kernel.yml` is the intended clean remote validation path and
 installs GCC 14 before running debug, optimized, CLI, Faust, synthesis, and
 undefined-behavior checks.
