@@ -4,6 +4,7 @@
 #include "mq/kernel/pitch/request/Run.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <optional>
 
 namespace mq::kernel::generate {
@@ -14,6 +15,7 @@ struct Limits {
     std::size_t actions{64};
     std::optional<performance::Timing> timing;
     pitch::request::Limits pitch{};
+    std::uint64_t seed{};
 };
 
 } // namespace mq::kernel::generate

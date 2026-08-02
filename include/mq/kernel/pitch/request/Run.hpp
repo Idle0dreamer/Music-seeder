@@ -6,6 +6,8 @@
 #include "mq/kernel/pitch/field/solve/Run.hpp"
 #include "mq/kernel/pitch/order/Compare.hpp"
 
+#include <cstdint>
+
 namespace mq::kernel::pitch::request {
 
 struct Limits {
@@ -14,6 +16,7 @@ struct Limits {
     field::solve::Limits field{};
     order::Limits order{};
     std::optional<performance::Timing> timing;
+    std::uint64_t seed{};
 };
 
 struct Error {

@@ -88,8 +88,8 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Sayr scope restoration | explicit grammar scope component and non-leakage law |
 | Complete candidate evaluation | legal outcomes and retained diagnostics before seed |
 | Exact staged performance plans | one target per committed structural event, including exact `4:3` and `3:2` relations |
-| Exact monophonic timed performance plan | `performance::Plan::events` derives contiguous rational onsets and validates duration, intensity, articulation, typed strand, optional exact pitch contours, and ornament intent |
-| Direction-conditioned execution timing | `performance::Timing` carries exact duration, intensity, and articulation intents parsed from an external profile; maqam packages and the shared family builder do not own fixed timing values |
+| Exact monophonic timed performance plan | `performance::Plan::events` derives rational onsets and validates duration, intensity, articulation, release, typed strand, optional exact pitch contours, ornament intent, and explicit pause spans |
+| Profile-driven hierarchical execution timing | `performance::Timing` resolves phrase start/body/end rates, seeded bounded performer variation, release intent, and boundary pauses from external data; maqam packages and the shared family builder do not own fixed timing values |
 | Executable profile comparison | reconstructed baggage prohibition changes the legal generation set |
 | Typed grammar output | `Stage` and `Candidate` term forms |
 | Scope-controlled generated output | explicit `Output` export and non-leakage law |
@@ -118,7 +118,9 @@ coupled-course model, not a named-instrument or regional-authenticity result.
 
 ## Next coherent sequence
 
-1. Validate the external timing-profile checkpoint through the free GitHub Actions workflow.
+1. Replace the engineering timing profile with performer/corpus-derived rate,
+   pause, release, and ornament distributions while preserving exact symbolic
+   plan laws.
 2. Validate and refine the coupled-course santur physical model against
    isolated-course and overlap measurements while preserving the one-way
    `performance::Plan::events` boundary.

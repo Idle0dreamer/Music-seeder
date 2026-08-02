@@ -52,6 +52,7 @@ std::expected<Outcome, Diagnostic> evaluate(
         });
     }
     limits.pitch.timing = *limits.timing;
+    limits.pitch.seed = limits.seed;
     performance::Plan plan;
     for (const auto& stage : candidate.stages) {
         const auto before = state.melody.history.size();

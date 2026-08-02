@@ -3,6 +3,8 @@
 #include "mq/kernel/performance/Plan.hpp"
 #include "mq/kernel/performance/Timing.hpp"
 
+#include <cstdint>
+
 namespace {
 
 mq::kernel::Identity id(std::string name) {
@@ -57,9 +59,36 @@ void test::timed::plan() {
     require(
         !plan.well_formed(),
         "unterminated pitch contour was accepted");
+    plan.events.front().contour->points.back().position = Rational(1);
 
     auto timing = test::timing_profile();
     require(timing.well_formed(), "timing profile was rejected");
-    timing.rise.duration = mq::kernel::Rational(0);
-    require(!timing.well_formed(), "invalid timing policy was accepted");
+    auto invalid = timing;
+    invalid.rise.duration = mq::kernel::Rational(0);
+    require(!invalid.well_formed(), "invalid timing policy was accepted");
+
+    plan.events.front().release = performance::Release{
+        Rational(1, 4),
+        performance::Articulation::Detached,
+    };
+    plan.append_pause(
+        Rational(1, 4),
+        id("pause.cadence"),
+        "test:cadence-pause");
+    require(plan.well_formed(), "explicit release or pause was rejected");
+
+    auto variable = timing;
+    variable.duration_variation = Rational(1, 4);
+    variable.intensity_variation = Rational(1, 4);
+    bool changed = false;
+    for (std::uint64_t seed = 0; seed < 4; ++seed) {
+        const auto resolved = variable.resolve(
+            motion::Direction::Rise,
+            performance::Context{3, false, false, false, seed});
+        if (resolved.duration != timing.rise.duration ||
+            resolved.intensity != timing.rise.intensity) {
+            changed = true;
+        }
+    }
+    require(changed, "seeded performer timing variation was not applied");
 }

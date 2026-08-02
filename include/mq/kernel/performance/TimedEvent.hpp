@@ -3,6 +3,7 @@
 #include "mq/kernel/Rational.hpp"
 #include "mq/kernel/performance/Articulation.hpp"
 #include "mq/kernel/performance/Ornament.hpp"
+#include "mq/kernel/performance/Release.hpp"
 #include "mq/kernel/performance/PitchContour.hpp"
 #include "mq/kernel/performance/Strand.hpp"
 #include "mq/kernel/performance/Target.hpp"
@@ -20,6 +21,7 @@ struct TimedEvent {
     sort::StrandId strand;
     std::optional<PitchContour> contour;
     std::optional<Ornament> ornament;
+    std::optional<Release> release;
 
     [[nodiscard]] bool well_formed() const {
         bool known_articulation = false;
@@ -36,6 +38,7 @@ struct TimedEvent {
                known_articulation &&
                (!contour || contour->well_formed()) &&
                (!ornament || ornament->well_formed()) &&
+               (!release || release->well_formed()) &&
                !strand.identity.domain.empty() &&
                !strand.identity.name.empty() &&
                !strand.identity.revision.empty();

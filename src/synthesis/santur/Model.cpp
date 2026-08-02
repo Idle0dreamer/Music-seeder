@@ -45,6 +45,7 @@ double string_mode(
     double baseHz,
     double local,
     double duration,
+    double releaseDuration,
     double intensity,
     double detune,
     double strikePosition,
@@ -72,7 +73,9 @@ double string_mode(
                               : 1.0;
     const double release = local < duration
                                ? 1.0
-                               : std::exp(-decay * (local - duration));
+                               : std::exp(
+                                     -decay * (local - duration) /
+                                     std::max(0.001, releaseDuration));
     return intensity * 0.24 * hammer * result * release;
 }
 
@@ -136,6 +139,10 @@ double Model::sample(
                                                        1900U) /
                                        10000.0;
     const double decay = sustain_decay(event.articulation);
+    const double releaseDuration = event.release
+                                       ? event.release->duration.decimal() *
+                                             config_.seconds_per_unit
+                                       : 1.0;
 
     double strings = 0.0;
     constexpr double detuning[] = {-0.0018, 0.0, 0.0021};
@@ -144,6 +151,7 @@ double Model::sample(
             baseHz,
             local,
             duration,
+            releaseDuration,
             intensity,
             detuning[course],
             strikePosition + 0.012 * static_cast<double>(course),

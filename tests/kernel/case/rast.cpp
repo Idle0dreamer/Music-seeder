@@ -59,16 +59,24 @@ void test::rast_case() {
         std::ranges::all_of(
             result->legal,
             [](const auto& item) {
+                const auto timing = test::timing_profile();
                 if (item.plan.events.size() == 1) {
-                    return item.plan.events.front().duration == Rational(3, 2);
+                    return item.plan.events.front().duration ==
+                               timing.start.duration &&
+                           item.plan.events.front().release &&
+                           !item.plan.pauses.empty();
                 }
                 return item.plan.events.size() == 5 &&
                        item.plan.events[0].onset == Rational(0) &&
-                       item.plan.events[1].onset == Rational(3, 2) &&
-                       item.plan.events[2].onset == Rational(9, 4) &&
-                       item.plan.events[3].onset == Rational(3) &&
-                       item.plan.events[4].onset == Rational(7, 2) &&
-                       item.plan.end() == Rational(4);
+                       item.plan.events[0].duration == timing.start.duration &&
+                       item.plan.events[1].duration == timing.rise.duration &&
+                       std::ranges::all_of(
+                           item.plan.events,
+                           [](const auto& event) { return event.release.has_value(); }) &&
+                       !item.plan.pauses.empty() &&
+                       item.plan.end() >
+                           item.plan.events.back().onset +
+                               item.plan.events.back().duration;
             }),
         "external timing profile was not applied to Rast");
 }

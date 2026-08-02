@@ -3,6 +3,7 @@
 #include <array>
 #include <charconv>
 #include <fstream>
+#include <functional>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -14,6 +15,8 @@ struct Fields {
     std::optional<Rational> duration;
     std::optional<Rational> intensity;
     std::optional<Articulation> articulation;
+    std::optional<Rational> release_duration;
+    std::optional<Articulation> release_articulation;
 };
 
 std::string trim(std::string_view value) {
@@ -79,7 +82,8 @@ std::expected<std::size_t, std::string> direction_index(
 std::expected<TimingIntent, std::string> finish(
     const Fields& fields,
     std::string_view direction) {
-    if (!fields.duration || !fields.intensity || !fields.articulation) {
+    if (!fields.duration || !fields.intensity || !fields.articulation ||
+        !fields.release_duration || !fields.release_articulation) {
         return std::unexpected(
             "timing profile is missing fields for " + std::string(direction));
     }
@@ -87,6 +91,8 @@ std::expected<TimingIntent, std::string> finish(
         *fields.duration,
         *fields.intensity,
         *fields.articulation,
+        *fields.release_duration,
+        *fields.release_articulation,
     };
     if (!intent.well_formed()) {
         return std::unexpected(
@@ -102,6 +108,13 @@ std::expected<Timing, std::string> parse_timing_profile(
     std::string_view text) {
     std::array<Fields, 4> fields;
     std::string provenance;
+    std::optional<Rational> phrase_start_rate;
+    std::optional<Rational> phrase_body_rate;
+    std::optional<Rational> phrase_end_rate;
+    std::optional<Rational> duration_variation;
+    std::optional<Rational> intensity_variation;
+    std::optional<Rational> open_pause;
+    std::optional<Rational> closed_pause;
     std::istringstream input{std::string(text)};
     std::string line;
     std::size_t line_number{};
@@ -128,6 +141,37 @@ std::expected<Timing, std::string> parse_timing_profile(
             provenance = value;
             continue;
         }
+        const auto global = [&](std::string_view name,
+                                std::optional<Rational>& destination)
+            -> std::expected<bool, std::string> {
+            if (key != name) return false;
+            if (destination) {
+                return std::unexpected("timing profile repeats " + key);
+            }
+            const auto parsed = rational(value);
+            if (!parsed) return std::unexpected(parsed.error());
+            destination = *parsed;
+            return true;
+        };
+        const auto globals = {
+            std::pair{"phrase.start-rate", std::ref(phrase_start_rate)},
+            std::pair{"phrase.body-rate", std::ref(phrase_body_rate)},
+            std::pair{"phrase.end-rate", std::ref(phrase_end_rate)},
+            std::pair{"performer.duration-variation", std::ref(duration_variation)},
+            std::pair{"performer.intensity-variation", std::ref(intensity_variation)},
+            std::pair{"boundary.open-pause", std::ref(open_pause)},
+            std::pair{"boundary.closed-pause", std::ref(closed_pause)},
+        };
+        bool handled_global = false;
+        for (const auto& [name, destination] : globals) {
+            const auto handled = global(name, destination.get());
+            if (!handled) return std::unexpected(handled.error());
+            if (*handled) {
+                handled_global = true;
+                break;
+            }
+        }
+        if (handled_global) continue;
         const auto first = key.find('.');
         const auto second = key.find('.', first == std::string::npos ? first : first + 1);
         if (first == std::string::npos || second == std::string::npos ||
@@ -156,6 +200,16 @@ std::expected<Timing, std::string> parse_timing_profile(
             const auto parsed = articulation(value);
             if (!parsed) return std::unexpected(parsed.error());
             destination.articulation = *parsed;
+        } else if (field == "release-duration") {
+            if (destination.release_duration) return std::unexpected("timing profile repeats " + key);
+            const auto parsed = rational(value);
+            if (!parsed) return std::unexpected(parsed.error());
+            destination.release_duration = *parsed;
+        } else if (field == "release-articulation") {
+            if (destination.release_articulation) return std::unexpected("timing profile repeats " + key);
+            const auto parsed = articulation(value);
+            if (!parsed) return std::unexpected(parsed.error());
+            destination.release_articulation = *parsed;
         } else {
             return std::unexpected("unknown timing profile key: " + key);
         }
@@ -171,7 +225,25 @@ std::expected<Timing, std::string> parse_timing_profile(
     if (!same) return std::unexpected(same.error());
     if (!rise) return std::unexpected(rise.error());
     if (!fall) return std::unexpected(fall.error());
-    return Timing{*start, *same, *rise, *fall, std::move(provenance)};
+    if (!phrase_start_rate || !phrase_body_rate || !phrase_end_rate ||
+        !duration_variation || !intensity_variation || !open_pause ||
+        !closed_pause) {
+        return std::unexpected("timing profile is missing global timing fields");
+    }
+    return Timing{
+        *start,
+        *same,
+        *rise,
+        *fall,
+        *phrase_start_rate,
+        *phrase_body_rate,
+        *phrase_end_rate,
+        *duration_variation,
+        *intensity_variation,
+        *open_pause,
+        *closed_pause,
+        std::move(provenance),
+    };
 }
 
 std::expected<Timing, std::string> load_timing_profile(

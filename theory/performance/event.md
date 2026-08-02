@@ -98,13 +98,13 @@ explicitly.
 
 The structural `Target` contains event intent and exact structural center. The
 kernel now wraps it in `performance::TimedEvent`, carrying exact rational
-onset and duration, nonnegative intensity, explicit articulation intent, and a
-typed strand. The current plan is deliberately monophonic and contiguous:
-each new onset is derived from the preceding event's end. This is an
-executable timing seam, not yet the full phrase-rate, pause, ornament, release,
-or measured/free-time model described elsewhere in the theory. An explicit
-history limit bounds prefix validation before any field or order proof work
-begins.
+onset and duration, nonnegative intensity, explicit articulation and release
+intent, and a typed strand. `performance::Plan` also carries intentional pause
+spans. Event timing is resolved from an external profile using phrase context
+and a seeded bounded performer-variation field; it is not a maqam-owned fixed
+duration table. Smooth rate fields, measured/free-time realization, and joint
+ornament allocation remain required downstream. An explicit history limit
+bounds prefix validation before any field or order proof work begins.
 
 ## Downstream breadth
 

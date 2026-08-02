@@ -58,6 +58,7 @@ std::expected<Result, Error> Engine::run(
     const pitch::field::Schema& schema,
     state::Snapshot initial,
     Limits limits) const {
+    limits.seed = seed;
     const auto valid = detail::check(expression, candidates, limits);
     if (!valid) {
         return std::unexpected(valid.error());

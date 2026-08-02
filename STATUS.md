@@ -96,7 +96,10 @@ Implemented so far:
     frequency updates, intensity, strike, and neutral/connected/detached
     attack-force mapping;
 52. an external timing-profile parser carries exact rational durations,
-    intensities, and articulation through generation into both renderers;
+    intensities, articulation, phrase-rate selection, seeded bounded variation,
+    explicit release intent, and boundary pauses through generation;
+53. synthesis consumes explicit release spans in the independent coupled-course
+    model while preserving the one-way instrument-neutral plan boundary;
 
 Checkpoint validation state:
 

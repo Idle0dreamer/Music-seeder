@@ -67,6 +67,9 @@ void print_timed(const mq::kernel::performance::TimedEvent& timed) {
                   << " family " << timed.ornament->family.str()
                   << " extent " << timed.ornament->extent.str();
     }
+    if (timed.release) {
+        std::cout << " release + " << timed.release->duration.str();
+    }
     std::cout << '\n';
 }
 
@@ -139,6 +142,11 @@ int run(std::uint64_t seed) {
     for (const auto& timed : selected->plan.events) {
         print_timed(timed);
     }
+    for (const auto& pause : selected->plan.pauses) {
+        std::cout << "  pause " << pause.function.str() << " @ "
+                  << pause.onset.str() << " + " << pause.duration.str()
+                  << '\n';
+    }
     return 0;
 }
 
@@ -205,6 +213,11 @@ int maqam(
     }
     for (const auto& timed : selected->plan.events) {
         print_timed(timed);
+    }
+    for (const auto& pause : selected->plan.pauses) {
+        std::cout << "  pause " << pause.function.str() << " @ "
+                  << pause.onset.str() << " + " << pause.duration.str()
+                  << '\n';
     }
     return 0;
 }

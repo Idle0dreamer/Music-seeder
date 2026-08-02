@@ -62,22 +62,24 @@ void test::nahawand_case() {
                 const auto timing = test::timing_profile();
                 if (item.plan.events.size() == 1) {
                     return item.plan.events.front().duration ==
-                        timing.start.duration;
+                               timing.start.duration &&
+                           item.plan.events.front().release &&
+                           !item.plan.pauses.empty();
                 }
                 return item.plan.events.size() == 5 &&
                        item.plan.events[0].onset == Rational(0) &&
-                       item.plan.events[1].onset == timing.start.duration &&
-                       item.plan.events[2].onset ==
-                           timing.start.duration + timing.rise.duration &&
-                       item.plan.events[3].onset ==
-                           timing.start.duration + timing.rise.duration *
-                               Rational(2) &&
-                       item.plan.events[4].onset ==
-                           timing.start.duration + timing.rise.duration *
-                               Rational(2) + timing.fall.duration &&
-                       item.plan.end() == timing.start.duration +
-                           timing.rise.duration * Rational(2) +
-                           timing.fall.duration * Rational(2);
+                       item.plan.events[0].duration == timing.start.duration &&
+                       item.plan.events[1].duration == timing.rise.duration &&
+                       std::ranges::all_of(
+                           item.plan.events,
+                           [](const auto& event) { return event.release.has_value(); }) &&
+                       std::ranges::all_of(
+                           item.plan.pauses,
+                           [](const auto& pause) { return pause.well_formed(); }) &&
+                       !item.plan.pauses.empty() &&
+                       item.plan.end() >
+                           item.plan.events.back().onset +
+                               item.plan.events.back().duration;
             }),
         "external timing profile was not applied to Nahawand");
 }

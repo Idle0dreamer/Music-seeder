@@ -69,16 +69,58 @@ std::expected<Result, Error> run(
             std::nullopt,
         });
     }
-    const auto& timing = limits.timing->for_direction((*current)->direction);
+    const auto index = state.melody.history.size() - 1;
+    const bool phrase_start =
+        state.phrase.active && state.phrase.active->first == index;
+    const bool phrase_end =
+        !state.phrase.active && !state.phrase.completed.empty() &&
+        state.phrase.completed.back().last == (*current)->identity;
+    const bool cadence =
+        phrase_end && !state.phrase.completed.empty() &&
+        state.phrase.completed.back().last == (*current)->identity;
+    const performance::Context timing_context{
+        index,
+        phrase_start,
+        phrase_end,
+        cadence,
+        limits.seed,
+    };
+    const auto timing = limits.timing->resolve(
+        (*current)->direction,
+        timing_context);
 
     const auto previous = prefix.events.empty()
                               ? std::optional<pitch::Expression>{}
                               : std::optional<pitch::Expression>{
                                     prefix.events.back().target.center};
-    prefix.append(performance::Target{
-        **current,
-        center->second,
-    }, timing.duration, timing.intensity, timing.articulation);
+    std::optional<performance::Release> release;
+    if (timing.release_duration > Rational(0)) {
+        release = performance::Release{
+            timing.release_duration,
+            timing.release_articulation,
+        };
+    }
+    prefix.append(
+        performance::Target{
+            **current,
+            center->second,
+        },
+        timing.duration,
+        timing.intensity,
+        timing.articulation,
+        performance::monophonic(),
+        release);
+    const auto pause = limits.timing->pause(timing_context);
+    if (pause > Rational(0)) {
+        prefix.append_pause(
+            pause,
+            Identity{
+                "performance.pause",
+                cadence ? "cadence" : "phrase-boundary",
+                "1",
+            },
+            limits.timing->provenance + ";derived:phrase-boundary");
+    }
     if (previous &&
         ((*current)->direction == motion::Direction::Rise ||
          (*current)->direction == motion::Direction::Fall)) {
