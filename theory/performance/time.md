@@ -73,8 +73,8 @@ for melodic syntax; the iqa layer supplies cyclic rhythmic affordances.
 
 The first executable seam is intentionally narrower than this model. A
 monophonic `performance::Plan` stores contiguous exact-rational event spans;
-the pitch request derives each onset from the prior duration and currently
-uses a neutral unit duration, unit intensity, and explicit neutral
-articulation. Phrase-rate fields, pauses, release events, ornament timing,
-and measured-cycle alignment remain downstream work rather than hidden
-defaults.
+the pitch request derives each onset from the prior duration and requires an
+explicit direction-conditioned `performance::Timing` profile. The checked-in
+engineering profile is input data, not a maqam default. Phrase-rate fields,
+pauses, release events, ornament timing, performer variation, and measured-cycle
+alignment remain downstream work rather than hidden defaults.

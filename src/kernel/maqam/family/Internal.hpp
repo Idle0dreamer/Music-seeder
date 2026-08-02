@@ -66,7 +66,6 @@ struct Key {
     pitch::Expression ghammaz;
     pitch::Expression extension;
     std::vector<BranchKey> branches;
-    performance::Timing timing;
 };
 
 [[nodiscard]] Identity id(const Key&, std::string name);
@@ -78,6 +77,4 @@ struct Key {
 profile(const Key&);
 [[nodiscard]] std::expected<Generation, std::string>
 generation(const Key&);
-[[nodiscard]] performance::Timing timing(const Key&);
-
 } // namespace mq::kernel::maqam::family::detail

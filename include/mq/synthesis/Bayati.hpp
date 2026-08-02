@@ -2,6 +2,7 @@
 
 #include "mq/kernel/Identity.hpp"
 #include "mq/kernel/performance/Plan.hpp"
+#include "mq/kernel/performance/Timing.hpp"
 
 #include <cstdint>
 #include <expected>
@@ -15,6 +16,7 @@ struct BayatiPlan {
 };
 
 [[nodiscard]] std::expected<BayatiPlan, std::string> make_bayati_plan(
-    std::uint64_t seed);
+    std::uint64_t seed,
+    const ::mq::kernel::performance::Timing& timing);
 
 } // namespace mq::synthesis

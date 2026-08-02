@@ -13,7 +13,6 @@ Key key(const Spec& spec) {
     result.source = spec.provenance;
     result.ghammaz = spec.ghammaz;
     result.extension = spec.extension;
-    result.timing = spec.timing;
     result.choice = id(result, "choice");
     result.centerRoot = id(result, "center.root");
     result.centerUpper = id(result, "center.upper");

@@ -19,6 +19,8 @@ void test::generate::overlay() {
     const auto generated = fixture::generation::make(set);
     require(generated.has_value(), generated.error_or("generation failed"));
     const auto& value = *generated;
+    const mq::kernel::generate::Limits limits{
+        .timing = test::timing_profile()};
 
     const std::vector candidates{
         value.program.stay,
@@ -43,7 +45,9 @@ void test::generate::overlay() {
             value.choice,
             candidates,
             value.projection,
-            value.schema);
+            value.schema,
+            {},
+            limits);
         if (result && result->selected == value.program.travel.identity) {
             seed = candidate;
             break;
@@ -93,7 +97,9 @@ void test::generate::overlay() {
         value.choice,
         candidates,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
 
     require(
         modified_result &&

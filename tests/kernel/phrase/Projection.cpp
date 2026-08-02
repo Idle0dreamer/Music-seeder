@@ -89,6 +89,7 @@ void test::phrase::projection() {
     const auto rule = id("rule");
     const auto need = id("need");
     const auto target = pitch::Expression::ratio(9, 8);
+    const auto timing = test::timing_profile();
     const pf::Schema schema{
         {fixture.role.root},
         {tier},
@@ -115,7 +116,9 @@ void test::phrase::projection() {
     const auto request = pitch::request::run(
         *state,
         projection,
-        schema);
+        schema,
+        {},
+        pitch::request::Limits{.timing = timing});
     require(
         request &&
             request->plan.events.size() == 1 &&

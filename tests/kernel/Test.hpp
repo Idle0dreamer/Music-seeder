@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mq/kernel/performance/Profile.hpp"
+
 #include <stdexcept>
 #include <string>
 
@@ -10,6 +12,8 @@ inline void require(bool condition, const std::string& message) {
 }
 
 namespace test {
+
+mq::kernel::performance::Timing timing_profile();
 
 void rational();
 void pitch();

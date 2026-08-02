@@ -1,5 +1,6 @@
 #include "mq/synthesis/Bayati.hpp"
 #include "mq/synthesis/FaustRender.hpp"
+#include "mq/kernel/performance/Profile.hpp"
 
 #include <charconv>
 #include <cstdint>
@@ -25,7 +26,13 @@ int main(int argc, char** argv) {
                                  ? argv[2]
                                  : "build/bayati-faust-" + std::to_string(seed) +
                                        ".wav";
-    const auto generated = mq::synthesis::make_bayati_plan(seed);
+    const auto timing = mq::kernel::performance::load_timing_profile(
+        "theory/data/performance/free-rhythm-v1.timing");
+    if (!timing) {
+        std::cerr << timing.error() << '\n';
+        return 1;
+    }
+    const auto generated = mq::synthesis::make_bayati_plan(seed, *timing);
     if (!generated) {
         std::cerr << generated.error() << '\n';
         return 1;

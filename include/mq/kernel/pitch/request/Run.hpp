@@ -13,7 +13,7 @@ struct Limits {
     field::project::Limits projection{};
     field::solve::Limits field{};
     order::Limits order{};
-    performance::Timing timing{};
+    std::optional<performance::Timing> timing;
 };
 
 struct Error {

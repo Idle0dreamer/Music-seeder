@@ -18,7 +18,7 @@ void test::rast_case() {
     };
     const mq::kernel::generate::Engine engine(*scaffold->profile, context);
     mq::kernel::generate::Limits limits;
-    limits.timing = scaffold->generation.timing;
+    limits.timing = test::timing_profile();
     const auto result = engine.run(
         23,
         scaffold->generation.choice,
@@ -70,5 +70,5 @@ void test::rast_case() {
                        item.plan.events[4].onset == Rational(7, 2) &&
                        item.plan.end() == Rational(4);
             }),
-        "Rast timing policy was not applied");
+        "external timing profile was not applied to Rast");
 }

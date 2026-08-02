@@ -519,7 +519,6 @@ std::expected<Generation, std::string> generation(const Key& key) {
         std::move(*production),
         projection(key),
         schema(key),
-        timing(),
     };
 }
 

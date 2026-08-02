@@ -23,6 +23,8 @@ void test::generate::grammar() {
     const auto generated = fixture::generation::make(set);
     require(generated.has_value(), generated.error_or("generation failed"));
     const auto& value = *generated;
+    const mq::kernel::generate::Limits limits{
+        .timing = test::timing_profile()};
     const eval::Context context{
         .jins = {&set.catalog},
         .path = {&set.path.graph},
@@ -44,7 +46,9 @@ void test::generate::grammar() {
             value.choice,
             value.production,
             value.projection,
-            value.schema);
+            value.schema,
+            {},
+            limits);
         if (result &&
             result->selected == value.program.travel.identity) {
             seed = item;
@@ -58,13 +62,17 @@ void test::generate::grammar() {
         value.choice,
         value.production,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     const auto b = regional.b.run(
         *seed,
         value.choice,
         value.production,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     require(
         a &&
             a->selected == value.program.travel.identity &&
@@ -89,7 +97,9 @@ void test::generate::grammar() {
         value.choice,
         scoped,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     require(
         emitted && emitted->legal.size() == 2,
         "explicit Output scope did not emit its event stage");
@@ -103,7 +113,9 @@ void test::generate::grammar() {
         value.choice,
         hidden,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     require(
         !omitted &&
             omitted.error().code ==

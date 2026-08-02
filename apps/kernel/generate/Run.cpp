@@ -10,6 +10,7 @@
 #include "mq/kernel/maqam/Nahawand.hpp"
 #include "mq/kernel/maqam/Nikriz.hpp"
 #include "mq/kernel/maqam/Rast.hpp"
+#include "mq/kernel/performance/Profile.hpp"
 
 #include <algorithm>
 #include <array>
@@ -18,6 +19,13 @@
 
 namespace app::generate {
 namespace {
+
+constexpr std::string_view timing_path =
+    "theory/data/performance/free-rhythm-v1.timing";
+
+std::expected<mq::kernel::performance::Timing, std::string> timing_profile() {
+    return mq::kernel::performance::load_timing_profile(timing_path);
+}
 
 const char* ornament_name(
     mq::kernel::performance::OrnamentKind kind) noexcept {
@@ -77,6 +85,11 @@ int run(std::uint64_t seed) {
         std::cerr << model.error() << '\n';
         return 1;
     }
+    const auto timing = timing_profile();
+    if (!timing) {
+        std::cerr << timing.error() << '\n';
+        return 1;
+    }
     
     // The CLI currently runs the neutral fixture's finite grammar
     // without recursive productions.
@@ -101,7 +114,7 @@ int run(std::uint64_t seed) {
         model->projection,
         model->schema,
         initial,
-        mq::kernel::generate::Limits{.timing = model->timing});
+        mq::kernel::generate::Limits{.timing = *timing});
     if (!result) {
         std::cerr << result.error().message << '\n';
         return 1;
@@ -139,6 +152,11 @@ int maqam(
         std::cerr << scaffold.error() << '\n';
         return 1;
     }
+    const auto timing = timing_profile();
+    if (!timing) {
+        std::cerr << timing.error() << '\n';
+        return 1;
+    }
     const eval::Context context{
         .jins = {&scaffold->ajnas},
         .path = {&scaffold->graph},
@@ -155,7 +173,7 @@ int maqam(
         scaffold->generation.schema,
         initial,
         mq::kernel::generate::Limits{
-            .timing = scaffold->generation.timing,
+            .timing = *timing,
         });
     if (!result) {
         std::cerr << result.error().message << '\n';

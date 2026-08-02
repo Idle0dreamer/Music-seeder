@@ -1,7 +1,6 @@
 #pragma once
 
 #include "mq/kernel/Identity.hpp"
-#include "mq/kernel/performance/Timing.hpp"
 #include "mq/kernel/pitch/field/Schema.hpp"
 #include "mq/kernel/pitch/field/project/Plan.hpp"
 #include "mq/kernel/grammar/Term.hpp"
@@ -21,7 +20,6 @@ struct Generation {
     grammar::Term production;
     pitch::field::project::Plan projection;
     pitch::field::Schema schema;
-    performance::Timing timing;
 };
 
 struct Scaffold {

@@ -14,7 +14,8 @@ Source records:
 
 The implementation keeps the root and upper-jins alternatives as separate
 typed branches. Their paths, obligations, phrase cells, contextual ratio
-targets, timing policy, and provenance travel through the shared family seam;
+targets and provenance travel through the shared family seam; timing arrives
+from the explicit external performance profile;
 the branch identities are not aliases or scale-array substitutions.
 
 This is a canonical repertoire package, not a claim about every regional,

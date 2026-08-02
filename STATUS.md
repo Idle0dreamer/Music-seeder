@@ -42,7 +42,8 @@ Implemented so far:
 21. exact instrument-neutral pitch targets with plan-prefix validation;
 22. exact rational monophonic timed performance events with typed strands,
     duration, intensity, articulation, optional exact pitch contours, and
-    ornament intent, with an explicit direction-conditioned timing policy;
+    ornament intent, with an explicit direction-conditioned timing profile
+    supplied outside the maqam packages;
 23. exact `Same`, `Rise`, and `Fall` order certificates;
 24. event-bounded phrase spans with exact cadence evidence and strength;
 25. typed phrase function, cadence, and boundary pitch projections;
@@ -94,7 +95,7 @@ Implemented so far:
 51. a Faust-generated C++ renderer target with exact-contour and oscillation
     frequency updates, intensity, strike, and neutral/connected/detached
     attack-force mapping;
-52. package-owned execution policies carry exact rational durations,
+52. an external timing-profile parser carries exact rational durations,
     intensities, and articulation through generation into both renderers;
 
 Checkpoint validation state:
@@ -114,7 +115,7 @@ Checkpoint validation state:
   legal routes, with the same exact timing boundary and profile-owned targets;
 - `./build/kernel nahawand 29` emits one selected five-event Nahawand route
   from three legal routes, with branch-specific Hijaz/Kurd targets and the
-  package-supplied timing policy;
+  externally supplied timing profile;
 - `./build/kernel hijaz 31` emits one selected five-event Hijaz route from
   three legal routes, with branch-specific Nahawand/Rast targets;
 - `./build/kernel kurd 37` emits a legal Kurd result from two routes, with the

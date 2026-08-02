@@ -22,6 +22,8 @@ void test::generate::laws() {
     const auto generated = fixture::generation::make(set);
     require(generated.has_value(), generated.error_or("generation failed"));
     const auto& value = *generated;
+    const mq::kernel::generate::Limits limits{
+        .timing = test::timing_profile()};
     const eval::Context context{
         .jins = {&set.catalog},
         .path = {&set.path.graph},
@@ -37,7 +39,9 @@ void test::generate::laws() {
         value.choice,
         candidates,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     require(result.has_value(), result ? "" : result.error().message);
     const auto stayed = std::ranges::find(
         result->legal,
@@ -102,7 +106,9 @@ void test::generate::laws() {
         value.choice,
         candidates,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     require(
         reordered && reordered->selected == result->selected,
         "candidate storage order changed seeded generation");
@@ -116,7 +122,9 @@ void test::generate::laws() {
         value.choice,
         unfinished,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     require(
         !unfulfilled &&
             unfulfilled.error().code ==
@@ -142,7 +150,9 @@ void test::generate::laws() {
         value.choice,
         invalid,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     require(
         !rejected &&
             rejected.error().code ==
@@ -151,6 +161,7 @@ void test::generate::laws() {
 
     auto limited = mq::kernel::generate::Limits{};
     limited.candidates = 1;
+    limited.timing = test::timing_profile();
     const auto oversized = engine.run(
         0,
         value.choice,

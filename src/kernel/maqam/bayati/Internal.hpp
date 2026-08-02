@@ -91,7 +91,6 @@ paths(const Key& key);
 [[nodiscard]] std::expected<sayr::Plan, std::string>
 sayr(const Key& key);
 
-[[nodiscard]] performance::Timing timing();
 
 [[nodiscard]] std::expected<Generation, std::string>
 generation(const Key& key);

@@ -13,10 +13,10 @@ namespace mq::kernel::performance {
 
 struct TimedEvent {
     Target target;
-    Rational onset{};
-    Rational duration{1};
-    Rational intensity{1};
-    Articulation articulation{Articulation::Neutral};
+    Rational onset;
+    Rational duration;
+    Rational intensity;
+    Articulation articulation;
     sort::StrandId strand;
     std::optional<PitchContour> contour;
     std::optional<Ornament> ornament;

@@ -26,7 +26,11 @@ void test::timed::plan() {
         pitch::Expression::ratio(1, 1),
     };
     mq::kernel::performance::Plan plan;
-    plan.append(target, Rational(2), Rational(1));
+    plan.append(
+        target,
+        Rational(2),
+        Rational(1),
+        performance::Articulation::Neutral);
     require(plan.well_formed(), "stationary timed plan was rejected");
 
     plan.events.front().contour = mq::kernel::performance::PitchContour{
@@ -54,8 +58,8 @@ void test::timed::plan() {
         !plan.well_formed(),
         "unterminated pitch contour was accepted");
 
-    mq::kernel::performance::Timing timing;
-    require(timing.well_formed(), "neutral timing policy was rejected");
+    auto timing = test::timing_profile();
+    require(timing.well_formed(), "timing profile was rejected");
     timing.rise.duration = mq::kernel::Rational(0);
     require(!timing.well_formed(), "invalid timing policy was accepted");
 }

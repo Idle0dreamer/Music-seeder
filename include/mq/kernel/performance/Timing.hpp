@@ -9,9 +9,9 @@
 namespace mq::kernel::performance {
 
 struct TimingIntent {
-    Rational duration{1};
-    Rational intensity{1};
-    Articulation articulation{Articulation::Neutral};
+    Rational duration;
+    Rational intensity;
+    Articulation articulation;
 
     [[nodiscard]] bool well_formed() const {
         bool known_articulation = false;
@@ -34,7 +34,7 @@ struct Timing {
     TimingIntent same;
     TimingIntent rise;
     TimingIntent fall;
-    std::string provenance{"neutral:unit-execution-v1"};
+    std::string provenance;
 
     [[nodiscard]] bool well_formed() const {
         return start.well_formed() && same.well_formed() &&

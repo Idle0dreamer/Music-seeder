@@ -4,6 +4,7 @@
 #include "mq/kernel/pitch/request/Run.hpp"
 
 #include <cstddef>
+#include <optional>
 
 namespace mq::kernel::generate {
 
@@ -11,7 +12,7 @@ struct Limits {
     std::size_t candidates{256};
     std::size_t stages{4'096};
     std::size_t actions{64};
-    performance::Timing timing{};
+    std::optional<performance::Timing> timing;
     pitch::request::Limits pitch{};
 };
 

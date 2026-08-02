@@ -22,9 +22,10 @@ bridge/soundboard modes, and sympathetic tails. It renders a deterministic WAV.
 The Faust side now has both a modal probe and a coupled-course source, plus a
 dedicated generated-C++ runtime target that drives exact-contour frequency,
 ornament, intensity, articulation, and strike controls through the shared WAV
-boundary. Bayati now also carries a direction-conditioned exact timing policy
-into both renderers; it is explicitly provisional execution data, not an
-authenticity claim.
+boundary. Both renderers now consume an explicit external timing profile;
+maqam packages do not own fixed note durations. The checked-in profile is
+engineering data pending performer/corpus replacement, not an authenticity
+claim.
 Bayati phrase/motif/ornament coverage, the remaining maqāmāt packages, and
 instrument measurements remain open. “Provisional” is not an acceptable final
 status.

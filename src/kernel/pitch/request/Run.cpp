@@ -60,7 +60,7 @@ std::expected<Result, Error> run(
         return std::unexpected(proof.error());
     }
 
-    if (!limits.timing.well_formed()) {
+    if (!limits.timing || !limits.timing->well_formed()) {
         return std::unexpected(Error{
             Error::Code::Plan,
             "timing policy is not well formed",
@@ -69,7 +69,7 @@ std::expected<Result, Error> run(
             std::nullopt,
         });
     }
-    const auto& timing = limits.timing.for_direction((*current)->direction);
+    const auto& timing = limits.timing->for_direction((*current)->direction);
 
     const auto previous = prefix.events.empty()
                               ? std::optional<pitch::Expression>{}

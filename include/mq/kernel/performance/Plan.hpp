@@ -38,9 +38,9 @@ struct Plan {
 
     void append(
         Target target,
-        Rational duration = Rational(1),
-        Rational intensity = Rational(1),
-        Articulation articulation = Articulation::Neutral,
+        Rational duration,
+        Rational intensity,
+        Articulation articulation,
         sort::StrandId strand = monophonic()) {
         events.push_back({
             std::move(target),

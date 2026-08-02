@@ -19,7 +19,6 @@ struct Spec {
     std::string family;
     pitch::Expression ghammaz;
     pitch::Expression extension;
-    performance::Timing timing;
     std::string provenance;
     std::vector<BranchSpec> branches;
 };

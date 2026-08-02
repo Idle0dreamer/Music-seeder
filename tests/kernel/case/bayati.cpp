@@ -17,7 +17,7 @@ void test::bayati_case() {
     };
     const mq::kernel::generate::Engine engine(*scaffold->profile, context);
     mq::kernel::generate::Limits limits;
-    limits.timing = scaffold->generation.timing;
+    limits.timing = test::timing_profile();
     const auto result = engine.run(
         17,
         scaffold->generation.choice,
@@ -76,7 +76,7 @@ void test::bayati_case() {
                        item.plan.events[3].articulation ==
                            performance::Articulation::Detached;
             }),
-        "Bayati timing policy was not consumed by generated plans");
+        "external timing profile was not consumed by Bayati plans");
     const Identity question{
         "maqam.bayati", "phrase.question", "1"};
     const Identity response{

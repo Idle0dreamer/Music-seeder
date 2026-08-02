@@ -8,7 +8,8 @@
 namespace mq::synthesis {
 
 std::expected<BayatiPlan, std::string> make_bayati_plan(
-    std::uint64_t seed) {
+    std::uint64_t seed,
+    const mq::kernel::performance::Timing& timing) {
     const auto scaffold = mq::kernel::maqam::make_bayati();
     if (!scaffold) {
         return std::unexpected(scaffold.error());
@@ -28,7 +29,7 @@ std::expected<BayatiPlan, std::string> make_bayati_plan(
         scaffold->generation.schema,
         {},
         mq::kernel::generate::Limits{
-            .timing = scaffold->generation.timing,
+            .timing = timing,
         });
     if (!generated) {
         return std::unexpected(generated.error().message);

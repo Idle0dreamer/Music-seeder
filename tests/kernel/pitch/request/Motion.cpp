@@ -40,6 +40,7 @@ void test::request::motion() {
         fixture.catalog);
     state::Snapshot initial;
     initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
+    const auto timing = test::timing_profile();
 
     auto firstState = place(
         evaluator,
@@ -54,7 +55,9 @@ void test::request::motion() {
     auto first = pr::run(
         *firstState,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        pr::Limits{.timing = timing});
     require(
         first.has_value(),
         first ? "" : first.error().message);
@@ -73,7 +76,8 @@ void test::request::motion() {
         *secondState,
         value.projection,
         value.schema,
-        first->plan);
+        first->plan,
+        pr::Limits{.timing = timing});
     require(
         second.has_value(),
         second ? "" : second.error().message);
@@ -92,7 +96,8 @@ void test::request::motion() {
         *thirdState,
         value.projection,
         value.schema,
-        second->plan);
+        second->plan,
+        pr::Limits{.timing = timing});
     require(
         third &&
             third->direction &&
@@ -116,7 +121,8 @@ void test::request::motion() {
         *fourthState,
         value.projection,
         value.schema,
-        third->plan);
+        third->plan,
+        pr::Limits{.timing = timing});
     require(
         fourth &&
             fourth->direction &&

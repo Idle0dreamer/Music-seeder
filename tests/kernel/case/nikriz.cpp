@@ -15,7 +15,7 @@ void test::nikriz_case() {
     };
     const mq::kernel::generate::Engine engine(*scaffold->profile, context);
     mq::kernel::generate::Limits limits;
-    limits.timing = scaffold->generation.timing;
+    limits.timing = test::timing_profile();
     const auto result = engine.run(
         43, scaffold->generation.choice, scaffold->generation.production,
         scaffold->generation.projection, scaffold->generation.schema, {}, limits);

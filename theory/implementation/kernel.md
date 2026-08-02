@@ -89,7 +89,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Complete candidate evaluation | legal outcomes and retained diagnostics before seed |
 | Exact staged performance plans | one target per committed structural event, including exact `4:3` and `3:2` relations |
 | Exact monophonic timed performance plan | `performance::Plan::events` derives contiguous rational onsets and validates duration, intensity, articulation, typed strand, optional exact pitch contours, and ornament intent |
-| Direction-conditioned execution timing | `performance::Timing` carries exact duration, intensity, and articulation intents; package specifications supply the policy and the shared family builder only consumes it |
+| Direction-conditioned execution timing | `performance::Timing` carries exact duration, intensity, and articulation intents parsed from an external profile; maqam packages and the shared family builder do not own fixed timing values |
 | Executable profile comparison | reconstructed baggage prohibition changes the legal generation set |
 | Typed grammar output | `Stage` and `Candidate` term forms |
 | Scope-controlled generated output | explicit `Output` export and non-leakage law |
@@ -118,7 +118,7 @@ coupled-course model, not a named-instrument or regional-authenticity result.
 
 ## Next coherent sequence
 
-1. Validate the current timing-policy checkpoint through the free GitHub Actions workflow.
+1. Validate the external timing-profile checkpoint through the free GitHub Actions workflow.
 2. Validate and refine the coupled-course santur physical model against
    isolated-course and overlap measurements while preserving the one-way
    `performance::Plan::events` boundary.

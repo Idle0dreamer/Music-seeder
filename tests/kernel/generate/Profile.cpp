@@ -12,6 +12,8 @@ void test::generate::profile() {
     const auto generated = fixture::generation::make(set);
     require(generated.has_value(), generated.error_or("generation failed"));
     const auto& value = *generated;
+    const mq::kernel::generate::Limits limits{
+        .timing = test::timing_profile()};
     const std::vector candidates{
         value.program.stay,
         value.program.travel,
@@ -37,7 +39,9 @@ void test::generate::profile() {
             value.choice,
             candidates,
             value.projection,
-            value.schema);
+            value.schema,
+            {},
+            limits);
         if (result &&
             result->selected == value.program.travel.identity) {
             seed = candidate;
@@ -51,13 +55,17 @@ void test::generate::profile() {
         value.choice,
         candidates,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     const auto b = regional.b.run(
         *seed,
         value.choice,
         candidates,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     require(
         a &&
             a->selected == value.program.travel.identity &&
@@ -80,7 +88,9 @@ void test::generate::profile() {
         value.choice,
         onlyTravel,
         value.projection,
-        value.schema);
+        value.schema,
+        {},
+        limits);
     require(
         !none &&
             none.error().code ==

@@ -18,7 +18,7 @@ void test::nahawand_case() {
     };
     const mq::kernel::generate::Engine engine(*scaffold->profile, context);
     mq::kernel::generate::Limits limits;
-    limits.timing = scaffold->generation.timing;
+    limits.timing = test::timing_profile();
     const auto result = engine.run(
         29,
         scaffold->generation.choice,
@@ -59,7 +59,7 @@ void test::nahawand_case() {
         std::ranges::all_of(
             result->legal,
             [&](const auto& item) {
-                const auto& timing = scaffold->generation.timing;
+                const auto timing = test::timing_profile();
                 if (item.plan.events.size() == 1) {
                     return item.plan.events.front().duration ==
                         timing.start.duration;
@@ -79,5 +79,5 @@ void test::nahawand_case() {
                            timing.rise.duration * Rational(2) +
                            timing.fall.duration * Rational(2);
             }),
-        "Nahawand timing policy was not applied");
+        "external timing profile was not applied to Nahawand");
 }

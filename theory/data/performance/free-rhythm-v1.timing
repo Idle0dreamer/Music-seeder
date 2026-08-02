@@ -1,0 +1,15 @@
+# External execution profile. These values are input data, not maqam code.
+# They are engineering placeholders until performer/corpus evidence replaces them.
+provenance=engineering:free-rhythm-execution-v1;not-performance-authenticity-evidence
+start.intent.duration=3/2
+start.intent.intensity=3/4
+start.intent.articulation=neutral
+same.intent.duration=1
+same.intent.intensity=1
+same.intent.articulation=connected
+rise.intent.duration=3/4
+rise.intent.intensity=1
+rise.intent.articulation=connected
+fall.intent.duration=1/2
+fall.intent.intensity=7/8
+fall.intent.articulation=detached

@@ -76,6 +76,5 @@ profile(const Key&);
 [[nodiscard]] std::expected<Generation, std::string>
 generation(const Key&);
 
-performance::Timing timing();
 
 } // namespace mq::kernel::maqam::rast::detail

@@ -42,7 +42,16 @@ std::expected<Outcome, Diagnostic> evaluate(
     const pitch::field::Schema& schema,
     state::Snapshot state,
     Limits limits) {
-    limits.pitch.timing = limits.timing;
+    if (!limits.timing) {
+        return std::unexpected(Diagnostic{
+            candidate.identity,
+            std::nullopt,
+            "generation requires an explicit performance timing profile",
+            std::nullopt,
+            std::nullopt,
+        });
+    }
+    limits.pitch.timing = *limits.timing;
     performance::Plan plan;
     for (const auto& stage : candidate.stages) {
         const auto before = state.melody.history.size();
