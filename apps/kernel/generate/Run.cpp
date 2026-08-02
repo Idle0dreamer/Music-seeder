@@ -4,9 +4,12 @@
 #include "mq/kernel/generate/Engine.hpp"
 #include "mq/kernel/grammar/Catalog.hpp"
 #include "mq/kernel/maqam/Bayati.hpp"
+#include "mq/kernel/maqam/Rast.hpp"
 
 #include <algorithm>
+#include <array>
 #include <iostream>
+#include <string_view>
 
 namespace app::generate {
 namespace {
@@ -121,10 +124,12 @@ int run(std::uint64_t seed) {
     return 0;
 }
 
-int bayati(std::uint64_t seed) {
+int maqam(
+    std::uint64_t seed,
+    std::expected<mq::kernel::maqam::Scaffold, std::string> scaffold,
+    const char* name) {
     using namespace mq::kernel;
 
-    const auto scaffold = maqam::make_bayati();
     if (!scaffold) {
         std::cerr << scaffold.error() << '\n';
         return 1;
@@ -160,15 +165,15 @@ int bayati(std::uint64_t seed) {
         result->selected,
         &mq::kernel::generate::Outcome::candidate);
     if (selected == result->legal.end()) {
-        std::cerr << "selected Bayati outcome is missing\n";
+        std::cerr << "selected " << name << " outcome is missing\n";
         return 1;
     }
     std::cout
         << "profile: " << scaffold->profile->identity() << '\n'
         << "seed: " << seed << '\n'
         << "candidate: " << result->selected.str() << '\n'
-        << "legal Bayati routes: " << result->legal.size() << '\n'
-        << "rejected Bayati routes: " << result->rejected.size() << '\n'
+        << "legal " << name << " routes: " << result->legal.size() << '\n'
+        << "rejected " << name << " routes: " << result->rejected.size() << '\n'
         << "timed performance events: " << selected->plan.events.size()
         << '\n';
     for (const auto& rejection : result->rejected) {
@@ -179,6 +184,39 @@ int bayati(std::uint64_t seed) {
         print_timed(timed);
     }
     return 0;
+}
+
+using Builder = std::expected<
+    mq::kernel::maqam::Scaffold,
+    std::string> (*)();
+
+struct Route {
+    std::string_view name;
+    const char* label;
+    Builder builder;
+};
+
+constexpr std::array routes{
+    Route{"bayati", "Bayati", mq::kernel::maqam::make_bayati},
+    Route{"rast", "Rast", mq::kernel::maqam::make_rast},
+};
+
+const Route* find_route(std::string_view name) noexcept {
+    const auto found = std::ranges::find(routes, name, &Route::name);
+    return found == routes.end() ? nullptr : &*found;
+}
+
+bool is_named(std::string_view name) noexcept {
+    return find_route(name) != nullptr;
+}
+
+int named(std::string_view name, std::uint64_t seed) {
+    const auto* route = find_route(name);
+    if (route == nullptr) {
+        std::cerr << "unknown maqam route: " << name << '\n';
+        return 2;
+    }
+    return maqam(seed, route->builder(), route->label);
 }
 
 } // namespace app::generate

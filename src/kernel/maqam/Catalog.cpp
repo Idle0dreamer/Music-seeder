@@ -13,13 +13,15 @@ Entry entry(
     std::string name,
     std::string family,
     Implementation implementation,
-    std::string provenance) {
+    std::string provenance,
+    Builder builder = nullptr) {
     return {
         sort::MaqamId{id("maqam." + name)},
         sort::FamilyId{id("family." + family)},
         std::move(name),
         implementation,
         std::move(provenance),
+        builder,
     };
 }
 
@@ -35,7 +37,7 @@ Catalog Catalog::declared() {
         entry("athar.kurd", "nikriz", Implementation::Incomplete, source),
         entry("awj.iraq", "sikah", Implementation::Incomplete, source),
         entry("bastanikar", "sikah", Implementation::Incomplete, source),
-        entry("bayati", "bayati", Implementation::Incomplete, source),
+        entry("bayati", "bayati", Implementation::Incomplete, source, make_bayati),
         entry("bayati.shuri", "bayati", Implementation::Incomplete, source),
         entry("dalanshin", "rast", Implementation::Incomplete, source),
         entry("farahfaza", "nahawand", Implementation::Incomplete, source),
@@ -58,7 +60,7 @@ Catalog Catalog::declared() {
         entry("nawa.athar", "nikriz", Implementation::Incomplete, source),
         entry("nikriz", "nikriz", Implementation::Incomplete, source),
         entry("rahat.al.arwah", "sikah", Implementation::Incomplete, source),
-        entry("rast", "rast", Implementation::Complete, source),
+        entry("rast", "rast", Implementation::Complete, source, make_rast),
         entry("saba", "independent", Implementation::Incomplete, source),
         entry("saba.zamzam", "independent", Implementation::Incomplete, source),
         entry("sazkar", "rast", Implementation::Incomplete, source),
@@ -96,13 +98,10 @@ std::expected<Scaffold, std::string> Catalog::build(
         return std::unexpected(
             "maqam package is declared but not complete: " + found->name);
     }
-    if (found->name == "bayati") {
-        return make_bayati();
+    if (found->builder == nullptr) {
+        return std::unexpected("maqam package has no builder: " + found->name);
     }
-    if (found->name == "rast") {
-        return make_rast();
-    }
-    return std::unexpected("maqam package has no builder: " + found->name);
+    return found->builder();
 }
 
 } // namespace mq::kernel::maqam

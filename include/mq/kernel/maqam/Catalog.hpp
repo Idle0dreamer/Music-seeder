@@ -17,12 +17,15 @@ enum class Implementation {
     Incomplete,
 };
 
+using Builder = std::expected<Scaffold, std::string> (*)();
+
 struct Entry {
     sort::MaqamId id;
     sort::FamilyId family;
     std::string name;
     Implementation implementation;
     std::string provenance;
+    Builder builder{};
 };
 
 class Catalog {

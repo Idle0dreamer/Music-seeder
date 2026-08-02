@@ -7,13 +7,14 @@
 #include <string_view>
 
 int main(int argc, char** argv) {
-    const bool bayati = argc > 1 && std::string_view(argv[1]) == "bayati";
-    if ((!bayati && argc > 2) || (bayati && argc > 3)) {
-        std::cerr << "usage: kernel [seed] | kernel bayati [seed]\n";
+    const auto mode = argc > 1 ? std::string_view(argv[1]) : std::string_view{};
+    const bool named = app::generate::is_named(mode);
+    if ((!named && argc > 2) || (named && argc > 3)) {
+        std::cerr << "usage: kernel [seed] | kernel <maqam> [seed]\n";
         return 2;
     }
     std::uint64_t seed{};
-    const int seedArgument = bayati ? 2 : 1;
+    const int seedArgument = named ? 2 : 1;
     if (argc > seedArgument) {
         const std::string_view value(argv[seedArgument]);
         const auto parsed = std::from_chars(
@@ -30,5 +31,8 @@ int main(int argc, char** argv) {
     if (pitch != 0) {
         return pitch;
     }
-    return bayati ? app::generate::bayati(seed) : app::generate::run(seed);
+    if (named) {
+        return app::generate::named(mode, seed);
+    }
+    return app::generate::run(seed);
 }
