@@ -99,6 +99,7 @@ Stage climax(
                 sort::RegionId{key.regionUpper},
                 sort::BaggageId{key.baggageExtension},
             },
+            operation::Emit{sort::CellId{key.cellClimax}},
             operation::gesture::End{occurrence(candidate, "ascent")},
             operation::Cadence{
                 sort::FamilyId{key.cadenceLocal},

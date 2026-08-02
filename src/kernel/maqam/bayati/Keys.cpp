@@ -31,6 +31,7 @@ Key keys() {
         id("phrase.return"),
         id("cell.establish"),
         id("cell.develop"),
+        id("cell.climax"),
         id("cell.return"),
         id("cadence.local"),
         id("cadence.return"),

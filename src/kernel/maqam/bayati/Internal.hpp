@@ -32,6 +32,7 @@ struct Key {
     Identity phraseReturn;
     Identity cellEstablish;
     Identity cellDevelop;
+    Identity cellClimax;
     Identity cellReturn;
     Identity cadenceLocal;
     Identity cadenceReturn;

@@ -52,12 +52,20 @@ void test::generate::laws() {
             result->rejected.empty() &&
             stayed != result->legal.end() &&
             stayed->plan.events.size() == 1 &&
+            stayed->state.cell.owners.size() == 1 &&
             stayed->plan.events.front().target.center == pitch::Expression{} &&
             stayed->state.gesture.completed.empty() &&
             stayed->state.sayr.completed.contains(
                 mq::kernel::sort::ObligationId{set.sayr.obligation.settle}) &&
             traveled != result->legal.end() &&
             traveled->plan.events.size() == 5 &&
+            traveled->state.cell.owners.size() == 5 &&
+            std::ranges::all_of(
+                traveled->plan.events,
+                [&](const auto& event) {
+                    return traveled->state.cell.owners.contains(
+                        sort::EventId{event.target.event.identity});
+                }) &&
             traveled->plan.events[0].target.center == pitch::Expression{} &&
             traveled->plan.events[1].target.center ==
                 pitch::Expression::ratio(4, 3) &&

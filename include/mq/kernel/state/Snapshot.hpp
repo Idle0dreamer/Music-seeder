@@ -17,6 +17,7 @@
 #include <vector>
 #include "mq/kernel/sort/CellId.hpp"
 #include "mq/kernel/sort/CenterId.hpp"
+#include "mq/kernel/sort/EventId.hpp"
 #include "mq/kernel/sort/JinsId.hpp"
 #include "mq/kernel/sort/PathId.hpp"
 #include "mq/kernel/sort/ObligationId.hpp"
@@ -50,6 +51,7 @@ struct Evidence {
 
 struct Cell {
     std::map<sort::CellId, std::size_t> occurrences;
+    std::map<sort::EventId, sort::CellId> owners;
 
     bool operator==(const Cell&) const = default;
 };

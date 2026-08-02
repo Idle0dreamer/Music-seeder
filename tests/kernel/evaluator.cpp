@@ -53,7 +53,6 @@ void test::evaluator() {
         operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
         operation::Emphasize{mq::kernel::sort::RoleId{fixture.role.ghammaz}, Rational(2)},
         operation::Dwell{mq::kernel::sort::RoleId{fixture.role.ghammaz}, Rational(2)},
-        operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
         operation::Begin{mq::kernel::sort::PhraseId{Identity{"test.phrase", "establish", "1"}},
             mq::kernel::phrase::Function{fixture.phrase.function},
         },
@@ -64,6 +63,7 @@ void test::evaluator() {
                     mq::kernel::sort::RegionId{fixture.region.root},
                     std::nullopt,
                 },
+        operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
         operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
             Rational(1),
             Rational(1),
@@ -83,8 +83,20 @@ void test::evaluator() {
     require(accepted.has_value(), "legal neutral program was rejected");
     require(
         accepted->center.stack.size() == 1 &&
-            accepted->center.stack.back().identity == fixture.center.root,
+            accepted->center.stack.back().identity == fixture.center.root &&
+            accepted->cell.owners.size() == 1 &&
+            accepted->cell.owners.begin()->second.identity == fixture.cell,
         "return did not restore the established center");
+
+    const std::vector<operation::Any> unbound{
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}},
+        operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
+        operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
+    };
+    const auto rejectedCell = evaluator.shared.run({}, unbound);
+    require(
+        !rejectedCell && rejectedCell.error().rule == "cell.event",
+        "cell emission without an event was accepted");
 
     const auto a = evaluator.regional.a.run({}, established);
     require(

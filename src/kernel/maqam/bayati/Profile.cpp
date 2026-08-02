@@ -47,6 +47,7 @@ profile(const Key& key) {
         define("allow.emit", {
             key.cellEstablish,
             key.cellDevelop,
+            key.cellClimax,
             key.cellReturn,
         }, source),
         define("allow.cadence", {key.cadenceLocal, key.cadenceReturn}, source),

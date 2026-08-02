@@ -1,5 +1,6 @@
 #include "Internal.hpp"
 
+#include <algorithm>
 #include <set>
 
 namespace mq::kernel::generate::detail {
@@ -87,6 +88,23 @@ std::expected<Outcome, Diagnostic> evaluate(
             candidate.identity,
             candidate.stages.back().identity,
             "candidate ended with an active gesture",
+            std::nullopt,
+            std::nullopt,
+        });
+    }
+    const bool every_event_has_cell =
+        state.cell.owners.size() == state.melody.history.size() &&
+        std::ranges::all_of(
+            state.melody.history,
+            [&](const auto& event) {
+                return state.cell.owners.contains(
+                    sort::EventId{event.identity});
+            });
+    if (!every_event_has_cell) {
+        return std::unexpected(Diagnostic{
+            candidate.identity,
+            candidate.stages.back().identity,
+            "candidate contains a structural event without a cell owner",
             std::nullopt,
             std::nullopt,
         });

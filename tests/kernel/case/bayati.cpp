@@ -46,6 +46,8 @@ void test::bayati_case() {
                        !item.state.phrase.active &&
                        !item.state.gesture.active &&
                        !item.state.center.stack.empty() &&
+                       item.state.cell.owners.size() ==
+                           item.plan.events.size() &&
                        item.state.cell.occurrences.size() >= 1 &&
                        item.state.phrase.completed.size() >= 1;
             }),

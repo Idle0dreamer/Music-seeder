@@ -31,6 +31,7 @@ std::vector<generate::Stage> travel(
                     mq::kernel::sort::RegionId{fixture.region.root},
                     std::nullopt,
                 },
+                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
             },
         },
         {
@@ -62,6 +63,7 @@ std::vector<generate::Stage> travel(
                     mq::kernel::sort::RegionId{fixture.region.upper},
                     mq::kernel::sort::BaggageId{fixture.baggage},
                 },
+                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
                 operation::gesture::End{ascent},
                 operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
                     Rational(1),
@@ -101,6 +103,7 @@ std::vector<generate::Stage> travel(
                     mq::kernel::sort::RegionId{fixture.region.upper},
                     std::nullopt,
                 },
+                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
             },
         },
         {
@@ -113,6 +116,7 @@ std::vector<generate::Stage> travel(
                     mq::kernel::sort::RegionId{fixture.region.root},
                     std::nullopt,
                 },
+                operation::Emit{mq::kernel::sort::CellId{fixture.cell}},
                 operation::gesture::End{descent},
                 operation::Cadence{mq::kernel::sort::FamilyId{fixture.cadence},
                     Rational(1),

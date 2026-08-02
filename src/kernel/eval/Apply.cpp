@@ -56,6 +56,24 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                     return std::unexpected(
                         denied(index, label, "allow.emit", subject));
                 }
+                if (!state.melody.current) {
+                    return std::unexpected(Violation{
+                        index,
+                        label,
+                        "cell.event",
+                        "cell emission requires a current structural event",
+                    });
+                }
+                const sort::EventId event{state.melody.current->identity};
+                if (state.cell.owners.contains(event)) {
+                    return std::unexpected(Violation{
+                        index,
+                        label,
+                        "cell.event",
+                        "structural event already belongs to a cell",
+                    });
+                }
+                state.cell.owners.emplace(event, value.cell);
                 const auto previous = state.cell.occurrences[value.cell]++;
                 state.evidence.amount[evidence::Kind::Cell] += Rational(1);
                 if (previous > 0) {
