@@ -118,3 +118,11 @@ jobs:
           ./build/synthesis-faust-render 17 /tmp/music-seeder-bayati-faust.wav
           test -s /tmp/music-seeder-bayati-faust.wav
           grep -a -q RIFF /tmp/music-seeder-bayati-faust.wav
+          ./build/synthesis-faust-render 17 /tmp/music-seeder-bayati-faust-repeat.wav
+          cmp -s /tmp/music-seeder-bayati-faust.wav /tmp/music-seeder-bayati-faust-repeat.wav
+      - name: Upload deterministic Bayati artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-seeder-bayati-wav
+          if-no-files-found: error
+          path: /tmp/music-seeder-bayati*.wav
