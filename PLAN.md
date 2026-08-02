@@ -13,11 +13,11 @@ law coverage. The synthesis boundary now contains a provisional C++ santur
 model with three detuned courses, stiff-string partials, hammer-contact attack,
 bridge/soundboard modes, and sympathetic tails. It renders a deterministic WAV.
 
-The Faust side now has both a modal probe and a coupled-course source; the free
-GitHub Actions workflow generates and compiles both C++ outputs. The generated
-Faust class is not yet the runtime used by `synthesis-render`, so the Faust
-runtime-integration gate remains open. Bayati phrase/motif/ornament coverage,
-instrument measurements, and remote workflow evidence also remain open.
+The Faust side now has both a modal probe and a coupled-course source, plus a
+dedicated generated-C++ runtime target that drives frequency, intensity, and
+strike controls and writes through the shared WAV boundary. It is not yet
+remotely verified. Bayati phrase/motif/ornament coverage, instrument
+measurements, and remote workflow evidence also remain open.
 
 ## Completion standard
 
@@ -61,8 +61,8 @@ Evidence required:
 - remote GCC 14 and sanitizer results;
 - Faust compiler generated-C++ probe from the pinned revisions.
 
-Current state: local kernel and CLI evidence exists; the fixes and workflow are
-unpublished, and the remote jobs have not yet run.
+Current state: local kernel, CLI, and independent synthesis evidence exists; the
+Faust runtime path is implemented but the remote jobs have not yet run.
 
 ### 1. Universal kernel contract
 

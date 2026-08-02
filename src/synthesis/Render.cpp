@@ -92,6 +92,33 @@ std::expected<RenderReport, RenderError> render_wav(
         return std::unexpected(RenderError{"render produced no finite signal"});
     }
 
+    return write_wav_samples(samples, config, path);
+}
+
+std::expected<RenderReport, RenderError> write_wav_samples(
+    std::span<const double> samples,
+    const RenderConfig& config,
+    const std::string& path) {
+    if (config.sample_rate == 0 || config.tonic_hz <= 0.0 ||
+        config.seconds_per_unit <= 0.0 || config.tail_seconds < 0.0 ||
+        samples.empty() || samples.size() >
+            std::numeric_limits<std::uint32_t>::max()) {
+        return std::unexpected(RenderError{
+            "WAV sample export configuration is outside its declared bounds",
+        });
+    }
+    double peak = 0.0;
+    for (const double sample : samples) {
+        if (!std::isfinite(sample)) {
+            return std::unexpected(RenderError{"render produced a non-finite sample"});
+        }
+        peak = std::max(peak, std::abs(sample));
+    }
+    if (!(peak > 0.0)) {
+        return std::unexpected(RenderError{"render produced no finite signal"});
+    }
+
+    const auto frames = static_cast<std::uint32_t>(samples.size());
     std::ofstream output(path, std::ios::binary | std::ios::trunc);
     if (!output) {
         return std::unexpected(RenderError{"could not open WAV output: " + path});
@@ -109,11 +136,7 @@ std::expected<RenderReport, RenderError> render_wav(
     if (!output) {
         return std::unexpected(RenderError{"WAV output failed while writing: " + path});
     }
-    return RenderReport{
-        frames,
-        normalizedPeak,
-        config.tonic_hz,
-    };
+    return RenderReport{frames, normalizedPeak, config.tonic_hz};
 }
 
 } // namespace mq::synthesis

@@ -53,5 +53,7 @@ The adapter may alter physical execution and audibility. It may not rewrite
 tonal role, phrase function, modulation, cadence, or regional theory.
 
 The current `synthesis-render` target implements this boundary for a provisional
-coupled-course santur model and writes mono PCM WAV. It is not yet a validated
+coupled-course santur model and writes mono PCM WAV. The separate
+`synthesis-faust-render` target drives generated Faust C++ through the same
+boundary and refuses unsupported articulation. Neither is yet a validated
 hammered-dulcimer reproduction.

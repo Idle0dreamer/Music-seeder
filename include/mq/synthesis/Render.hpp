@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <expected>
+#include <span>
 #include <string>
 
 namespace mq::synthesis {
@@ -28,6 +29,11 @@ struct RenderReport {
 
 [[nodiscard]] std::expected<RenderReport, RenderError> render_wav(
     const ::mq::kernel::performance::Plan& plan,
+    const RenderConfig& config,
+    const std::string& path);
+
+[[nodiscard]] std::expected<RenderReport, RenderError> write_wav_samples(
+    std::span<const double> samples,
     const RenderConfig& config,
     const std::string& path);
 

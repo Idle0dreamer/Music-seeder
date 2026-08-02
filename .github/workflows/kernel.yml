@@ -103,11 +103,16 @@ jobs:
       - name: Install GCC 14
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++-14
+          sudo apt-get install -y g++-14 cmake libmicrohttpd-dev
       - name: Build the synthesis adapter
         run: make CXX=g++-14 synthesis
+      - name: Build the Faust-generated synthesis adapter
+        run: make CXX=g++-14 synthesis-faust
       - name: Render deterministic Bayati WAV
         run: |
           ./build/synthesis-render 17 /tmp/music-seeder-bayati.wav
           test -s /tmp/music-seeder-bayati.wav
           grep -a -q RIFF /tmp/music-seeder-bayati.wav
+          ./build/synthesis-faust-render 17 /tmp/music-seeder-bayati-faust.wav
+          test -s /tmp/music-seeder-bayati-faust.wav
+          grep -a -q RIFF /tmp/music-seeder-bayati-faust.wav

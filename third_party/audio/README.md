@@ -32,7 +32,8 @@ should not build Faust, `mesh2faust`, or an instrument adapter locally. The
 online build workflow is the intended place for compiler and model validation.
 The `faust-probe` job in `.github/workflows/kernel.yml` builds the pinned Faust
 compiler and generates C++ from both `synthesis/models/modal_probe.dsp` and
-`synthesis/models/santur_courses.dsp`.
+`synthesis/models/santur_courses.dsp`; the synthesis job also builds and runs
+the generated-Faust adapter.
 
 ## Ownership and licensing
 

@@ -76,6 +76,8 @@ Implemented so far:
     variation;
 43. a separate C++ synthesis target with a provisional coupled-course santur
     model that consumes timed plans and writes deterministic mono PCM WAV;
+44. a Faust-generated C++ renderer target with explicit frequency, intensity,
+    and strike mapping plus refusal for unsupported articulation;
 
 Checkpoint validation state:
 
@@ -90,9 +92,9 @@ Checkpoint validation state:
 - `make synthesis` and `./build/synthesis-render 17 /tmp/bayati.wav` produce a
   non-silent valid 48 kHz PCM WAV from the provisional coupled-course model;
   repeated renders have the same SHA-256;
-- `.github/workflows/kernel.yml` now compiles the pinned Faust-generated C++
-  probe and exercises the synthesis render online; this workflow has not yet
-  run for the current unpushed tree;
+- `.github/workflows/kernel.yml` now compiles both pinned Faust-generated C++
+  sources and exercises both the independent and Faust runtime renderers
+  online; this workflow has not yet run for the current local tree;
 - this evidence is for the current working tree, not a claim that pristine
   remote commit `310cfa8` contains the uncommitted fixes;
 - `.github/workflows/kernel.yml` provides the free remote debug, release, CLI,
