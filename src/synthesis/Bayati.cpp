@@ -1,47 +1,16 @@
 #include "mq/synthesis/Bayati.hpp"
-
-#include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Bayati.hpp"
-
-#include <algorithm>
+#include "mq/synthesis/Plan.hpp"
 
 namespace mq::synthesis {
 
 std::expected<BayatiPlan, std::string> make_bayati_plan(
     std::uint64_t seed,
     const mq::kernel::performance::Timing& timing) {
-    const auto scaffold = mq::kernel::maqam::make_bayati();
-    if (!scaffold) {
-        return std::unexpected(scaffold.error());
-    }
-    const mq::kernel::eval::Context context{
-        .jins = {&scaffold->ajnas},
-        .path = {&scaffold->graph},
-        .sayr = {&scaffold->sayr},
-        .grammar = {},
-    };
-    const mq::kernel::generate::Engine engine(*scaffold->profile, context);
-    const auto generated = engine.run(
-        seed,
-        scaffold->generation.choice,
-        scaffold->generation.production,
-        scaffold->generation.projection,
-        scaffold->generation.schema,
-        {},
-        mq::kernel::generate::Limits{
-            .timing = timing,
-        });
+    const auto generated = make_plan("bayati", seed, timing);
     if (!generated) {
-        return std::unexpected(generated.error().message);
+        return std::unexpected(generated.error());
     }
-    const auto selected = std::ranges::find(
-        generated->legal,
-        generated->selected,
-        &mq::kernel::generate::Outcome::candidate);
-    if (selected == generated->legal.end()) {
-        return std::unexpected("selected Bayati outcome is missing");
-    }
-    return BayatiPlan{generated->selected, selected->plan};
+    return BayatiPlan{generated->candidate, generated->plan};
 }
 
 } // namespace mq::synthesis

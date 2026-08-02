@@ -68,7 +68,7 @@ Implemented so far:
     baggage step while retaining the diagnostic;
 38. typed sayr plans, dependency-ordered obligations, proof-bearing
     fulfillment, route completion, and scope restoration;
-39. fifty registered executable test-function invocations (47 summary
+39. fifty-one registered executable test-function invocations (48 summary
     lines);
 40. typed maqam catalog with explicit complete/incomplete admission and
     undeclared-package refusal;
@@ -106,6 +106,16 @@ Implemented so far:
     performer-variation validation with provenance and disagreement fields;
 56. synthesis consumes explicit release spans in the independent coupled-course
     model while preserving the one-way instrument-neutral plan boundary;
+57. declarative ordered-family branch records carry source/target centers,
+    tonic and endpoint roles, and transition direction without route-name
+    conditionals;
+58. an executable Sikah ordered-station vertical route with direct kernel and
+    native WAV checks, retained outside the complete-package catalog gate;
+59. one synthesis-side maqam registry feeds both native and Faust renderers;
+60. minimal flag-based synthesis/player configuration for maqam, seed, timing
+    profile, output path, sample rate, and tonic frequency;
+61. Faust release-duration control is consumed from each timed event rather
+    than silently using a renderer timing default;
 
 Checkpoint validation state:
 
@@ -131,8 +141,9 @@ Checkpoint validation state:
   Nahawand fourth-degree branch available;
 - `./build/kernel ajam 41` emits a selected Ajam route from three legal routes;
 - `./build/kernel nikriz 43` emits a legal Nikriz result from two routes;
-- `make synthesis` and `./build/synthesis-render 17 /tmp/bayati.wav` produce a
-  non-silent valid 48 kHz PCM WAV from the provisional coupled-course model;
+- `make synthesis` and the flag-based named synthesis player produce a
+  non-silent valid 48 kHz PCM WAV from the coupled-course model; the named
+  flag-based Sikah player also produces a valid 48 kHz PCM WAV;
   the current timing-policy render is 140640 frames with peak `0.92`;
 - `.github/workflows/kernel.yml` compiles both pinned Faust-generated C++
   sources and exercises both the independent and Faust runtime renderers

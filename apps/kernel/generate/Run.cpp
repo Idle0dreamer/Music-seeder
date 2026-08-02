@@ -10,6 +10,7 @@
 #include "mq/kernel/maqam/Nahawand.hpp"
 #include "mq/kernel/maqam/Nikriz.hpp"
 #include "mq/kernel/maqam/Rast.hpp"
+#include "mq/kernel/maqam/Sikah.hpp"
 #include "mq/kernel/performance/Profile.hpp"
 
 #include <algorithm>
@@ -243,6 +244,7 @@ constexpr std::array routes{
     Route{"nahawand", "Nahawand", mq::kernel::maqam::make_nahawand},
     Route{"nikriz", "Nikriz", mq::kernel::maqam::make_nikriz},
     Route{"rast", "Rast", mq::kernel::maqam::make_rast},
+    Route{"sikah", "Sikah", mq::kernel::maqam::make_sikah},
 };
 
 const Route* find_route(std::string_view name) noexcept {

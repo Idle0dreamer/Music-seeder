@@ -45,9 +45,9 @@ build/synthesis-faust-render: $(FAUST_OBJ)
 	$(CXX) $(FAUST_CXXFLAGS) $^ -o $@
 
 faust-compiler:
-	$(MAKE) -C $(FAUST_ROOT)/build cmake \
+	$(MAKE) -C $(FAUST_ROOT)/build CMAKE=cmake cmake \
 		BACKENDS=regular.cmake TARGETS=regular.cmake
-	$(MAKE) -C $(FAUST_ROOT)/build -j2
+	$(MAKE) -C $(FAUST_ROOT)/build CMAKE=cmake -j2
 
 $(FAUST_GENERATED): synthesis/models/santur_courses.dsp faust-compiler
 	@mkdir -p $(dir $@)

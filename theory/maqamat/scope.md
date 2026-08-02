@@ -86,8 +86,9 @@ canonical repertoire package.
 
 ## Current implementation state
 
-Rast, Nahawand, Hijaz, Kurd, Ajam, and Nikriz are the first complete canonical
-packages under this contract. Bayati is the first vertical slice and remains
-executable but incomplete under its case-study gates. The remaining entries
-are not silently executable. The catalog, package coverage matrix, and tests
-must advance together until every declared entry reaches the contract above.
+Rast, Nahawand, Hijaz, Kurd, Ajam, and Nikriz are the first canonical package
+implementations under this contract. Bayati and Sikah currently have
+executable vertical routes but remain incomplete under their case-study gates.
+The remaining entries are not silently executable. The catalog, package
+coverage matrix, and tests must advance together until every declared entry
+reaches the contract above.

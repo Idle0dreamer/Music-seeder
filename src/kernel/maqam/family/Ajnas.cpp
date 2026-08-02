@@ -62,17 +62,17 @@ jins::Descriptor root(const Key& key) {
 jins::Descriptor upper(const Key& key, const BranchKey& branch) {
     const gesture::Definition descent = one(
         key.gestureDescent,
-        key.roleUpper,
+        branch.ghammaz,
         key.regionUpper,
-        motion::Direction::Fall);
+        branch.direction);
     return {
         branch.jins,
-        key.roleGhammaz,
-        {key.roleGhammaz, key.roleUpper},
-        {key.roleUpper},
+        branch.tonic,
+        {branch.tonic, branch.ghammaz},
+        {branch.ghammaz},
         {key.regionUpper},
         {key.regionUpper},
-        {key.roleGhammaz},
+        {branch.tonic},
         {},
         {key.gestureDescent},
         {key.gestureDescent},

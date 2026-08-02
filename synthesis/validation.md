@@ -7,7 +7,8 @@ acoustic tests does not validate maqam behavior.
 ## Current engineering evidence
 
 - Local `make synthesis` and the independent renderer produce a non-silent,
-  bounded 48 kHz mono PCM WAV for Bayati seed `17`.
+  bounded 48 kHz mono PCM WAV for a named Sikah seed through the flag-based
+  player surface.
 - The current render is 140640 frames, peak `0.92`, SHA-256
   `174241947fcf975e3867cfc6897e37f6c889daa058952f32f3ee482a3df72829`.
 - A repeated local render is byte-identical.
@@ -15,8 +16,8 @@ acoustic tests does not validate maqam behavior.
   `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed the Faust probe and
   synthesis-render jobs and uploaded artifact `8836021086`.
 - Local Faust compilation was not independently rerun because this host has
-  no `cmake` executable; the pinned compiler generation and runtime path are
-  validated by the remote job above.
+- no `cmake` executable. The next exact remote head must rerun Faust source
+  generation, release-control compilation, and the named Sikah Faust render.
 
 These facts establish a reproducible software path, not santur authenticity.
 Measured geometry, bridge/radiation references, overlap tolerances, and

@@ -7,8 +7,8 @@ std::expected<path::Graph, std::string> paths(const Key& key) {
     for (const auto& branch : key.branches) {
         auto added = result.add(path::Rule{
             branch.path,
-            key.centerRoot,
-            key.centerUpper,
+            branch.source_center,
+            branch.center,
             tonicization::Level::Internal,
             {},
             branch.source,

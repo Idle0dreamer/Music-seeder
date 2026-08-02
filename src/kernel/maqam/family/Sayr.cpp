@@ -1,5 +1,7 @@
 #include "Internal.hpp"
 
+#include <set>
+
 namespace mq::kernel::maqam::family::detail {
 namespace {
 
@@ -16,7 +18,7 @@ ks::Obligation travel(
         branch.travel,
         {
             need(branch.travel.name + ".jins", ks::need::Jins{branch.jins}),
-            need(branch.travel.name + ".center", ks::need::Center{key.centerUpper}),
+            need(branch.travel.name + ".center", ks::need::Center{branch.center}),
             need(branch.travel.name + ".path", ks::need::Path{branch.path}),
         },
         {id(key, "obligation.climax")},
@@ -111,7 +113,17 @@ std::expected<sayr::Plan, std::string> sayr(const Key& key) {
     for (const auto& branch : key.branches) {
         obligations.push_back(travel(key, branch));
         obligations.push_back(restore(key, branch));
-        routes.push_back({branch.route, {branch.restore}});
+    }
+    if (key.ordered) {
+        std::set<Identity> terminals;
+        for (const auto& branch : key.branches) {
+            terminals.insert(branch.restore);
+        }
+        routes.push_back({id(key, "route.ordered"), std::move(terminals)});
+    } else {
+        for (const auto& branch : key.branches) {
+            routes.push_back({branch.route, {branch.restore}});
+        }
     }
     auto result = ks::Plan::make(
         id(key, "sayr.canonical"),

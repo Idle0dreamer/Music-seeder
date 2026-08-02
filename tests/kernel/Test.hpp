@@ -129,6 +129,7 @@ void kurd_case();
 void nahawand_case();
 void nikriz_case();
 void rast_case();
+void sikah_case();
 void maqam_catalog();
 
 namespace validation {

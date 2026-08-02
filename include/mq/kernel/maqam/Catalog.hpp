@@ -9,6 +9,7 @@
 #include "mq/kernel/maqam/Nikriz.hpp"
 #include "mq/kernel/maqam/Nahawand.hpp"
 #include "mq/kernel/maqam/Rast.hpp"
+#include "mq/kernel/maqam/Sikah.hpp"
 #include "mq/kernel/sort/FamilyId.hpp"
 #include "mq/kernel/sort/MaqamId.hpp"
 

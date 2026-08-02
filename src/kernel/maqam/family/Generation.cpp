@@ -3,6 +3,8 @@
 #include "mq/kernel/generate/Stage.hpp"
 #include "mq/kernel/operation/Operation.hpp"
 
+#include <algorithm>
+
 namespace mq::kernel::maqam::family::detail {
 namespace {
 
@@ -110,14 +112,17 @@ Stage climax(
         },
         operation::Modulate{
             sort::PathId{branch.path},
-            sort::CenterId{key.centerUpper},
+            sort::CenterId{branch.center},
             tonicization::Level::Internal,
         },
         operation::sayr::Fulfill{sort::ObligationId{branch.travel}},
     });
 }
 
-Stage branchDescent(const Key& key, const Identity& candidate) {
+Stage branchDescent(
+    const Key& key,
+    const Identity& candidate,
+    const BranchKey& branch) {
     const auto p = phrase(key, candidate, "return");
     const auto descent = occurrence(key, candidate, "descent");
     return makeStage(key, candidate, "branch-descent", {
@@ -125,8 +130,8 @@ Stage branchDescent(const Key& key, const Identity& candidate) {
         operation::gesture::Begin{descent, key.gestureDescent},
         operation::Place{
             sort::EventId{event(key, candidate, "branch")},
-            sort::RoleId{key.roleUpper},
-            motion::Direction::Fall,
+            sort::RoleId{branch.ghammaz},
+            branch.direction,
             sort::RegionId{key.regionUpper},
             std::nullopt,
         },
@@ -169,6 +174,83 @@ Stage restore(
         operation::Return{sort::CenterId{key.centerRoot}},
         operation::sayr::Fulfill{sort::ObligationId{branch.restore}},
     });
+}
+
+Stage orderedContinuation(
+    const Key& key,
+    const Identity& candidate,
+    const BranchKey& branch) {
+    const auto p = phrase(key, candidate, "return");
+    const auto descent = occurrence(
+        key,
+        candidate,
+        "ordered-descent." + branch.jins.name);
+    return makeStage(key, candidate, "ordered." + branch.jins.name, {
+        operation::Begin{sort::PhraseId{p}, phrase::Function{key.phraseResponse}},
+        operation::Enter{sort::JinsId{branch.jins}},
+        operation::Tonicize{
+            sort::JinsId{branch.jins},
+            tonicization::Level::Internal,
+        },
+        operation::gesture::Begin{descent, key.gestureDescent},
+        operation::Place{
+            sort::EventId{event(key, candidate, "ordered." + branch.jins.name)},
+            sort::RoleId{branch.ghammaz},
+            branch.direction,
+            sort::RegionId{key.regionUpper},
+            std::nullopt,
+        },
+        operation::Modulate{
+            sort::PathId{branch.path},
+            sort::CenterId{branch.center},
+            tonicization::Level::Internal,
+        },
+        operation::Emit{
+            sort::CellId{key.cellDevelop},
+            sort::FormulaId{key.formulaDevelopVariation},
+        },
+        operation::sayr::Fulfill{sort::ObligationId{branch.travel}},
+    });
+}
+
+Stage orderedRestore(
+    const Key& key,
+    const Identity& candidate) {
+    const auto p = phrase(key, candidate, "return");
+    const auto descent = occurrence(
+        key,
+        candidate,
+        "ordered-descent." + key.branches.back().jins.name);
+    const auto resolution = occurrence(key, candidate, "ordered-resolution");
+    std::vector<operation::Any> actions{
+        operation::gesture::End{descent},
+        operation::Enter{sort::JinsId{key.jinsRoot}},
+        operation::gesture::Begin{resolution, key.gestureResolution},
+        operation::Place{
+            sort::EventId{event(key, candidate, "ordered-tonic-return")},
+            sort::RoleId{key.roleTonic},
+            motion::Direction::Fall,
+            sort::RegionId{key.regionRoot},
+            std::nullopt,
+        },
+        operation::Emit{
+            sort::CellId{key.cellReturn},
+            sort::FormulaId{key.formulaReturn},
+        },
+        operation::gesture::End{resolution},
+        operation::Cadence{
+            sort::FamilyId{key.cadenceReturn},
+            Rational(1),
+            Rational(1),
+        },
+        operation::End{sort::PhraseId{p}, phrase::Boundary::Closed},
+        operation::Return{sort::CenterId{key.centerRoot}},
+    };
+    for (const auto& branch : key.branches) {
+        actions.push_back(operation::sayr::Fulfill{
+            sort::ObligationId{branch.restore}});
+    }
+    return makeStage(key, candidate, "ordered.restore", std::move(actions));
 }
 
 grammar::Term actions(
@@ -220,7 +302,7 @@ std::vector<Stage> journey(
         establishment(key, candidate),
         development(key, candidate),
         climax(key, candidate, branch),
-        branchDescent(key, candidate),
+        branchDescent(key, candidate, branch),
         restore(key, candidate, branch),
     };
 }
@@ -265,6 +347,16 @@ pitch::field::Schema schema(const Key& key) {
         key.roleUpper,
         key.roleExtension,
     };
+    for (const auto& branch : key.branches) {
+        if (std::ranges::find(result.variables, branch.tonic) ==
+            result.variables.end()) {
+            result.variables.push_back(branch.tonic);
+        }
+        if (std::ranges::find(result.variables, branch.ghammaz) ==
+            result.variables.end()) {
+            result.variables.push_back(branch.ghammaz);
+        }
+    }
     result.tiers = {tier};
     result.rules.push_back(pf::Rule{
         pf::Guard{{}},
@@ -327,12 +419,12 @@ pitch::field::Schema schema(const Key& key) {
     for (const auto& branch : key.branches) {
         addAim(
             {{key.keyJins, branch.jins},
-             {key.keyRole, key.roleUpper},
-             {key.keyMotion, key.motionFall},
+             {key.keyRole, branch.ghammaz},
+             {key.keyMotion, branch.motion},
              {key.keyRegion, key.regionUpper},
              {key.keyGesture, key.gestureDescent}},
             id(key, "pitch.rule.branch." + branch.jins.name),
-            {{key.roleUpper, Rational(1)}, {key.roleTonic, Rational(-1)}},
+            {{branch.ghammaz, Rational(1)}, {key.roleTonic, Rational(-1)}},
             branch.target,
             branch.source + ";branch-target");
     }
@@ -358,6 +450,35 @@ pitch::field::Schema schema(const Key& key) {
 } // namespace
 
 std::expected<Generation, std::string> generation(const Key& key) {
+    if (key.ordered) {
+        if (key.branches.size() != 2) {
+            return std::unexpected(
+                "ordered family package requires exactly two stations");
+        }
+        const auto candidate = id(key, "candidate.ordered");
+        const auto stages = std::vector<Stage>{
+            establishment(key, candidate),
+            development(key, candidate),
+            climax(key, candidate, key.branches.front()),
+            orderedContinuation(key, candidate, key.branches.back()),
+            orderedRestore(key, candidate),
+        };
+        auto production = grammar::Term::alt(
+            id(key, "production.ordered"),
+            {
+            {id(key, "branch.ordered"), {}, candidateTerm(
+                key, stages, candidate)},
+            });
+        if (!production) {
+            return std::unexpected(production.error());
+        }
+        return Generation{
+            key.choice,
+            std::move(*production),
+            projection(key),
+            schema(key),
+        };
+    }
     const auto stay = id(key, "candidate.stay");
     const auto stayPhrase = phrase(key, stay, "establish");
     const auto stayStages = std::vector<Stage>{makeStage(key, stay, "stay", {

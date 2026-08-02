@@ -72,6 +72,7 @@ std::expected<RenderReport, RenderError> render_faust_wav(
     if (ui.getParamIndex("fundamental_hz") < 0 ||
         ui.getParamIndex("intensity") < 0 ||
         ui.getParamIndex("articulation") < 0 ||
+        ui.getParamIndex("release_seconds") < 0 ||
         ui.getParamIndex("strike") < 0) {
         return std::unexpected(RenderError{
             "Faust santur source omitted a required continuous control",
@@ -102,6 +103,11 @@ std::expected<RenderReport, RenderError> render_faust_wav(
         while (next < plan.events.size() && onsets[next] <= frame) {
             active = next;
             const auto& event = plan.events[active];
+            if (!event.release) {
+                return std::unexpected(RenderError{
+                    "Faust adapter requires explicit event release intent",
+                });
+            }
             const double frequency = ::mq::synthesis::pitch::frequency_hz(
                 event, config.tonic_hz, 0.0);
             const float intensity = static_cast<float>(std::clamp(
@@ -112,6 +118,11 @@ std::expected<RenderReport, RenderError> render_faust_wav(
                                static_cast<float>(frequency)) ||
                 !set_parameter(ui, "intensity", intensity) ||
                 !set_parameter(ui, "articulation", articulation) ||
+                !set_parameter(
+                    ui,
+                    "release_seconds",
+                    static_cast<float>(event.release->duration.decimal() *
+                                       config.seconds_per_unit)) ||
                 !set_parameter(ui, "strike", 1.0F)) {
                 return std::unexpected(RenderError{
                     "Faust adapter failed to set an event control",

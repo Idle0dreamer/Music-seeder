@@ -67,7 +67,7 @@ Catalog Catalog::declared() {
         entry("shadd.araban", "hijaz", Implementation::Incomplete, source),
         entry("shahnaz", "hijaz", Implementation::Incomplete, source),
         entry("shawq.afza", "ajam", Implementation::Incomplete, source),
-        entry("sikah", "sikah", Implementation::Incomplete, source),
+        entry("sikah", "sikah", Implementation::Incomplete, source, make_sikah),
         entry("sikah.baladi", "independent", Implementation::Incomplete, source),
         entry("suzdalara", "rast", Implementation::Incomplete, source),
         entry("suzidil", "hijaz", Implementation::Incomplete, source),

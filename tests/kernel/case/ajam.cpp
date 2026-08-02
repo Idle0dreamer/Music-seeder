@@ -3,6 +3,8 @@
 #include "mq/kernel/generate/Engine.hpp"
 #include "mq/kernel/maqam/Ajam.hpp"
 
+#include <string>
+
 #include <algorithm>
 
 void test::ajam_case() {
@@ -19,9 +21,28 @@ void test::ajam_case() {
     const auto result = engine.run(
         41, scaffold->generation.choice, scaffold->generation.production,
         scaffold->generation.projection, scaffold->generation.schema, {}, limits);
-    require(result.has_value(), result ? "" : result.error().message);
-    require(result->legal.size() == 3 && result->rejected.empty(),
-        "Ajam routes did not all complete");
+    if (!result) {
+        std::string detail = result.error().message;
+        for (const auto& rejection : result.error().rejected) {
+            detail += "\n" + rejection.candidate.str() + ": " +
+                      rejection.message;
+        }
+        for (const auto& diagnostic : result.error().derivation) {
+            detail += "\n" + diagnostic.term.str() + ": " +
+                      diagnostic.message;
+        }
+        require(false, detail);
+    }
+    if (result->legal.size() != 3 || !result->rejected.empty()) {
+        std::string detail =
+            "Ajam routes did not all complete: legal=" +
+            std::to_string(result->legal.size());
+        for (const auto& rejection : result->rejected) {
+            detail += "\n" + rejection.candidate.str() + ": " +
+                      rejection.message;
+        }
+        require(false, detail);
+    }
     require(std::ranges::all_of(result->legal, [](const auto& item) {
         return item.plan.well_formed() && !item.state.phrase.active &&
                !item.state.gesture.active;

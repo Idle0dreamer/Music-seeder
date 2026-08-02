@@ -9,11 +9,13 @@ declare description "Three-course struck resonator; parameters remain provisiona
 fundamental = hslider("fundamental_hz", 220, 20, 2000, 0.01);
 intensity = hslider("intensity", 0.8, 0, 1, 0.001);
 articulation = hslider("articulation", 0, 0, 2, 1);
+releaseSeconds = hslider("release_seconds", 0.5, 0.001, 10.0, 0.001);
 strike = button("strike");
 // Neutral, connected, and detached are distinct attack-force mappings at
 // this boundary. Their named-instrument calibration remains future work.
 attackGain = 1.0 - 0.10 * articulation;
 excitation = intensity * attackGain * pm.impulseExcitation(strike);
+decayScale = 0.5 / releaseSeconds;
 
 course1 = excitation : pm.modalModel(
     6,
@@ -21,21 +23,24 @@ course1 = excitation : pm.modalModel(
      fundamental * 3.0, fundamental * 4.01,
      fundamental * 5.03, fundamental * 6.06),
     (1.0, 0.46, 0.24, 0.14, 0.09, 0.05),
-    (0.8, 0.44, 0.24, 0.13, 0.08, 0.04));
+    (0.8 * decayScale, 0.44 * decayScale, 0.24 * decayScale,
+     0.13 * decayScale, 0.08 * decayScale, 0.04 * decayScale));
 course2 = excitation : pm.modalModel(
     6,
     (fundamental, fundamental * 2.0,
      fundamental * 3.002, fundamental * 4.008,
      fundamental * 5.02, fundamental * 6.04),
     (1.0, 0.46, 0.24, 0.14, 0.09, 0.05),
-    (0.8, 0.44, 0.24, 0.13, 0.08, 0.04));
+    (0.8 * decayScale, 0.44 * decayScale, 0.24 * decayScale,
+     0.13 * decayScale, 0.08 * decayScale, 0.04 * decayScale));
 course3 = excitation : pm.modalModel(
     6,
     (fundamental * 1.0021, fundamental * 2.0042,
      fundamental * 3.006, fundamental * 4.016,
      fundamental * 5.025, fundamental * 6.05),
     (1.0, 0.46, 0.24, 0.14, 0.09, 0.05),
-    (0.8, 0.44, 0.24, 0.13, 0.08, 0.04));
+    (0.8 * decayScale, 0.44 * decayScale, 0.24 * decayScale,
+     0.13 * decayScale, 0.08 * decayScale, 0.04 * decayScale));
 
 // The bridge filter is the shared coupling/radiation boundary. The final
 // instrument model must replace this reduced modal coupling with measured

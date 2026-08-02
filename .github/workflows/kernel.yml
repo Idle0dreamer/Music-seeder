@@ -27,6 +27,7 @@ jobs:
         run: |
           ./build/kernel 1
           ./build/kernel 2
+          ./build/kernel sikah 53
 
   undefined:
     runs-on: ubuntu-latest
@@ -89,6 +90,7 @@ jobs:
             -o /tmp/music_seed_santur_courses.cpp
           test -s /tmp/music_seed_santur_courses.cpp
           grep -q music_seed_santur_courses /tmp/music_seed_santur_courses.cpp
+          grep -q release_seconds /tmp/music_seed_santur_courses.cpp
           g++ -std=c++17 \
             -I third_party/audio/faust/architecture \
             -c /tmp/music_seed_santur_courses.cpp \
@@ -110,19 +112,22 @@ jobs:
         run: make CXX=g++-14 synthesis
       - name: Build the Faust-generated synthesis adapter
         run: make CXX=g++-14 synthesis-faust
-      - name: Render deterministic Bayati WAV
+      - name: Render deterministic Sikah WAV through both adapters
         run: |
-          ./build/synthesis-render 17 /tmp/music-seeder-bayati.wav
-          test -s /tmp/music-seeder-bayati.wav
-          grep -a -q RIFF /tmp/music-seeder-bayati.wav
-          ./build/synthesis-faust-render 17 /tmp/music-seeder-bayati-faust.wav
-          test -s /tmp/music-seeder-bayati-faust.wav
-          grep -a -q RIFF /tmp/music-seeder-bayati-faust.wav
-          ./build/synthesis-faust-render 17 /tmp/music-seeder-bayati-faust-repeat.wav
-          cmp -s /tmp/music-seeder-bayati-faust.wav /tmp/music-seeder-bayati-faust-repeat.wav
-      - name: Upload deterministic Bayati artifacts
+          ./build/synthesis-render --maqam sikah --seed 53 \
+            --output /tmp/music-seeder-sikah.wav
+          test -s /tmp/music-seeder-sikah.wav
+          grep -a -q RIFF /tmp/music-seeder-sikah.wav
+          ./build/synthesis-faust-render --maqam sikah --seed 53 \
+            --output /tmp/music-seeder-sikah-faust.wav
+          test -s /tmp/music-seeder-sikah-faust.wav
+          grep -a -q RIFF /tmp/music-seeder-sikah-faust.wav
+          ./build/synthesis-faust-render --maqam sikah --seed 53 \
+            --output /tmp/music-seeder-sikah-faust-repeat.wav
+          cmp -s /tmp/music-seeder-sikah-faust.wav /tmp/music-seeder-sikah-faust-repeat.wav
+      - name: Upload deterministic Sikah artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: music-seeder-bayati-wav
+          name: music-seeder-sikah-wav
           if-no-files-found: error
-          path: /tmp/music-seeder-bayati*.wav
+          path: /tmp/music-seeder-sikah*.wav

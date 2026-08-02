@@ -56,10 +56,27 @@ Key key(const Spec& spec) {
     result.motionFall = id(result, "motion.fall");
     result.boundaryOpen = id(result, "boundary.open");
     result.boundaryClosed = id(result, "boundary.closed");
+    result.ordered = spec.ordered;
     result.branches.reserve(spec.branches.size());
     for (const auto& source : spec.branches) {
         BranchKey branch;
         branch.jins = id(result, "jins." + source.name + ".upper");
+        branch.source_center = source.source_center_name.empty()
+                                   ? result.centerRoot
+                                   : id(result, "center." + source.source_center_name);
+        branch.center = source.center_name.empty()
+                            ? result.centerUpper
+                            : id(result, "center." + source.center_name);
+        branch.tonic = source.tonic_role.empty()
+                           ? result.roleGhammaz
+                           : id(result, "role." + source.tonic_role);
+        branch.ghammaz = source.ghammaz_role.empty()
+                             ? result.roleUpper
+                             : id(result, "role." + source.ghammaz_role);
+        branch.direction = source.direction;
+        branch.motion = source.direction == motion::Direction::Rise
+                            ? result.motionRise
+                            : result.motionFall;
         branch.path = id(result, "path.to." + source.name);
         branch.travel = id(result, "obligation.travel." + source.name);
         branch.restore = id(result, "obligation.restore." + source.name);

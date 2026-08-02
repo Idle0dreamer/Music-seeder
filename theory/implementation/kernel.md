@@ -108,6 +108,8 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Complete Ajam package and routes | `make_ajam`, `ajam_case`, catalog admission, and CLI execution for stay, Upper Ajam, and Nahawand routes |
 | Complete Nikriz package and routes | `make_nikriz`, `nikriz_case`, catalog admission, and CLI execution for stay and Nahawand routes |
 | Provisional Bayati profile and routes | `src/kernel/maqam/bayati`, `bayati_case`, and CLI execution for stay, Nahawand, Rast, and Hijaz routes; completion debt remains explicit |
+| Declarative ordered-family seam | `family::BranchSpec` carries source/target centers, roles, and transition direction; the Sikah route exercises the shared builder without a route-name dispatch |
+| Executable Sikah vertical route | `make_sikah`, `sikah_case`, named CLI execution, and native synthesis render; the catalog still rejects it as incomplete |
 
 ## Evidence still required
 
@@ -117,6 +119,9 @@ implements. Passing legacy prototype tests does not advance this ledger.
   corpus data; profile-matched source segments and independent review are still
   required for phrase-rate, pause, release, ornament, and performer claims.
 - A vocabulary-composition boundary for admitting a second theory module.
+- Collection-file loading of the current C++ package definitions; the current
+  ordered-family seam is the migration target, not the final configurable
+  package format.
 
 Audio rendering is outside this ledger. The independent synthesis boundary is
 implemented under `synthesis/`; its current renderer is a provisional
@@ -143,7 +148,7 @@ Verified for the preceding 34-suite descriptor checkpoint:
 - thirty-four debug law suites;
 - undefined-behavior sanitizer;
 
-The current working tree passes a local GCC debug suite with 50 test-function
+The current working tree passes a local GCC debug suite with 51 test-function
 invocations, an optimized build, UBSan, and CLI generation for neutral,
 Hijaz, Kurd, Nahawand, Rast, and Bayati seeds.
 Exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed all four jobs in

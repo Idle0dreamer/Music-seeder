@@ -55,6 +55,7 @@ int main() {
         test::nikriz_case();
         test::rast_case();
         test::bayati_case();
+        test::sikah_case();
         test::validation::casebook();
         std::cout
             << "PASS exact rational arithmetic\n"
@@ -104,6 +105,7 @@ int main() {
             << "PASS executable Nikriz routes and timed plans\n"
             << "PASS executable Rast routes and timed plans\n"
             << "PASS executable provisional Bayati routes and timed plans\n"
+            << "PASS executable ordered Sikah station route and timed plan\n"
             << "PASS exact corpus timing, release, ornament, pause, and variation validation\n";
         return 0;
     } catch (const std::exception& error) {

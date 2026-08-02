@@ -1,38 +1,26 @@
-#include "mq/synthesis/Bayati.hpp"
+#include "mq/synthesis/Plan.hpp"
 #include "mq/synthesis/FaustRender.hpp"
+#include "mq/synthesis/Player.hpp"
 #include "mq/kernel/performance/Profile.hpp"
 
-#include <charconv>
-#include <cstdint>
 #include <iostream>
-#include <string>
 #include <string_view>
 
 int main(int argc, char** argv) {
-    if (argc < 2 || argc > 3) {
-        std::cerr << "usage: synthesis-faust-render seed [output.wav]\n";
-        return 2;
+    const auto options = mq::synthesis::parse_player_args(
+        argc, argv, "synthesis-faust-render");
+    if (!options) {
+        std::cerr << options.error() << '\n';
+        return argc == 2 && std::string_view(argv[1]) == "--help" ? 0 : 2;
     }
-    std::uint64_t seed{};
-    const std::string_view seedValue(argv[1]);
-    const auto parsed = std::from_chars(
-        seedValue.data(), seedValue.data() + seedValue.size(), seed);
-    if (parsed.ec != std::errc{} ||
-        parsed.ptr != seedValue.data() + seedValue.size()) {
-        std::cerr << "seed must be an unsigned integer\n";
-        return 2;
-    }
-    const std::string output = argc == 3
-                                 ? argv[2]
-                                 : "build/bayati-faust-" + std::to_string(seed) +
-                                       ".wav";
     const auto timing = mq::kernel::performance::load_timing_profile(
-        "theory/data/performance/free-rhythm-v1.timing");
+        options->timing_path);
     if (!timing) {
         std::cerr << timing.error() << '\n';
         return 1;
     }
-    const auto generated = mq::synthesis::make_bayati_plan(seed, *timing);
+    const auto generated = mq::synthesis::make_plan(
+        options->maqam, options->seed, *timing);
     if (!generated) {
         std::cerr << generated.error() << '\n';
         return 1;
@@ -40,21 +28,24 @@ int main(int argc, char** argv) {
     const auto rendered = mq::synthesis::render_faust_wav(
         generated->plan,
         mq::synthesis::RenderConfig{
+            .sample_rate = options->sample_rate,
+            .tonic_hz = options->tonic_hz,
             .seconds_per_unit = timing->seconds_per_unit.decimal(),
             .tail_seconds = timing->tail_seconds.decimal(),
-            .seed = seed,
+            .seed = options->seed,
         },
-        output);
+        options->output);
     if (!rendered) {
         std::cerr << rendered.error().message << '\n';
         return 1;
     }
     std::cout
+        << "maqam: " << options->maqam << '\n'
         << "candidate: " << generated->candidate.str() << '\n'
         << "model: Faust-generated coupled-course physical model\n"
         << "frames: " << rendered->frames << '\n'
         << "peak: " << rendered->peak << '\n'
         << "tonic_hz: " << rendered->conversion_tonic_hz << '\n'
-        << "wav: " << output << '\n';
+        << "wav: " << options->output << '\n';
     return 0;
 }

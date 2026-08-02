@@ -47,6 +47,17 @@ void test::maqam_catalog() {
         const auto built = catalog.build(package->id);
         require(built.has_value(), built.error_or(std::string(name) + " build failed"));
     }
+    const auto* sikah = catalog.find(sort::MaqamId{
+        Identity{"maqam.catalog", "maqam.sikah", "1"}});
+    require(sikah != nullptr, "Sikah is missing from maqam catalog");
+    require(
+        sikah->implementation == maqam::Implementation::Incomplete,
+        "Sikah vertical route was marked complete before package validation");
+    const auto sikahPackage = catalog.build(sikah->id);
+    require(
+        !sikahPackage &&
+            sikahPackage.error().find("not complete") != std::string::npos,
+        "Sikah package bypassed the completion gate");
     const auto missing = catalog.build(sort::MaqamId{
         Identity{"maqam.catalog", "maqam.unknown", "1"}});
     require(
