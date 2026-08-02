@@ -9,7 +9,7 @@ namespace mq::synthesis {
 namespace {
 
 constexpr std::string_view default_timing =
-    "theory/data/performance/free-rhythm-v1.timing";
+    "theory/data/performance/continuous-free-rhythm-v1.timing";
 constexpr std::uint32_t default_sample_rate = 48'000;
 constexpr double default_tonic_hz = 146.8323839587;
 constexpr double default_duration_seconds = 30.0;

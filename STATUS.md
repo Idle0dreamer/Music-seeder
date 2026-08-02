@@ -124,6 +124,9 @@ Implemented so far:
     wavetable lookup, and bounded audible-tail mixing for long renders;
 65. block-oriented Faust execution with persistent generated-DSP state between
     audio blocks while preserving one-sample strike edges;
+66. long performance generation now uses a separate external continuous
+    timing profile for bounded performer variation and rotates through every
+    complete legal collection route available to each continuation;
 
 Checkpoint validation state:
 

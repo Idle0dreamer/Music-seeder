@@ -38,8 +38,10 @@ kernel's exported performance-plan contract.
   by both renderers. Adding a collection-defined family does not require a
   renderer branch.
 - The Qt player launches the renderer asynchronously, supports configurable
-  multi-phrase durations and continuous looping, and displays the rendered
-  WAV and a soft Fourier magnitude view.
+  long performance durations, collection-defined route continuations, and an
+  explicit optional playback loop. The generated file itself is one rendered
+  performance stream; it is not assembled by copying one audio clip. The
+  player displays the rendered WAV and a soft Fourier magnitude view.
 - `../src/synthesis/FaustRender.cpp` and the `synthesis-faust` Make target
   consume generated Faust C++ through the same boundary.
 - `../third_party/audio/` records pinned Git source checkouts for the future
