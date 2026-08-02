@@ -67,6 +67,7 @@ jobs:
         run: |
           third_party/audio/faust/build/bin/faust \
             -I third_party/audio/faustlibraries \
+            -a third_party/audio/faust/architecture/minimal-effect.cpp \
             -lang cpp \
             -cn music_seed_modal_probe \
             synthesis/models/modal_probe.dsp \
@@ -81,6 +82,7 @@ jobs:
         run: |
           third_party/audio/faust/build/bin/faust \
             -I third_party/audio/faustlibraries \
+            -a third_party/audio/faust/architecture/minimal-effect.cpp \
             -lang cpp \
             -cn music_seed_santur_courses \
             synthesis/models/santur_courses.dsp \

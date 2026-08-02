@@ -11,6 +11,7 @@ SYNTH_APP_SRC := $(shell find apps/synthesis -name '*.cpp' ! -name 'faust_main.c
 SYNTH_OBJ := $(patsubst %.cpp,build/synthesis/%.o,$(SYNTH_SRC) $(SYNTH_APP_SRC))
 FAUST_ROOT := third_party/audio/faust
 FAUST_LIBRARIES := third_party/audio/faustlibraries
+FAUST_ARCHITECTURE := $(FAUST_ROOT)/architecture/minimal-effect.cpp
 FAUST_COMPILER := $(FAUST_ROOT)/build/bin/faust
 FAUST_GENERATED := build/generated/music_seed_santur_courses.cpp
 FAUST_SRC := $(KERNEL_SRC) $(shell find src/synthesis -name '*.cpp' ! -name 'FaustRender.cpp' | sort) src/synthesis/FaustRender.cpp
@@ -51,6 +52,7 @@ faust-compiler:
 $(FAUST_GENERATED): synthesis/models/santur_courses.dsp faust-compiler
 	@mkdir -p $(dir $@)
 	$(FAUST_COMPILER) -I $(FAUST_LIBRARIES) -lang cpp \
+		-a $(FAUST_ARCHITECTURE) \
 		-cn music_seed_santur_courses $< -o $@
 
 build/kernel: $(APP_OBJ)
