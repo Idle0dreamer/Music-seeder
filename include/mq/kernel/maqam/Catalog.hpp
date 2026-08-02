@@ -1,7 +1,9 @@
 #pragma once
 
 #include "mq/kernel/Identity.hpp"
+#include "mq/kernel/maqam/Package.hpp"
 #include "mq/kernel/maqam/Bayati.hpp"
+#include "mq/kernel/maqam/Nahawand.hpp"
 #include "mq/kernel/maqam/Rast.hpp"
 #include "mq/kernel/sort/FamilyId.hpp"
 #include "mq/kernel/sort/MaqamId.hpp"

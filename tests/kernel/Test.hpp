@@ -119,6 +119,7 @@ void produce();
 } // namespace grammar
 
 void bayati_case();
+void nahawand_case();
 void rast_case();
 void maqam_catalog();
 

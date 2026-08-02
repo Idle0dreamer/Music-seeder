@@ -4,6 +4,7 @@
 #include "mq/kernel/generate/Engine.hpp"
 #include "mq/kernel/grammar/Catalog.hpp"
 #include "mq/kernel/maqam/Bayati.hpp"
+#include "mq/kernel/maqam/Nahawand.hpp"
 #include "mq/kernel/maqam/Rast.hpp"
 
 #include <algorithm>
@@ -198,6 +199,7 @@ struct Route {
 
 constexpr std::array routes{
     Route{"bayati", "Bayati", mq::kernel::maqam::make_bayati},
+    Route{"nahawand", "Nahawand", mq::kernel::maqam::make_nahawand},
     Route{"rast", "Rast", mq::kernel::maqam::make_rast},
 };
 

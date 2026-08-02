@@ -67,32 +67,34 @@ Implemented so far:
     baggage step while retaining the diagnostic;
 38. typed sayr plans, dependency-ordered obligations, proof-bearing
     fulfillment, route completion, and scope restoration;
-39. forty-five registered executable test-function invocations (42 summary
+39. forty-six registered executable test-function invocations (43 summary
     lines);
 40. typed maqam catalog with explicit complete/incomplete admission and
     undeclared-package refusal;
 41. complete canonical Rast package with Upper Rast and Nahawand routes,
     contextual targets, timed plans, and CLI execution;
-42. a sourced, explicitly provisional Bayati profile with root Bayati,
+42. complete canonical Nahawand package with Hijaz and Kurd routes,
+    contextual targets, timed plans, and CLI execution;
+43. a sourced, explicitly provisional Bayati profile with root Bayati,
     Nahawand, Rast, and Hijaz upper-jins routes;
-43. positive sayr completion laws and seeded grammar derivations for all four
+44. positive sayr completion laws and seeded grammar derivations for all four
     Bayati routes;
-44. branch-conditioned exact pitch targets rather than route-name-only
+45. branch-conditioned exact pitch targets rather than route-name-only
     variation;
-45. a separate C++ synthesis target with a provisional coupled-course santur
+46. a separate C++ synthesis target with a provisional coupled-course santur
     model that consumes timed plans and writes deterministic mono PCM WAV;
-46. a Faust-generated C++ renderer target with exact-contour and oscillation
+47. a Faust-generated C++ renderer target with exact-contour and oscillation
     frequency updates, intensity, strike, and neutral/connected/detached
     attack-force mapping;
-47. Bayati's provisional execution policy carries exact rational durations,
+48. package-owned execution policies carry exact rational durations,
     intensities, and articulation through generation into both renderers;
 
 Checkpoint validation state:
 
 - the current working tree passes `make kernel-test` with GCC debug flags,
-  all 45 test-function invocations, and 42 summary lines;
+  all 46 test-function invocations, and 43 summary lines;
 - the current working tree passes `make kernel` with `-O2 -Werror`;
-- the current working tree passes `make kernel-sanitize` with UBSan and all 40
+- the current working tree passes `make kernel-sanitize` with UBSan and all 43
   summary lines;
 - `./build/kernel 1` emits the five-event neutral travel candidate with exact
   onsets `0`, `1`, `2`, `3`, and `4`; `./build/kernel 2` emits the one-event
@@ -102,6 +104,9 @@ Checkpoint validation state:
   onsets `0`, `3/2`, `9/4`, `3`, and `7/2` for the selected journey;
 - `./build/kernel rast 23` emits one selected five-event Rast route from three
   legal routes, with the same exact timing boundary and profile-owned targets;
+- `./build/kernel nahawand 29` emits one selected five-event Nahawand route
+  from three legal routes, with branch-specific Hijaz/Kurd targets and the
+  package-supplied timing policy;
 - `make synthesis` and `./build/synthesis-render 17 /tmp/bayati.wav` produce a
   non-silent valid 48 kHz PCM WAV from the provisional coupled-course model;
   the current timing-policy render is 140640 frames with peak `0.92`;
@@ -119,8 +124,10 @@ Checkpoint validation state:
   as passed here.
 
 The Bayati profile is an explicitly provisional Egypt-Levant research profile,
-not a claim of authentic regional or school-specific performance. Its source
-scope and remaining corpus/annotator debt are recorded in
+not a claim of authentic regional or school-specific performance. The
+Nahawand package is scoped to the canonical repertoire description and does not
+claim every regional, historical, performer, or school realization. Bayati's
+source scope and remaining corpus/annotator debt are recorded in
 `theory/implementation/kernel.md` and `theory/case/bayati.md`.
 
 The neutral fixture remains finite and intentionally limited. The Bayati

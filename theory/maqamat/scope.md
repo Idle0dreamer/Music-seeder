@@ -86,8 +86,8 @@ canonical repertoire package.
 
 ## Current implementation state
 
-Rast is the first complete canonical package under this contract. Bayati is the
-first vertical slice and remains executable but incomplete under its case-study
-gates. The remaining entries are not silently executable. The catalog, package
-coverage matrix, and tests must advance together until every declared entry
-reaches the contract above.
+Rast and Nahawand are the first complete canonical packages under this
+contract. Bayati is the first vertical slice and remains executable but
+incomplete under its case-study gates. The remaining entries are not silently
+executable. The catalog, package coverage matrix, and tests must advance
+together until every declared entry reaches the contract above.

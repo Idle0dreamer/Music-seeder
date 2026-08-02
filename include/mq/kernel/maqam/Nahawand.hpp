@@ -2,12 +2,8 @@
 
 #include "mq/kernel/maqam/Package.hpp"
 
-#include <expected>
-#include <memory>
-#include <string>
-
 namespace mq::kernel::maqam {
 
-std::expected<Scaffold, std::string> make_bayati();
+std::expected<Scaffold, std::string> make_nahawand();
 
 } // namespace mq::kernel::maqam

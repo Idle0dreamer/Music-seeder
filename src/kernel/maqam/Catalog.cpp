@@ -54,7 +54,7 @@ Catalog Catalog::declared() {
         entry("mahur", "rast", Implementation::Incomplete, source),
         entry("muhayyar", "bayati", Implementation::Incomplete, source),
         entry("musta.ar", "sikah", Implementation::Incomplete, source),
-        entry("nahawand", "nahawand", Implementation::Incomplete, source),
+        entry("nahawand", "nahawand", Implementation::Complete, source, make_nahawand),
         entry("nahawand.murassa", "nahawand", Implementation::Incomplete, source),
         entry("nairuz", "rast", Implementation::Incomplete, source),
         entry("nawa.athar", "nikriz", Implementation::Incomplete, source),

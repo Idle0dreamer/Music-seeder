@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mq/kernel/maqam/Bayati.hpp"
+#include "mq/kernel/maqam/Package.hpp"
 
 namespace mq::kernel::maqam {
 

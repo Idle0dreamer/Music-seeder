@@ -26,6 +26,16 @@ void test::maqam_catalog() {
         "implemented Rast package was not marked complete");
     const auto rastPackage = catalog.build(rast->id);
     require(rastPackage.has_value(), rastPackage.error_or("Rast build failed"));
+    const auto nahawand = catalog.find(sort::MaqamId{
+        Identity{"maqam.catalog", "maqam.nahawand", "1"}});
+    require(nahawand != nullptr, "Nahawand is missing from maqam catalog");
+    require(
+        nahawand->implementation == maqam::Implementation::Complete,
+        "implemented Nahawand package was not marked complete");
+    const auto nahawandPackage = catalog.build(nahawand->id);
+    require(
+        nahawandPackage.has_value(),
+        nahawandPackage.error_or("Nahawand build failed"));
     const auto missing = catalog.build(sort::MaqamId{
         Identity{"maqam.catalog", "maqam.unknown", "1"}});
     require(
