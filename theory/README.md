@@ -45,10 +45,12 @@ maqām.
 32. [Unified constraint model](math/model.md)
 33. [Corpus and annotation model](data/corpus.md)
 34. [Validation gates](validation/gates.md)
-35. [Bayati case study](case/bayati.md)
-36. [Research debt](validation/debt.md)
-37. [Kernel implementation ledger](implementation/kernel.md)
-38. [Sources](sources/bibliography.md)
+35. [Maqāmāt implementation scope](maqamat/scope.md)
+36. [Bayati case study](case/bayati.md)
+37. [Rast case study](case/rast.md)
+38. [Research debt](validation/debt.md)
+39. [Kernel implementation ledger](implementation/kernel.md)
+40. [Sources](sources/bibliography.md)
 
 ## Central conclusion
 

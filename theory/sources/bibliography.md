@@ -14,6 +14,11 @@ on top of it.
   [Maqam Bayati](https://www.maqamworld.com/en/maqam/bayati.php).
   Pedagogical orientation for sayr, phrasing, modulation, and Bayati’s common
   secondary ajnas. Used as a starting reference, not a complete grammar.
+- Digital Arabic Maqām Archive (DiArMaqAr), [archive](https://diarmaqar.net/en)
+  and [documentation](https://diarmaqar.net/docs/guide/). Machine-readable
+  maqāmāt, ajnās, suyūr, intiqālāt, tuning systems, and bibliographic
+  provenance. Imported profile data must preserve its CC BY-NC-SA boundary and
+  must remain separate from unscoped regional claims.
 
 ## Phrase, form, and melodic vocabulary
 

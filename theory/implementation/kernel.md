@@ -89,7 +89,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Complete candidate evaluation | legal outcomes and retained diagnostics before seed |
 | Exact staged performance plans | one target per committed structural event, including exact `4:3` and `3:2` relations |
 | Exact monophonic timed performance plan | `performance::Plan::events` derives contiguous rational onsets and validates duration, intensity, articulation, typed strand, optional exact pitch contours, and ornament intent |
-| Direction-conditioned execution timing | `performance::Timing` carries exact duration, intensity, and articulation intents; Bayati supplies an explicitly provisional policy and generation passes it to adapters |
+| Direction-conditioned execution timing | `performance::Timing` carries exact duration, intensity, and articulation intents; Bayati and Rast supply profile-owned policies and generation passes them to adapters |
 | Executable profile comparison | reconstructed baggage prohibition changes the legal generation set |
 | Typed grammar output | `Stage` and `Candidate` term forms |
 | Scope-controlled generated output | explicit `Output` export and non-leakage law |
@@ -97,7 +97,9 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Executable neutral generation witness | CLI seed selects a complete candidate and prints exact targets |
 | Recursive phrase grammar | `grammar::Produce` and test-verified budget exhaustion |
 | Contextual intonation basis | `pitch::trajectory` basis functions (onset, release, vibrato, attraction) |
-| Provisional Bayati profile and routes | `src/kernel/maqam/bayati`, `bayati_case`, and CLI execution for stay, Nahawand, Rast, and Hijaz routes |
+| Typed maqām catalog and package admission | `maqam::Catalog`, typed `MaqamId`, explicit complete/incomplete entries, and refusal of incomplete or undeclared packages |
+| Complete Rast package and routes | `src/kernel/maqam/rast`, `rast_case`, catalog admission, and CLI execution for stay, Upper Rast, and Nahawand routes |
+| Provisional Bayati profile and routes | `src/kernel/maqam/bayati`, `bayati_case`, and CLI execution for stay, Nahawand, Rast, and Hijaz routes; completion debt remains explicit |
 
 ## Evidence still required
 
@@ -127,8 +129,9 @@ Verified for the preceding 34-suite descriptor checkpoint:
 - thirty-four debug law suites;
 - undefined-behavior sanitizer;
 
-The current working tree passes a local GCC debug suite with 43 test-function
-invocations, an optimized build, UBSan, and CLI generation for seeds 1 and 2.
+The current working tree passes a local GCC debug suite with 45 test-function
+invocations, an optimized build, UBSan, and CLI generation for neutral, Rast,
+and Bayati seeds.
 Exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed all four jobs in
 GitHub Actions run `30755938899`.
 `.github/workflows/kernel.yml` is the intended clean remote validation path and

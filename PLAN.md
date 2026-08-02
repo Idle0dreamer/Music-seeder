@@ -1,15 +1,19 @@
-# Music-seeder completion plan
+# Music-seeder maqāmāt and Faust completion plan
 
-This is the execution plan for the maqām and Faust portions of the project.
-It preserves the full target: a sourced, executable Bayati slice that can
-produce instrument-neutral performances and a Faust-backed C++ sound path,
-while keeping regional theory and acoustic claims separate.
+This is the execution plan for the full declared Arabic maqāmāt repertoire and
+the Faust-backed sound path. Bayati was the first vertical slice, while Rast
+is now the first complete canonical package; neither is the completion target
+by itself. The repertoire boundary is declared in
+[`theory/maqamat/scope.md`](theory/maqamat/scope.md).
+Every named entry must become an executable, sourced package before this plan
+is complete.
 
 ## Current checkpoint
 
-The kernel portion is executable for a provisional Egypt-Levant Bayati profile:
-four legal seeded routes, exact symbolic targets, timed events, and positive
-law coverage. The synthesis boundary now contains a provisional C++ santur
+The kernel portion currently executes four legal seeded routes for an
+explicitly provisional Egypt-Levant Bayati development profile: exact
+symbolic targets, timed events, and positive law coverage. The synthesis
+boundary now contains a provisional C++ santur
 model with three detuned courses, stiff-string partials, hammer-contact attack,
 bridge/soundboard modes, and sympathetic tails. It renders a deterministic WAV.
 
@@ -19,9 +23,12 @@ ornament, intensity, articulation, and strike controls through the shared WAV
 boundary. Bayati now also carries a direction-conditioned exact timing policy
 into both renderers; it is explicitly provisional execution data, not an
 authenticity claim.
-Bayati phrase/motif/ornament coverage and instrument measurements remain open.
-Exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed the remote workflow
-in run `30755938899`, including the Faust probe and deterministic WAV artifact.
+Bayati phrase/motif/ornament coverage, the remaining maqāmāt packages, and
+instrument measurements remain open. “Provisional” is not an acceptable final
+status.
+The last exact head with a green remote Faust/synthesis workflow is
+`af231b6`; the current registry and Rast commits require a new exact-head
+remote run.
 
 ## Completion standard
 
@@ -42,9 +49,32 @@ The project is complete for this plan only when all of these are true:
 6. Bayati claims are limited to the sourced region/repertoire/profile scope.
    Unknown rules remain rejected or explicitly provisional; they are never
    silently filled by a neutral or Western fallback.
+7. Every entry in `theory/maqamat/scope.md` has its own complete package,
+   executable route set, law tests, provenance, and profile-specific
+   validation. A shared builder may supply universal laws only; it may not
+   substitute a generic route for missing maqām data.
 
 Software tests prove implementation laws. They do not prove Bayati authenticity
 or instrument plausibility. Those require the evidence and acoustic gates below.
+
+## Full maqāmāt delivery sequence
+
+The package sequence is ordered by shared structural leverage, not by reducing
+all maqāmāt to one scale model:
+
+1. finish Bayati as the first complete profile, including phrase/cell
+   recurrence and variation, conditional intonation, and profile-matched
+   evidence;
+2. implement the eight root families—ʿAjam, Bayati, Hijaz, Kurd, Nahawand,
+   Nikriz, Rast, and Sikah—with separate root-jins, upper-jins, sayr, and
+   modulation data;
+3. implement every named branch and independent maqām in the declared scope,
+   preserving branch-specific pathways and closure behavior;
+4. add historical, regional, repertoire, and tuning variants as separately
+   sourced profile identities, never as silent overrides of the canonical
+   package;
+5. publish a coverage matrix proving that every package reaches all required
+   kernel, performance, and Faust boundary tests.
 
 ## Execution order
 
@@ -65,8 +95,9 @@ Evidence required:
 - remote GCC 14 and sanitizer results;
 - Faust compiler generated-C++ probe from the pinned revisions.
 
-Current state: local kernel, CLI, and independent synthesis evidence exists; the
-Faust runtime path is implemented but the remote jobs have not yet run.
+Current state: local kernel and CLI evidence exists, and the earlier exact
+Bayati Faust/synthesis workflow passed remotely; the current registry/Rast
+head still needs its own remote run.
 
 ### 1. Universal kernel contract
 
@@ -84,7 +115,6 @@ Deliverables:
 Evidence required:
 
 - each new type has a law test and an explicit failure path;
-- no hard-coded maqām scale/cents arrays;
 - no implicit generic-identity escape hatch;
 - current neutral fixture remains a mechanism test only.
 
