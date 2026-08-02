@@ -12,7 +12,8 @@ is complete.
 
 The kernel portion currently executes four legal seeded routes for an
 explicitly provisional Egypt-Levant Bayati development profile and three
-legal canonical routes each for Nahawand and Rast: exact symbolic targets,
+legal canonical routes each for Hijaz and Nahawand, two for Kurd, and three
+for Rast: exact symbolic targets,
 timed events, and positive law coverage. The synthesis
 boundary now contains a provisional C++ santur
 model with three detuned courses, stiff-string partials, hammer-contact attack,
@@ -66,9 +67,9 @@ all maqāmāt to one scale model:
 1. finish Bayati as the next complete profile, including phrase/cell
    recurrence and variation, conditional intonation, and profile-matched
    evidence;
-2. implement the remaining six root families—ʿAjam, Bayati, Hijaz, Kurd,
-   Nikriz, and Sikah—with separate root-jins, upper-jins, sayr, and
-   modulation data; Nahawand and Rast now establish the independent package
+2. implement the remaining four root families—ʿAjam, Bayati, Nikriz, and
+   Sikah—with separate root-jins, upper-jins, sayr, and modulation data;
+   Nahawand, Rast, Hijaz, and Kurd now establish the independent package
    seams;
 3. implement every named branch and independent maqām in the declared scope,
    preserving branch-specific pathways and closure behavior;

@@ -100,6 +100,8 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Typed maqām catalog and package admission | `maqam::Catalog`, typed `MaqamId`, explicit complete/incomplete entries, and refusal of incomplete or undeclared packages |
 | Complete Rast package and routes | `src/kernel/maqam/rast`, `rast_case`, catalog admission, and CLI execution for stay, Upper Rast, and Nahawand routes |
 | Complete Nahawand package and routes | `src/kernel/maqam/family`, `make_nahawand`, `nahawand_case`, catalog admission, and CLI execution for stay, Hijaz, and Kurd routes |
+| Complete Hijaz package and routes | `make_hijaz`, `hijaz_case`, catalog admission, and CLI execution for stay, Nahawand, and Rast routes |
+| Complete Kurd package and routes | `make_kurd`, `kurd_case`, catalog admission, and CLI execution for stay and Nahawand routes |
 | Provisional Bayati profile and routes | `src/kernel/maqam/bayati`, `bayati_case`, and CLI execution for stay, Nahawand, Rast, and Hijaz routes; completion debt remains explicit |
 
 ## Evidence still required
@@ -130,9 +132,9 @@ Verified for the preceding 34-suite descriptor checkpoint:
 - thirty-four debug law suites;
 - undefined-behavior sanitizer;
 
-The current working tree passes a local GCC debug suite with 46 test-function
+The current working tree passes a local GCC debug suite with 48 test-function
 invocations, an optimized build, UBSan, and CLI generation for neutral,
-Nahawand, Rast, and Bayati seeds.
+Hijaz, Kurd, Nahawand, Rast, and Bayati seeds.
 Exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed all four jobs in
 GitHub Actions run `30755938899`.
 `.github/workflows/kernel.yml` is the intended clean remote validation path and

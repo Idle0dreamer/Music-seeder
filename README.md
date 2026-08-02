@@ -10,9 +10,9 @@ product. Other theory modules may be added later through explicit boundaries;
 none are modeled or claimed by the current kernel.
 
 The old seed-driven generator and synthesized audio prototypes remain rejected
-diagnostic artifacts. The current C++23 Bayati, Nahawand, and Rast
-implementations are separate profile packages. Rast and Nahawand are admitted
-as complete canonical packages; Bayati remains explicitly incomplete until its
+diagnostic artifacts. The current C++23 Bayati, Hijaz, Kurd, Nahawand, and Rast
+implementations are separate profile packages. Rast, Nahawand, Hijaz, and Kurd
+are admitted as complete canonical packages; Bayati remains explicitly incomplete until its
 profile-specific completion gates pass. The normative theory for the current maqām module is
 under `theory/`; the implementation is isolated under
 `include/mq/kernel`, `src/kernel`, `apps/kernel`, and `tests/kernel`.
@@ -30,8 +30,9 @@ make kernel-test
 ```
 
 The optional unsigned seed drives the neutral executable generation fixture.
-The Bayati, Nahawand, and Rast routes are available as
-`./build/kernel bayati [seed]`, `./build/kernel nahawand [seed]`, and
+The Bayati, Hijaz, Kurd, Nahawand, and Rast routes are available as
+`./build/kernel bayati [seed]`, `./build/kernel hijaz [seed]`,
+`./build/kernel kurd [seed]`, `./build/kernel nahawand [seed]`, and
 `./build/kernel rast [seed]`. They print complete candidates and exact timed
 structural targets; the kernel is not itself an audio renderer.
 
@@ -61,8 +62,8 @@ sources are not part of this checkpoint.
 
 The declared Arabic repertoire boundary is in
 [`theory/maqamat/scope.md`](theory/maqamat/scope.md). Rast is currently the
-first complete canonical package and Nahawand is the second. Bayati is
-executable but remains incomplete
+first complete canonical package; Nahawand, Hijaz, and Kurd are also admitted
+as complete canonical packages. Bayati is executable but remains incomplete
 under its case-study gates. Remaining entries are catalogued and refused until
 their own positive and negative rules, formulas, vocabulary, pathways, and
 provenance evidence are implemented.

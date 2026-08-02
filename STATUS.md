@@ -67,7 +67,7 @@ Implemented so far:
     baggage step while retaining the diagnostic;
 38. typed sayr plans, dependency-ordered obligations, proof-bearing
     fulfillment, route completion, and scope restoration;
-39. forty-six registered executable test-function invocations (43 summary
+39. forty-eight registered executable test-function invocations (45 summary
     lines);
 40. typed maqam catalog with explicit complete/incomplete admission and
     undeclared-package refusal;
@@ -75,26 +75,30 @@ Implemented so far:
     contextual targets, timed plans, and CLI execution;
 42. complete canonical Nahawand package with Hijaz and Kurd routes,
     contextual targets, timed plans, and CLI execution;
-43. a sourced, explicitly provisional Bayati profile with root Bayati,
+43. complete canonical Hijaz package with Nahawand and Rast routes,
+    contextual targets, timed plans, and CLI execution;
+44. complete canonical Kurd package with a Nahawand route, contextual targets,
+    timed plans, and CLI execution;
+45. a sourced, explicitly provisional Bayati profile with root Bayati,
     Nahawand, Rast, and Hijaz upper-jins routes;
-44. positive sayr completion laws and seeded grammar derivations for all four
+46. positive sayr completion laws and seeded grammar derivations for all four
     Bayati routes;
-45. branch-conditioned exact pitch targets rather than route-name-only
+47. branch-conditioned exact pitch targets rather than route-name-only
     variation;
-46. a separate C++ synthesis target with a provisional coupled-course santur
+48. a separate C++ synthesis target with a provisional coupled-course santur
     model that consumes timed plans and writes deterministic mono PCM WAV;
-47. a Faust-generated C++ renderer target with exact-contour and oscillation
+49. a Faust-generated C++ renderer target with exact-contour and oscillation
     frequency updates, intensity, strike, and neutral/connected/detached
     attack-force mapping;
-48. package-owned execution policies carry exact rational durations,
+50. package-owned execution policies carry exact rational durations,
     intensities, and articulation through generation into both renderers;
 
 Checkpoint validation state:
 
 - the current working tree passes `make kernel-test` with GCC debug flags,
-  all 46 test-function invocations, and 43 summary lines;
+  all 48 test-function invocations, and 45 summary lines;
 - the current working tree passes `make kernel` with `-O2 -Werror`;
-- the current working tree passes `make kernel-sanitize` with UBSan and all 43
+- the current working tree passes `make kernel-sanitize` with UBSan and all 45
   summary lines;
 - `./build/kernel 1` emits the five-event neutral travel candidate with exact
   onsets `0`, `1`, `2`, `3`, and `4`; `./build/kernel 2` emits the one-event
@@ -107,6 +111,10 @@ Checkpoint validation state:
 - `./build/kernel nahawand 29` emits one selected five-event Nahawand route
   from three legal routes, with branch-specific Hijaz/Kurd targets and the
   package-supplied timing policy;
+- `./build/kernel hijaz 31` emits one selected five-event Hijaz route from
+  three legal routes, with branch-specific Nahawand/Rast targets;
+- `./build/kernel kurd 37` emits a legal Kurd result from two routes, with the
+  Nahawand fourth-degree branch available;
 - `make synthesis` and `./build/synthesis-render 17 /tmp/bayati.wav` produce a
   non-silent valid 48 kHz PCM WAV from the provisional coupled-course model;
   the current timing-policy render is 140640 frames with peak `0.92`;
