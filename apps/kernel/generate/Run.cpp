@@ -3,6 +3,7 @@
 #include "mq/kernel/fixture/generation/Set.hpp"
 #include "mq/kernel/generate/Engine.hpp"
 #include "mq/kernel/grammar/Catalog.hpp"
+#include "mq/kernel/maqam/Bayati.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -65,11 +66,81 @@ int run(std::uint64_t seed) {
         << "legal candidates: " << result->legal.size() << '\n'
         << "rejected grammar branches: "
         << result->derivation.size() << '\n'
-        << "structural targets: " << selected->plan.targets.size() << '\n';
-    for (const auto& target : selected->plan.targets) {
+        << "timed performance events: " << selected->plan.events.size()
+        << '\n';
+    for (const auto& timed : selected->plan.events) {
+        const auto& target = timed.target;
         std::cout
             << "  " << target.event.identity.str()
-            << " -> " << target.center.str() << '\n';
+            << " -> " << target.center.str()
+            << " @ " << timed.onset.str()
+            << " + " << timed.duration.str()
+            << " intensity " << timed.intensity.str()
+            << '\n';
+    }
+    return 0;
+}
+
+int bayati(std::uint64_t seed) {
+    using namespace mq::kernel;
+
+    const auto scaffold = maqam::make_bayati();
+    if (!scaffold) {
+        std::cerr << scaffold.error() << '\n';
+        return 1;
+    }
+    const eval::Context context{
+        .jins = {&scaffold->ajnas},
+        .path = {&scaffold->graph},
+        .sayr = {&scaffold->sayr},
+        .grammar = {nullptr},
+    };
+    const mq::kernel::generate::Engine engine(*scaffold->profile, context);
+    const state::Snapshot initial;
+    const auto result = engine.run(
+        seed,
+        scaffold->generation.choice,
+        scaffold->generation.production,
+        scaffold->generation.projection,
+        scaffold->generation.schema,
+        initial);
+    if (!result) {
+        std::cerr << result.error().message << '\n';
+        for (const auto& rejection : result.error().rejected) {
+            std::cerr << "  rejected " << rejection.candidate.str()
+                      << ": " << rejection.message << '\n';
+        }
+        return 1;
+    }
+    const auto selected = std::ranges::find(
+        result->legal,
+        result->selected,
+        &mq::kernel::generate::Outcome::candidate);
+    if (selected == result->legal.end()) {
+        std::cerr << "selected Bayati outcome is missing\n";
+        return 1;
+    }
+    std::cout
+        << "profile: " << scaffold->profile->identity() << '\n'
+        << "seed: " << seed << '\n'
+        << "candidate: " << result->selected.str() << '\n'
+        << "legal Bayati routes: " << result->legal.size() << '\n'
+        << "rejected Bayati routes: " << result->rejected.size() << '\n'
+        << "timed performance events: " << selected->plan.events.size()
+        << '\n';
+    for (const auto& rejection : result->rejected) {
+        std::cout << "  rejected " << rejection.candidate.str()
+                  << ": " << rejection.message << '\n';
+    }
+    for (const auto& timed : selected->plan.events) {
+        const auto& target = timed.target;
+        std::cout
+            << "  " << target.event.identity.str()
+            << " -> " << target.center.str()
+            << " @ " << timed.onset.str()
+            << " + " << timed.duration.str()
+            << " intensity " << timed.intensity.str()
+            << '\n';
     }
     return 0;
 }

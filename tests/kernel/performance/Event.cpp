@@ -25,9 +25,9 @@ void test::event::laws() {
 
     const operation::Place first{
         mq::kernel::sort::EventId{id("first")},
-        fixture.role.root,
+        mq::kernel::sort::RoleId{fixture.role.root},
         motion::Direction::Start,
-        fixture.region.root,
+        mq::kernel::sort::RegionId{fixture.region.root},
         std::nullopt,
     };
     const std::vector<operation::Any> begin{first};
@@ -48,9 +48,9 @@ void test::event::laws() {
 
     const operation::Place second{
         mq::kernel::sort::EventId{id("second")},
-        fixture.role.ghammaz,
+        mq::kernel::sort::RoleId{fixture.role.ghammaz},
         motion::Direction::Rise,
-        fixture.region.upper,
+        mq::kernel::sort::RegionId{fixture.region.upper},
         std::nullopt,
     };
     const std::vector<operation::Any> continueWith{second};
@@ -65,9 +65,9 @@ void test::event::laws() {
     const std::vector<operation::Any> wrongFirst{
         operation::Place{
             mq::kernel::sort::EventId{id("wrong-first")},
-            fixture.role.root,
+            mq::kernel::sort::RoleId{fixture.role.root},
             motion::Direction::Rise,
-            fixture.region.root,
+            mq::kernel::sort::RegionId{fixture.region.root},
             std::nullopt,
         },
     };

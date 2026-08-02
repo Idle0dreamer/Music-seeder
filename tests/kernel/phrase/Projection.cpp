@@ -118,8 +118,8 @@ void test::phrase::projection() {
         schema);
     require(
         request &&
-            request->plan.targets.size() == 1 &&
-            request->plan.targets.front().center == target &&
+            request->plan.events.size() == 1 &&
+            request->plan.events.front().target.center == target &&
             std::ranges::find(request->field.rules, rule) !=
                 request->field.rules.end(),
         "phrase context did not select an exact pitch request");

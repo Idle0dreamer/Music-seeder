@@ -45,7 +45,7 @@ void test::gesture::laws() {
         mq::kernel::sort::RoleId{fixture.role.baggage},
         motion::Direction::Rise,
         mq::kernel::sort::RegionId{fixture.region.upper},
-        fixture.baggage,
+        mq::kernel::sort::BaggageId{fixture.baggage},
     };
     const std::vector<operation::Any> open{
         operation::gesture::Begin{
@@ -105,8 +105,8 @@ void test::gesture::laws() {
     require(
         completed && !completed->gesture.active &&
             completed->gesture.completed.size() == 1 &&
-            completed->gesture.completed.front().first == root.event &&
-            completed->gesture.completed.front().last == baggage.event &&
+            completed->gesture.completed.front().first == root.event.identity &&
+            completed->gesture.completed.front().last == baggage.event.identity &&
             std::ranges::all_of(
                 completed->melody.history,
                 [&](const auto& event) {
@@ -155,7 +155,7 @@ void test::gesture::laws() {
         mq::kernel::sort::RoleId{fixture.role.baggage},
         motion::Direction::Rise,
         mq::kernel::sort::RegionId{fixture.region.upper},
-        fixture.baggage,
+        mq::kernel::sort::BaggageId{fixture.baggage},
     },
     };
     const auto forbidden = narrowed.run(initial, full);

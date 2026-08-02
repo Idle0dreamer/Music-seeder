@@ -26,10 +26,10 @@ void test::event::scope() {
     const auto event = kg::Term::atom(
         id("place"),
         operation::Place{
-            id("event"),
-            fixture.role.root,
+            sort::EventId{id("event")},
+            sort::RoleId{fixture.role.root},
             motion::Direction::Start,
-            fixture.region.root,
+            sort::RegionId{fixture.region.root},
             std::nullopt,
         });
 

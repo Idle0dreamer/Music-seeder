@@ -61,10 +61,10 @@ void test::project::run() {
     const auto fall = id("test.project.motion", "fall");
 
     state::Snapshot state;
-    state.center.stack = {root, local};
-    state.jins.active = jins;
+    state.center.stack = {sort::CenterId{root}, sort::CenterId{local}};
+    state.jins.active = sort::JinsId{jins};
     state.tonicization.level = tonicization::Level::Internal;
-    state.path.completed.insert(route);
+    state.path.completed.insert(sort::PathId{route});
     state.melody.current = performance::Event{
         event,
         role,

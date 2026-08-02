@@ -98,7 +98,7 @@ void test::request::motion() {
             third->direction &&
             third->direction->relation ==
                 pitch::order::Relation::Equal &&
-            third->plan.targets.back().center ==
+            third->plan.events.back().target.center ==
                 pitch::Expression::ratio(4, 3),
         "Same motion lacks an exact equality certificate");
 
@@ -122,6 +122,6 @@ void test::request::motion() {
             fourth->direction &&
             fourth->direction->relation ==
                 pitch::order::Relation::Less &&
-            fourth->plan.targets.back().center == pitch::Expression{},
+            fourth->plan.events.back().target.center == pitch::Expression{},
         "Fall motion lacks an exact less-than certificate");
 }

@@ -6,21 +6,29 @@ KERNEL_SRC := $(shell find src/kernel -name '*.cpp' | sort)
 KERNEL_TEST := $(shell find tests/kernel -name '*.cpp' | sort)
 KERNEL_APP_SRC := $(shell find apps/kernel -name '*.cpp' | sort)
 KERNEL_APP := $(KERNEL_SRC) $(KERNEL_APP_SRC)
+SYNTH_SRC := $(KERNEL_SRC) $(shell find src/synthesis -name '*.cpp' | sort)
+SYNTH_APP_SRC := $(shell find apps/synthesis -name '*.cpp' | sort)
+SYNTH_OBJ := $(patsubst %.cpp,build/synthesis/%.o,$(SYNTH_SRC) $(SYNTH_APP_SRC))
 TEST_SRC := $(KERNEL_SRC) $(KERNEL_TEST)
 TEST_OBJ := $(patsubst %.cpp,build/debug/%.o,$(TEST_SRC))
 APP_OBJ := $(patsubst %.cpp,build/release/%.o,$(KERNEL_APP))
 UB_OBJ := $(patsubst %.cpp,build/undefined/%.o,$(TEST_SRC))
 AS_OBJ := $(patsubst %.cpp,build/address/%.o,$(TEST_SRC))
 DEPS := $(TEST_OBJ:.o=.d) $(APP_OBJ:.o=.d) \
-	$(UB_OBJ:.o=.d) $(AS_OBJ:.o=.d)
+	$(UB_OBJ:.o=.d) $(AS_OBJ:.o=.d) $(SYNTH_OBJ:.o=.d)
 
-.PHONY: all test kernel kernel-test kernel-sanitize kernel-address clean
+.PHONY: all test kernel synthesis kernel-test kernel-sanitize kernel-address clean
 
 all: kernel
 
 test: kernel-test
 
 kernel: build/kernel
+
+synthesis: build/synthesis-render
+
+build/synthesis-render: $(SYNTH_OBJ)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 build/kernel: $(APP_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -33,6 +41,10 @@ build/debug/%.o: %.cpp Makefile
 	$(CXX) $(DBGFLAGS) -MMD -MP -c $< -o $@
 
 build/release/%.o: %.cpp Makefile
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+
+build/synthesis/%.o: %.cpp Makefile
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 

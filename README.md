@@ -9,10 +9,11 @@ Maqām is the present research scope, not the identity or eventual limit of the
 product. Other theory modules may be added later through explicit boundaries;
 none are modeled or claimed by the current kernel.
 
-The old seed-driven Bayati generator and synthesized audio remain as rejected
-diagnostic prototypes. They are not the project authority. The normative theory
-for the current maqām module is under `theory/`; the C++23 implementation is
-isolated under
+The old seed-driven generator and synthesized audio prototypes remain rejected
+diagnostic artifacts. The current C++23 Bayati implementation is a separate,
+explicitly provisional kernel profile; it is executable but is not a claim of
+regional authenticity. The normative theory for the current maqām module is
+under `theory/`; the implementation is isolated under
 `include/mq/kernel`, `src/kernel`, `apps/kernel`, and `tests/kernel`.
 
 Pitch is calculated from symbolic ratio and contextual constraints. No scale
@@ -28,8 +29,9 @@ make kernel-test
 ```
 
 The optional unsigned seed drives the neutral executable generation fixture.
-It prints the selected complete candidate and exact structural targets. This is
-an integration witness, not an authentic regional performance or audio demo.
+The provisional Bayati route is available as `./build/kernel bayati [seed]`.
+Both print complete candidates and exact timed structural targets; neither is
+an audio renderer or a regional-authenticity claim.
 
 `make test` is an alias for the kernel law suite. Rejected legacy prototype
 sources are not part of this checkpoint.
@@ -55,10 +57,11 @@ sources are not part of this checkpoint.
 
 ## Scope
 
-The kernel currently uses neutral reconstruction fixtures. It does not claim an
-Egyptian, Levantine, or other regional grammar. A real profile will be admitted
-only when its positive and negative rules, formulas, vocabulary, pathways, and
-provenance satisfy the theory gates.
+The kernel includes a provisional Egypt-Levant Bayati profile for executable
+research. It is scoped by provenance, has explicit positive route rules, and
+does not claim regional authenticity or corpus validation. Further regional
+profiles require their own positive and negative rules, formulas, vocabulary,
+pathways, and provenance evidence.
 
 ## Research basis
 

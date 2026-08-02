@@ -1,0 +1,113 @@
+name: kernel
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  debug-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pinned sources
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+      - name: Install GCC 14
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-14
+      - name: Check patch hygiene
+        run: git diff --check
+      - name: Debug law suite
+        run: make CXX=g++-14 kernel-test
+      - name: Optimized executable
+        run: make CXX=g++-14 kernel
+      - name: CLI generation
+        run: |
+          ./build/kernel 1
+          ./build/kernel 2
+
+  undefined:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pinned sources
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+      - name: Install GCC 14
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-14
+      - name: Undefined-behavior suite
+        run: make CXX=g++-14 kernel-sanitize
+
+  faust-probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out project files
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Check out only the Faust inputs
+        run: |
+          git submodule update --init --filter=blob:none --jobs=1 \
+            third_party/audio/faust third_party/audio/faustlibraries
+      - name: Install Faust build dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake libmicrohttpd-dev
+      - name: Build pinned Faust compiler
+        run: |
+          make -C third_party/audio/faust/build cmake \
+            BACKENDS=regular.cmake TARGETS=regular.cmake
+          make -C third_party/audio/faust/build -j2
+      - name: Generate C++ from the physical-modeling probe
+        run: |
+          third_party/audio/faust/build/bin/faust \
+            -I third_party/audio/faustlibraries \
+            -lang cpp \
+            -cn music_seed_modal_probe \
+            synthesis/models/modal_probe.dsp \
+            -o /tmp/music_seed_modal_probe.cpp
+          test -s /tmp/music_seed_modal_probe.cpp
+          grep -q music_seed_modal_probe /tmp/music_seed_modal_probe.cpp
+          g++ -std=c++17 \
+            -I third_party/audio/faust/architecture \
+            -c /tmp/music_seed_modal_probe.cpp \
+            -o /tmp/music_seed_modal_probe.o
+      - name: Generate C++ from the coupled-course Faust source
+        run: |
+          third_party/audio/faust/build/bin/faust \
+            -I third_party/audio/faustlibraries \
+            -lang cpp \
+            -cn music_seed_santur_courses \
+            synthesis/models/santur_courses.dsp \
+            -o /tmp/music_seed_santur_courses.cpp
+          test -s /tmp/music_seed_santur_courses.cpp
+          grep -q music_seed_santur_courses /tmp/music_seed_santur_courses.cpp
+          g++ -std=c++17 \
+            -I third_party/audio/faust/architecture \
+            -c /tmp/music_seed_santur_courses.cpp \
+            -o /tmp/music_seed_santur_courses.o
+
+  synthesis-render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+      - name: Install GCC 14
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-14
+      - name: Build the synthesis adapter
+        run: make CXX=g++-14 synthesis
+      - name: Render deterministic Bayati WAV
+        run: |
+          ./build/synthesis-render 17 /tmp/music-seeder-bayati.wav
+          test -s /tmp/music-seeder-bayati.wav
+          grep -a -q RIFF /tmp/music-seeder-bayati.wav

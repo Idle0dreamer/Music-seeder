@@ -88,6 +88,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Sayr scope restoration | explicit grammar scope component and non-leakage law |
 | Complete candidate evaluation | legal outcomes and retained diagnostics before seed |
 | Exact staged performance plans | one target per committed structural event, including exact `4:3` and `3:2` relations |
+| Exact monophonic timed performance plan | `performance::Plan::events` derives contiguous rational onsets and validates duration, intensity, articulation, and typed strand |
 | Executable profile comparison | reconstructed baggage prohibition changes the legal generation set |
 | Typed grammar output | `Stage` and `Candidate` term forms |
 | Scope-controlled generated output | explicit `Output` export and non-leakage law |
@@ -95,23 +96,27 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Executable neutral generation witness | CLI seed selects a complete candidate and prints exact targets |
 | Recursive phrase grammar | `grammar::Produce` and test-verified budget exhaustion |
 | Contextual intonation basis | `pitch::trajectory` basis functions (onset, release, vibrato, attraction) |
-| Regional profile test harness | `bayati_case` harness matching the Egyptian/Levantine case specification |
+| Provisional Bayati profile and routes | `src/kernel/maqam/bayati`, `bayati_case`, and CLI execution for stay, Nahawand, Rast, and Hijaz routes |
 
-## Deliberately not claimed yet
+## Evidence still required
 
 - A rights-cleared, profile-matched corpus for the Bayati regional profile.
 - Human annotator review of structural layers.
 - A vocabulary-composition boundary for admitting a second theory module.
 
 Audio rendering is outside this ledger. The independent synthesis boundary is
-specified under `synthesis/`.
+implemented under `synthesis/`; its current renderer is a provisional
+coupled-course model, not a named-instrument or regional-authenticity result.
 
 ## Next coherent sequence
 
-1. Finish remote validation of the typed neutral sayr checkpoint and record
-   executable evidence.
-2. Admit sourced regional evidence only after the corresponding generated
-   consequences have validation laws.
+1. Validate the current checkpoint through the free GitHub Actions workflow.
+2. Validate and refine the coupled-course santur physical model against
+   isolated-course and overlap measurements while preserving the one-way
+   `performance::Plan::events` boundary.
+3. Extend the provisional Bayati profile with reviewed phrase, ornament, and
+   contextual intonation cases; do not treat the current route harness as
+   regional authenticity validation.
 
 ## Validation environment
 
@@ -121,15 +126,12 @@ Verified for the preceding 34-suite descriptor checkpoint:
 - thirty-four debug law suites;
 - undefined-behavior sanitizer;
 
-The current sayr code completed a clean remote GCC 14 debug build, linked, and
-passed all 37 registered suite entry points. Optimized compilation, sanitizers,
-and CLI runs remain unverified. A separate Modal attempt inherited ignored
-desktop build objects, so its partial release and sanitizer results are not
-evidence.
-
-Use `tools/notebook/Build.ipynb` on an online CPU runtime to complete the
-remaining evidence without desktop memory pressure. It installs and probes
-GCC 14, forces that compiler for every target, and validates a clean clone.
+The current working tree passes a local GCC debug suite with 42 test-function
+invocations, an optimized build, and CLI generation for seeds 1 and 2. This is
+not evidence for pristine remote `310cfa8`; the repair set is still local.
+`.github/workflows/kernel.yml` is the intended clean remote validation path and
+installs GCC 14 before running debug, optimized, CLI, Faust, synthesis, and
+undefined-behavior checks.
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails
 because the traced environment denies its `/proc/<pid>/task` inspection. This

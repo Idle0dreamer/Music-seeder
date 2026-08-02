@@ -60,7 +60,7 @@ std::expected<Result, Error> run(
         return std::unexpected(proof.error());
     }
 
-    prefix.targets.push_back({
+    prefix.append(performance::Target{
         **current,
         center->second,
     });

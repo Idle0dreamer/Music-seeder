@@ -23,10 +23,10 @@ void test::sayr::laws() {
     };
     const eval::Evaluator evaluator(fixture.profile.shared, context);
     const operation::sayr::Fulfill establish{
-        fixture.sayr.obligation.establish,
+        sort::ObligationId{fixture.sayr.obligation.establish},
     };
     const operation::sayr::Fulfill settle{
-        fixture.sayr.obligation.settle,
+        sort::ObligationId{fixture.sayr.obligation.settle},
     };
 
     const auto noPlan = eval::Evaluator(
@@ -63,9 +63,9 @@ void test::sayr::laws() {
             completed->sayr.history.size() == 2 &&
             fixture.sayr.plan.accepts(completed->sayr.history) &&
             completed->sayr.history.front().obligation ==
-                fixture.sayr.obligation.establish &&
+                sort::ObligationId{fixture.sayr.obligation.establish} &&
             completed->sayr.history.back().obligation ==
-                fixture.sayr.obligation.settle &&
+                sort::ObligationId{fixture.sayr.obligation.settle} &&
             completed->trace.events.back().operation ==
                 "Sayr.Fulfill",
         "checked sayr fulfillment lost order or route completion");

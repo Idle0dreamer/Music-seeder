@@ -7,8 +7,10 @@ instrument-specific execution.
 ## Kernel output
 
 The current kernel carries stable structural events and exact structural pitch
-targets in an instrument-neutral prefix plan. The complete future contract also
-carries:
+targets in `performance::Plan::events`. Each current event also carries an
+exact rational onset and duration, intensity, articulation intent, and typed
+monophonic strand. This is the first executable timing seam; the complete
+future contract also carries:
 
 - stable event and gesture identities;
 - structural roles and phrase boundaries;
@@ -21,6 +23,20 @@ carries:
 It does not carry courses, string geometry, hammer contact constants,
 soundboard modes, sample rate, microphone geometry, or persistent resonator
 state.
+
+## Frequency input
+
+The adapter receives continuous frequency authority from the performance plan:
+
+```text
+f(t) = f_tonic * contextual_ratio(t) * 2^k
+```
+
+`contextual_ratio(t)` may depend on jins, direction, phrase, region, performer,
+modulation, attraction, and ornament. MIDI notes, 12-TET tables, and fixed
+pitch-bend ranges are not valid substitutes for this contract. Numerical
+conversion is owned by the adapter at its declared boundary and must not feed
+approximations back into grammar legality.
 
 ## Adapter responsibility
 
@@ -35,3 +51,7 @@ An instrument adapter:
 
 The adapter may alter physical execution and audibility. It may not rewrite
 tonal role, phrase function, modulation, cadence, or regional theory.
+
+The current `synthesis-render` target implements this boundary for a provisional
+coupled-course santur model and writes mono PCM WAV. It is not yet a validated
+hammered-dulcimer reproduction.

@@ -37,7 +37,7 @@ void test::sayr::scope() {
     const auto fulfill = kg::Term::atom(
         id("fulfill"),
         operation::sayr::Fulfill{
-            fixture.sayr.obligation.establish,
+            sort::ObligationId{fixture.sayr.obligation.establish},
         });
     const auto hidden = evaluator.derive(
         kg::Term::scope(
@@ -61,6 +61,6 @@ void test::sayr::scope() {
     require(
         visible.outcomes.size() == 1 &&
             visible.outcomes.front().state.sayr.completed.contains(
-                fixture.sayr.obligation.establish),
+                sort::ObligationId{fixture.sayr.obligation.establish}),
         "explicit sayr scope export lost completion state");
 }

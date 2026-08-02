@@ -39,8 +39,11 @@ void test::request::run() {
         value.schema);
     require(
         first &&
-            first->plan.targets.size() == 1 &&
-            first->plan.targets.back().center == pitch::Expression{} &&
+            first->plan.events.size() == 1 &&
+            first->plan.events.back().target.center == pitch::Expression{} &&
+            first->plan.events.back().onset == Rational(0) &&
+            first->plan.events.back().duration == Rational(1) &&
+            first->plan.well_formed() &&
             !first->direction,
         "first calculated performance target is incorrect");
 
@@ -64,13 +67,35 @@ void test::request::run() {
         first->plan);
     require(
         second &&
-            second->plan.targets.size() == 2 &&
-            second->plan.targets.back().center ==
+            second->plan.events.size() == 2 &&
+            second->plan.events.back().target.center ==
                 pitch::Expression::ratio(4, 3) &&
+            second->plan.events.back().onset == Rational(1) &&
+            second->plan.events.back().duration == Rational(1) &&
+            second->plan.well_formed() &&
             second->direction &&
             second->direction->relation ==
                 pitch::order::Relation::Greater,
         "rising request lost exact target or order certificate");
+
+    auto variableTiming = first->plan;
+    variableTiming.events.front().duration = Rational(3, 2);
+    variableTiming.events.front().intensity = Rational(3, 4);
+    variableTiming.events.front().articulation =
+        performance::Articulation::Connected;
+    const auto varied = pr::run(
+        *secondState,
+        value.projection,
+        value.schema,
+        variableTiming);
+    require(
+        varied &&
+            varied->plan.events.back().onset == Rational(3, 2) &&
+            varied->plan.events.front().intensity == Rational(3, 4) &&
+            varied->plan.events.front().articulation ==
+                performance::Articulation::Connected &&
+            varied->plan.well_formed(),
+        "timed plan did not derive onset from prior exact duration");
 
     const auto missing = pr::run(
         *secondState,
@@ -79,6 +104,18 @@ void test::request::run() {
     require(
         !missing && missing.error().code == pr::Error::Code::History,
         "pitch request accepted a missing performance-plan prefix");
+
+    auto brokenTiming = first->plan;
+    brokenTiming.events.front().duration = Rational(0);
+    const auto rejectedTiming = pr::run(
+        *secondState,
+        value.projection,
+        value.schema,
+        brokenTiming);
+    require(
+        !rejectedTiming &&
+            rejectedTiming.error().code == pr::Error::Code::Plan,
+        "pitch request accepted an invalid timed-plan prefix");
 
     pr::Limits shortHistory;
     shortHistory.history = 1;

@@ -3,6 +3,7 @@
 #include "mq/kernel/fixture/Set.hpp"
 #include "mq/kernel/grammar/Catalog.hpp"
 #include "mq/kernel/grammar/Evaluator.hpp"
+#include "mq/kernel/sort/ProductionId.hpp"
 
 namespace {
 
@@ -54,7 +55,7 @@ void test::grammar::produce() {
     state::Snapshot initial;
     initial.jins.active = mq::kernel::sort::JinsId{fixture.jins.root};
     // Set budget to 2 for this production
-    initial.grammar.budget[p_id] = 2;
+    initial.grammar.budget[sort::ProductionId{p_id}] = 2;
     
     const auto result = grammar_eval.derive(rec, initial);
     

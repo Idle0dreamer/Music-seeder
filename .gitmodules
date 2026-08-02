@@ -1,0 +1,15 @@
+[submodule "third_party/audio/faust"]
+	path = third_party/audio/faust
+	url = https://github.com/grame-cncm/faust.git
+[submodule "third_party/audio/faustlibraries"]
+	path = third_party/audio/faustlibraries
+	url = https://github.com/grame-cncm/faustlibraries.git
+[submodule "third_party/audio/stk"]
+	path = third_party/audio/stk
+	url = https://github.com/thestk/stk.git
+[submodule "third_party/audio/q"]
+	path = third_party/audio/q
+	url = https://github.com/cycfi/q.git
+[submodule "third_party/audio/tuning-library"]
+	path = third_party/audio/tuning-library
+	url = https://github.com/surge-synthesizer/tuning-library.git

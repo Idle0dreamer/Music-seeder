@@ -25,23 +25,23 @@ void test::phrase::laws() {
     const auto phraseId = id("span");
     const auto eventId = id("event");
     const operation::Begin begin{
-        phraseId,
+        sort::PhraseId{phraseId},
         mq::kernel::phrase::Function{fixture.phrase.function},
     };
     const operation::Place place{
-        eventId,
-        fixture.role.root,
+        sort::EventId{eventId},
+        sort::RoleId{fixture.role.root},
         motion::Direction::Start,
-        fixture.region.root,
+        sort::RegionId{fixture.region.root},
         std::nullopt,
     };
     const operation::Cadence cadence{
-        fixture.cadence,
+        sort::FamilyId{fixture.cadence},
         Rational(2),
         Rational(3, 4),
     };
     const operation::End end{
-        phraseId,
+        sort::PhraseId{phraseId},
         mq::kernel::phrase::Boundary::Closed,
     };
     const std::vector<operation::Any> legal{
@@ -95,7 +95,7 @@ void test::phrase::laws() {
         !duplicate && duplicate.error().rule == "phrase.identity",
         "completed phrase identity was reused");
     const operation::Begin denied{
-        id("denied"),
+        sort::PhraseId{id("denied")},
         mq::kernel::phrase::Function{id("unknown-function")},
     };
     const auto forbidden =
@@ -109,10 +109,10 @@ void test::phrase::laws() {
         evaluator.run(*opened, std::vector<operation::Any>{place, cadence});
     require(first.has_value(), first ? "" : first.error().message);
     const operation::Place tail{
-        id("tail"),
-        fixture.role.ghammaz,
+        sort::EventId{id("tail")},
+        sort::RoleId{fixture.role.ghammaz},
         motion::Direction::Rise,
-        fixture.region.upper,
+        sort::RegionId{fixture.region.upper},
         std::nullopt,
     };
     const auto unclosed = evaluator.run(

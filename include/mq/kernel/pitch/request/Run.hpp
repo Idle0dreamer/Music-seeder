@@ -21,6 +21,7 @@ struct Error {
         Project,
         Field,
         History,
+        Plan,
         Role,
         Direction,
         Order,

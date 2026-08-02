@@ -37,7 +37,7 @@ std::expected<std::optional<order::Proof>, Error> prove(
     const Expression& center,
     const performance::Plan& prefix,
     order::Limits limits) {
-    if (prefix.targets.empty()) {
+    if (prefix.events.empty()) {
         if (event.direction != motion::Direction::Start) {
             return std::unexpected(failure(
                 Error::Code::Direction,
@@ -53,7 +53,7 @@ std::expected<std::optional<order::Proof>, Error> prove(
 
     auto proof = order::compare(
         center,
-        prefix.targets.back().center,
+        prefix.events.back().target.center,
         limits);
     if (!proof) {
         return std::unexpected(failure(

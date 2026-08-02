@@ -51,30 +51,30 @@ void test::generate::laws() {
         result->legal.size() == 2 &&
             result->rejected.empty() &&
             stayed != result->legal.end() &&
-            stayed->plan.targets.size() == 1 &&
-            stayed->plan.targets.front().center == pitch::Expression{} &&
+            stayed->plan.events.size() == 1 &&
+            stayed->plan.events.front().target.center == pitch::Expression{} &&
             stayed->state.gesture.completed.empty() &&
             stayed->state.sayr.completed.contains(
                 mq::kernel::sort::ObligationId{set.sayr.obligation.settle}) &&
             traveled != result->legal.end() &&
-            traveled->plan.targets.size() == 5 &&
-            traveled->plan.targets[0].center == pitch::Expression{} &&
-            traveled->plan.targets[1].center ==
+            traveled->plan.events.size() == 5 &&
+            traveled->plan.events[0].target.center == pitch::Expression{} &&
+            traveled->plan.events[1].target.center ==
                 pitch::Expression::ratio(4, 3) &&
-            traveled->plan.targets[2].center ==
+            traveled->plan.events[2].target.center ==
                 pitch::Expression::ratio(3, 2) &&
-            traveled->plan.targets[3].center ==
+            traveled->plan.events[3].target.center ==
                 pitch::Expression::ratio(4, 3) &&
-            traveled->plan.targets[4].center == pitch::Expression{} &&
+            traveled->plan.events[4].target.center == pitch::Expression{} &&
             traveled->state.gesture.completed.size() == 2 &&
             traveled->state.gesture.completed.front().first ==
-                traveled->plan.targets.front().event.identity &&
+                traveled->plan.events.front().target.event.identity &&
             traveled->state.gesture.completed.front().last ==
-                traveled->plan.targets[2].event.identity &&
+                traveled->plan.events[2].target.event.identity &&
             traveled->state.gesture.completed.back().first ==
-                traveled->plan.targets[3].event.identity &&
+                traveled->plan.events[3].target.event.identity &&
             traveled->state.gesture.completed.back().last ==
-                traveled->plan.targets.back().event.identity &&
+                traveled->plan.events.back().target.event.identity &&
             traveled->state.sayr.completed.contains(
                 mq::kernel::sort::ObligationId{set.sayr.obligation.restore}) &&
             traveled->state.center.stack.back().identity == set.center.root &&

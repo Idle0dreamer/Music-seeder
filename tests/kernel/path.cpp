@@ -100,8 +100,8 @@ void test::path() {
     const auto accepted = evaluator.run({}, complete);
     require(accepted.has_value(), "legal path history was rejected");
     require(
-        accepted->path.completed.contains(first) &&
-            accepted->path.completed.contains(gated),
+        accepted->path.completed.contains(sort::PathId{first}) &&
+            accepted->path.completed.contains(sort::PathId{gated}),
         "completed path history was not retained");
 
     const auto missing =

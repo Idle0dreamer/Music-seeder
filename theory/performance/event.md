@@ -96,10 +96,15 @@ The order certificate is retained with the request result. A missing prefix,
 missing role solution, proof-budget exhaustion, or direction mismatch fails
 explicitly.
 
-The output target contains event intent and exact structural center. It does
-not yet claim a trajectory, duration, articulation, or acoustic realization.
-An explicit history limit bounds prefix validation before any field or order
-proof work begins.
+The structural `Target` contains event intent and exact structural center. The
+kernel now wraps it in `performance::TimedEvent`, carrying exact rational
+onset and duration, nonnegative intensity, explicit articulation intent, and a
+typed strand. The current plan is deliberately monophonic and contiguous:
+each new onset is derived from the preceding event's end. This is an
+executable timing seam, not yet the full phrase-rate, pause, ornament, release,
+or measured/free-time model described elsewhere in the theory. An explicit
+history limit bounds prefix validation before any field or order proof work
+begins.
 
 ## Downstream breadth
 

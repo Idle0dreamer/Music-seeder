@@ -64,14 +64,14 @@ void test::sayr::plan() {
         "valid sayr plan failed admission");
 
     const ks::Completion firstCompletion{
-        first,
+        sort::ObligationId{first},
         {{
             firstNeed,
             ks::proof::Jins{fixture.jins.root},
         }},
     };
     const ks::Completion secondCompletion{
-        second,
+        sort::ObligationId{second},
         {{
             secondNeed,
             ks::proof::Center{fixture.center.root},

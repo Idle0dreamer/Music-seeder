@@ -39,7 +39,7 @@ std::expected<const performance::Event*, Error> check(
     const performance::Plan& prefix,
     std::size_t limit) {
     if (state.melody.history.size() > limit ||
-        prefix.targets.size() > limit) {
+        prefix.events.size() > limit) {
         return std::unexpected(failure(
             Error::Code::Count,
             "pitch request history budget exceeded"));
@@ -71,13 +71,19 @@ std::expected<const performance::Event*, Error> check(
                 "structural event history violates identity or direction laws"));
         }
     }
-    if (prefix.targets.size() + 1 != state.melody.history.size()) {
+    if (!prefix.well_formed()) {
+        return std::unexpected(failure(
+            Error::Code::Plan,
+            "performance plan timing is not contiguous or valid"));
+    }
+    if (prefix.events.size() + 1 != state.melody.history.size()) {
         return std::unexpected(failure(
             Error::Code::History,
             "performance plan is not the exact event-history prefix"));
     }
-    for (std::size_t index = 0; index < prefix.targets.size(); ++index) {
-        if (prefix.targets[index].event != state.melody.history[index]) {
+    for (std::size_t index = 0; index < prefix.events.size(); ++index) {
+        if (prefix.events[index].target.event !=
+            state.melody.history[index]) {
             return std::unexpected(failure(
                 Error::Code::History,
                 "performance plan event does not match event history"));

@@ -2,8 +2,8 @@
 
 This directory is the normative specification for Music-seeder's current
 maqām module. It does not define the whole product or pre-empt future theory
-modules. The existing executable is a rejected prototype and is not evidence
-that this theory has been implemented.
+modules. The legacy executable prototype is not evidence by itself; the
+current kernel evidence is listed in `implementation/kernel.md`.
 
 The model is intentionally modular. No single document is allowed to stand in
 for the whole tradition, and no scale table is allowed to stand in for a

@@ -68,3 +68,13 @@ t_i=\tau(k_i,b_i)+\Delta_{\text{role},i},
 where \(k_i\) is cycle index, \(b_i\) beat role, and \(\Delta\) a declared
 profile microtiming formula or bounded table. Phrase grammar remains responsible
 for melodic syntax; the iqa layer supplies cyclic rhythmic affordances.
+
+## Current kernel boundary
+
+The first executable seam is intentionally narrower than this model. A
+monophonic `performance::Plan` stores contiguous exact-rational event spans;
+the pitch request derives each onset from the prior duration and currently
+uses a neutral unit duration, unit intensity, and explicit neutral
+articulation. Phrase-rate fields, pauses, release events, ornament timing,
+and measured-cycle alignment remain downstream work rather than hidden
+defaults.
