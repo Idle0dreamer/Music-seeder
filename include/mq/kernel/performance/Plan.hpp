@@ -49,6 +49,7 @@ struct Plan {
             intensity,
             articulation,
             std::move(strand),
+            std::nullopt,
         });
     }
 };

@@ -1,4 +1,5 @@
 #include "mq/synthesis/santur/Model.hpp"
+#include "mq/synthesis/Pitch.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -25,11 +26,6 @@ double phase(const ::mq::kernel::performance::TimedEvent& event,
              std::uint64_t salt) {
     const auto value = hash(seed + salt, event.target.event.identity.str());
     return static_cast<double>(value % 10000U) / 10000.0 * 2.0 * pi;
-}
-
-double frequency(const ::mq::kernel::performance::TimedEvent& event,
-                 double tonicHz) {
-    return tonicHz * std::exp2(event.target.center.cents() / 1200.0);
 }
 
 double sustain_decay(
@@ -126,7 +122,11 @@ double Model::sample(
         return 0.0;
     }
 
-    const double baseHz = frequency(event, config_.tonic_hz);
+    const double position = duration > 0.0
+                                ? std::clamp(local / duration, 0.0, 1.0)
+                                : 0.0;
+    const double baseHz = ::mq::synthesis::pitch::frequency_hz(
+        event, config_.tonic_hz, position);
     const double intensity = std::clamp(event.intensity.decimal(), 0.0, 4.0);
     const double startPhase = phase(event, config_.seed, 17);
     const double strikePosition = 0.11 +

@@ -1,7 +1,8 @@
 #include "mq/synthesis/FaustRender.hpp"
+#include "mq/synthesis/Pitch.hpp"
 
-#include "faust/gui/APIUI.h"
 #include "music_seed_santur_courses.cpp"
+#include "faust/gui/APIUI.h"
 
 #include <algorithm>
 #include <cmath>
@@ -70,6 +71,7 @@ std::expected<RenderReport, RenderError> render_faust_wav(
     dsp.buildUserInterface(&ui);
     if (ui.getParamIndex("fundamental_hz") < 0 ||
         ui.getParamIndex("intensity") < 0 ||
+        ui.getParamIndex("articulation") < 0 ||
         ui.getParamIndex("strike") < 0) {
         return std::unexpected(RenderError{
             "Faust santur source omitted a required continuous control",
@@ -80,17 +82,11 @@ std::expected<RenderReport, RenderError> render_faust_wav(
     std::vector<std::uint64_t> onsets;
     onsets.reserve(plan.events.size());
     for (const auto& event : plan.events) {
-        const double frequency = config.tonic_hz * std::exp2(
-            event.target.center.cents() / 1200.0);
+        const double frequency = ::mq::synthesis::pitch::frequency_hz(
+            event, config.tonic_hz, 0.0);
         if (!std::isfinite(frequency) || frequency < 20.0 || frequency > 2000.0) {
             return std::unexpected(RenderError{
                 "Faust adapter cannot realize a frequency outside its declared range",
-            });
-        }
-        if (event.articulation !=
-                ::mq::kernel::performance::Articulation::Neutral) {
-            return std::unexpected(RenderError{
-                "Faust santur source does not yet realize non-neutral articulation",
             });
         }
         const auto onset = static_cast<std::uint64_t>(std::llround(
@@ -100,17 +96,22 @@ std::expected<RenderReport, RenderError> render_faust_wav(
     }
 
     std::size_t next = 0;
+    std::size_t active = 0;
     for (std::uint64_t frame = 0; frame < *frames; ++frame) {
         bool strike = false;
         while (next < plan.events.size() && onsets[next] <= frame) {
-            const auto& event = plan.events[next];
-            const double frequency = config.tonic_hz * std::exp2(
-                event.target.center.cents() / 1200.0);
+            active = next;
+            const auto& event = plan.events[active];
+            const double frequency = ::mq::synthesis::pitch::frequency_hz(
+                event, config.tonic_hz, 0.0);
             const float intensity = static_cast<float>(std::clamp(
                 event.intensity.decimal() / 4.0, 0.0, 1.0));
+            const float articulation = static_cast<float>(
+                static_cast<int>(event.articulation));
             if (!set_parameter(ui, "fundamental_hz",
                                static_cast<float>(frequency)) ||
                 !set_parameter(ui, "intensity", intensity) ||
+                !set_parameter(ui, "articulation", articulation) ||
                 !set_parameter(ui, "strike", 1.0F)) {
                 return std::unexpected(RenderError{
                     "Faust adapter failed to set an event control",
@@ -118,6 +119,23 @@ std::expected<RenderReport, RenderError> render_faust_wav(
             }
             strike = true;
             ++next;
+        }
+        if (active < plan.events.size() &&
+            frame >= onsets[active]) {
+            const auto& event = plan.events[active];
+            const auto elapsed = static_cast<double>(frame - onsets[active]);
+            const auto duration = static_cast<double>(std::max<std::uint64_t>(
+                1, static_cast<std::uint64_t>(std::llround(
+                    event.duration.decimal() * config.seconds_per_unit *
+                    static_cast<double>(config.sample_rate)))));
+            const double frequency = ::mq::synthesis::pitch::frequency_hz(
+                event, config.tonic_hz, elapsed / duration);
+            if (!set_parameter(ui, "fundamental_hz",
+                               static_cast<float>(frequency))) {
+                return std::unexpected(RenderError{
+                    "Faust adapter failed to update pitch trajectory",
+                });
+            }
         }
         if (!strike && !set_parameter(ui, "strike", 0.0F)) {
             return std::unexpected(RenderError{

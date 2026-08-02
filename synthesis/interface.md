@@ -55,5 +55,6 @@ tonal role, phrase function, modulation, cadence, or regional theory.
 The current `synthesis-render` target implements this boundary for a provisional
 coupled-course santur model and writes mono PCM WAV. The separate
 `synthesis-faust-render` target drives generated Faust C++ through the same
-boundary and refuses unsupported articulation. Neither is yet a validated
+boundary and maps neutral, connected, and detached attack intents to a
+declared attack-force control. Neither is yet a validated
 hammered-dulcimer reproduction.

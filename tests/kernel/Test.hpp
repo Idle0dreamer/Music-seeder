@@ -58,6 +58,12 @@ void scope();
 
 } // namespace event
 
+namespace timed {
+
+void plan();
+
+} // namespace timed
+
 namespace request {
 
 void run();

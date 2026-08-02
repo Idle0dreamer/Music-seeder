@@ -35,7 +35,7 @@ void test::event::laws() {
     require(
         started &&
             started->melody.current ==
-                performance::Event{
+                mq::kernel::performance::Event{
                     first.event.identity,
                     first.role.identity,
                     first.direction,

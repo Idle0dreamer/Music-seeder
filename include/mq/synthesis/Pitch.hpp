@@ -1,0 +1,44 @@
+#pragma once
+
+#include "mq/kernel/performance/TimedEvent.hpp"
+
+#include <algorithm>
+#include <cmath>
+
+namespace mq::synthesis::pitch {
+
+[[nodiscard]] inline double contour_cents(
+    const ::mq::kernel::performance::TimedEvent& event,
+    double position) {
+    if (!event.contour || event.contour->points.empty()) {
+        return 0.0;
+    }
+    const auto& points = event.contour->points;
+    const double clamped = std::clamp(position, 0.0, 1.0);
+    if (clamped <= points.front().position.decimal()) {
+        return points.front().offset.cents();
+    }
+    for (std::size_t index = 1; index < points.size(); ++index) {
+        const double right = points[index].position.decimal();
+        if (clamped <= right) {
+            const double left = points[index - 1].position.decimal();
+            const double span = right - left;
+            const double amount = span > 0.0 ? (clamped - left) / span : 0.0;
+            const double low = points[index - 1].offset.cents();
+            const double high = points[index].offset.cents();
+            return low + amount * (high - low);
+        }
+    }
+    return points.back().offset.cents();
+}
+
+[[nodiscard]] inline double frequency_hz(
+    const ::mq::kernel::performance::TimedEvent& event,
+    double tonic_hz,
+    double position) {
+    return tonic_hz * std::exp2(
+        (event.target.center.cents() + contour_cents(event, position)) /
+        1200.0);
+}
+
+} // namespace mq::synthesis::pitch

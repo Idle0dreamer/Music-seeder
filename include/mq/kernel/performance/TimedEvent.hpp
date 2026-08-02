@@ -2,8 +2,11 @@
 
 #include "mq/kernel/Rational.hpp"
 #include "mq/kernel/performance/Articulation.hpp"
+#include "mq/kernel/performance/PitchContour.hpp"
 #include "mq/kernel/performance/Strand.hpp"
 #include "mq/kernel/performance/Target.hpp"
+
+#include <optional>
 
 namespace mq::kernel::performance {
 
@@ -14,6 +17,7 @@ struct TimedEvent {
     Rational intensity{1};
     Articulation articulation{Articulation::Neutral};
     sort::StrandId strand;
+    std::optional<PitchContour> contour;
 
     [[nodiscard]] bool well_formed() const {
         bool known_articulation = false;
@@ -28,6 +32,7 @@ struct TimedEvent {
                duration > Rational(0) &&
                intensity >= Rational(0) &&
                known_articulation &&
+               (!contour || contour->well_formed()) &&
                !strand.identity.domain.empty() &&
                !strand.identity.name.empty() &&
                !strand.identity.revision.empty();

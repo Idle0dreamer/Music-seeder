@@ -28,6 +28,7 @@ int main() {
         test::jins::overlay();
         test::event::laws();
         test::event::scope();
+        test::timed::plan();
         test::gesture::laws();
         test::gesture::scope();
         test::sayr::plan();
@@ -70,6 +71,7 @@ int main() {
             << "PASS provenance-bearing descriptor overlay operations\n"
             << "PASS structural event transition laws\n"
             << "PASS structural event scope laws\n"
+            << "PASS exact timed pitch-contour laws\n"
             << "PASS ordered jins gesture and baggage laws\n"
             << "PASS gesture scope and dependency laws\n"
             << "PASS validated sayr plan and route laws\n"

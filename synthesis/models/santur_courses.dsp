@@ -8,8 +8,12 @@ declare description "Three-course struck resonator; parameters remain provisiona
 
 fundamental = hslider("fundamental_hz", 220, 20, 2000, 0.01);
 intensity = hslider("intensity", 0.8, 0, 1, 0.001);
+articulation = hslider("articulation", 0, 0, 2, 1);
 strike = button("strike");
-excitation = intensity * pm.impulseExcitation(strike);
+// Neutral, connected, and detached are distinct attack-force mappings at
+// this boundary. Their named-instrument calibration remains future work.
+attackGain = 1.0 - 0.10 * articulation;
+excitation = intensity * attackGain * pm.impulseExcitation(strike);
 
 course1 = excitation : pm.modalModel(
     6,
