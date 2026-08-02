@@ -48,9 +48,11 @@ int main() {
         test::grammar::relation();
         test::grammar::produce();
         test::maqam_catalog();
+        test::ajam_case();
         test::hijaz_case();
         test::kurd_case();
         test::nahawand_case();
+        test::nikriz_case();
         test::rast_case();
         test::bayati_case();
         std::cout
@@ -94,9 +96,11 @@ int main() {
             << "PASS grammar identity, sequence, repeat, and scope laws\n"
             << "PASS well-founded recursive phrase production budgets\n"
             << "PASS declared maqam catalog refuses incomplete packages\n"
+            << "PASS executable Ajam routes and timed plans\n"
             << "PASS executable Hijaz routes and timed plans\n"
             << "PASS executable Kurd routes and timed plans\n"
             << "PASS executable Nahawand routes and timed plans\n"
+            << "PASS executable Nikriz routes and timed plans\n"
             << "PASS executable Rast routes and timed plans\n"
             << "PASS executable provisional Bayati routes and timed plans\n";
         return 0;

@@ -119,9 +119,11 @@ void produce();
 } // namespace grammar
 
 void bayati_case();
+void ajam_case();
 void hijaz_case();
 void kurd_case();
 void nahawand_case();
+void nikriz_case();
 void rast_case();
 void maqam_catalog();
 

@@ -36,7 +36,7 @@ void test::maqam_catalog() {
     require(
         nahawandPackage.has_value(),
         nahawandPackage.error_or("Nahawand build failed"));
-    for (const auto& name : {"hijaz", "kurd"}) {
+    for (const auto& name : {"ajam", "hijaz", "kurd", "nikriz"}) {
         const auto* package = catalog.find(sort::MaqamId{
             Identity{"maqam.catalog", "maqam." + std::string(name), "1"}});
         require(package != nullptr, std::string(name) + " is missing from maqam catalog");

@@ -102,6 +102,8 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Complete Nahawand package and routes | `src/kernel/maqam/family`, `make_nahawand`, `nahawand_case`, catalog admission, and CLI execution for stay, Hijaz, and Kurd routes |
 | Complete Hijaz package and routes | `make_hijaz`, `hijaz_case`, catalog admission, and CLI execution for stay, Nahawand, and Rast routes |
 | Complete Kurd package and routes | `make_kurd`, `kurd_case`, catalog admission, and CLI execution for stay and Nahawand routes |
+| Complete Ajam package and routes | `make_ajam`, `ajam_case`, catalog admission, and CLI execution for stay, Upper Ajam, and Nahawand routes |
+| Complete Nikriz package and routes | `make_nikriz`, `nikriz_case`, catalog admission, and CLI execution for stay and Nahawand routes |
 | Provisional Bayati profile and routes | `src/kernel/maqam/bayati`, `bayati_case`, and CLI execution for stay, Nahawand, Rast, and Hijaz routes; completion debt remains explicit |
 
 ## Evidence still required
@@ -132,7 +134,7 @@ Verified for the preceding 34-suite descriptor checkpoint:
 - thirty-four debug law suites;
 - undefined-behavior sanitizer;
 
-The current working tree passes a local GCC debug suite with 48 test-function
+The current working tree passes a local GCC debug suite with 50 test-function
 invocations, an optimized build, UBSan, and CLI generation for neutral,
 Hijaz, Kurd, Nahawand, Rast, and Bayati seeds.
 Exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed all four jobs in

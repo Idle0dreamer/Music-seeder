@@ -4,9 +4,11 @@
 #include "mq/kernel/generate/Engine.hpp"
 #include "mq/kernel/grammar/Catalog.hpp"
 #include "mq/kernel/maqam/Bayati.hpp"
+#include "mq/kernel/maqam/Ajam.hpp"
 #include "mq/kernel/maqam/Hijaz.hpp"
 #include "mq/kernel/maqam/Kurd.hpp"
 #include "mq/kernel/maqam/Nahawand.hpp"
+#include "mq/kernel/maqam/Nikriz.hpp"
 #include "mq/kernel/maqam/Rast.hpp"
 
 #include <algorithm>
@@ -200,10 +202,12 @@ struct Route {
 };
 
 constexpr std::array routes{
+    Route{"ajam", "Ajam", mq::kernel::maqam::make_ajam},
     Route{"bayati", "Bayati", mq::kernel::maqam::make_bayati},
     Route{"hijaz", "Hijaz", mq::kernel::maqam::make_hijaz},
     Route{"kurd", "Kurd", mq::kernel::maqam::make_kurd},
     Route{"nahawand", "Nahawand", mq::kernel::maqam::make_nahawand},
+    Route{"nikriz", "Nikriz", mq::kernel::maqam::make_nikriz},
     Route{"rast", "Rast", mq::kernel::maqam::make_rast},
 };
 

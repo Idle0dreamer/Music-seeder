@@ -32,7 +32,7 @@ Catalog Catalog::declared() {
     const auto source =
         "MaqamWorld:maqam-index;scope:canonical-arabic-repertoire-v1";
     result.entries_ = {
-        entry("ajam", "ajam", Implementation::Incomplete, source),
+        entry("ajam", "ajam", Implementation::Complete, source, make_ajam),
         entry("ajam.ushayran", "ajam", Implementation::Incomplete, source),
         entry("athar.kurd", "nikriz", Implementation::Incomplete, source),
         entry("awj.iraq", "sikah", Implementation::Incomplete, source),
@@ -58,7 +58,7 @@ Catalog Catalog::declared() {
         entry("nahawand.murassa", "nahawand", Implementation::Incomplete, source),
         entry("nairuz", "rast", Implementation::Incomplete, source),
         entry("nawa.athar", "nikriz", Implementation::Incomplete, source),
-        entry("nikriz", "nikriz", Implementation::Incomplete, source),
+        entry("nikriz", "nikriz", Implementation::Complete, source, make_nikriz),
         entry("rahat.al.arwah", "sikah", Implementation::Incomplete, source),
         entry("rast", "rast", Implementation::Complete, source, make_rast),
         entry("saba", "independent", Implementation::Incomplete, source),
