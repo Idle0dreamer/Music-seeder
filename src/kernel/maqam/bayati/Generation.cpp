@@ -74,6 +74,11 @@ Stage development(
             operation::Emphasize{sort::RoleId{key.roleGhammaz}, Rational(3)},
             operation::Dwell{sort::RoleId{key.roleGhammaz}, Rational(2)},
             operation::Emit{sort::CellId{key.cellDevelop}},
+            operation::Cadence{
+                sort::FamilyId{key.cadenceLocal},
+                Rational(1),
+                Rational(1, 2),
+            },
         });
 }
 
