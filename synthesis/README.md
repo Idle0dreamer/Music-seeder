@@ -47,10 +47,11 @@ WAV. It includes three detuned course strings, stiff-string partials, a
 hammer-contact attack, bridge and soundboard modes, and sympathetic tails. The
 Bayati generator now supplies exact provisional timing, intensity, and
 articulation policy to this adapter. The Faust-generated coupled-course
-renderer is implemented as a separate target; its timing-policy exact-head
-remote build and artifact are pending. Neither is yet a validated instrument
-reproduction: geometry, material parameters, measurements, and perceptual
-comparison remain open.
+renderer is implemented as a separate target; exact head
+`985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed its remote build and
+uploaded the independent and Faust WAV artifacts in run `30755938899`.
+Neither is yet a validated instrument reproduction: geometry, material
+parameters, measurements, and perceptual comparison remain open.
 
 Future code belongs under independent `include/mq/synthesis`,
 `src/synthesis`, and `tests/synthesis` trees. It does not belong under

@@ -19,9 +19,9 @@ ornament, intensity, articulation, and strike controls through the shared WAV
 boundary. Bayati now also carries a direction-conditioned exact timing policy
 into both renderers; it is explicitly provisional execution data, not an
 authenticity claim.
-The latest exact-head remote workflow is still running. Bayati
-phrase/motif/ornament coverage, instrument measurements, and remote workflow
-evidence remain open.
+Bayati phrase/motif/ornament coverage and instrument measurements remain open.
+Exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed the remote workflow
+in run `30755938899`, including the Faust probe and deterministic WAV artifact.
 
 ## Completion standard
 

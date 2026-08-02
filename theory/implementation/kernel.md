@@ -128,8 +128,9 @@ Verified for the preceding 34-suite descriptor checkpoint:
 - undefined-behavior sanitizer;
 
 The current working tree passes a local GCC debug suite with 43 test-function
-invocations, an optimized build, and CLI generation for seeds 1 and 2. This is
-not a substitute for the exact-head remote workflow result.
+invocations, an optimized build, UBSan, and CLI generation for seeds 1 and 2.
+Exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed all four jobs in
+GitHub Actions run `30755938899`.
 `.github/workflows/kernel.yml` is the intended clean remote validation path and
 installs GCC 14 before running debug, optimized, CLI, Faust, synthesis, and
 undefined-behavior checks.

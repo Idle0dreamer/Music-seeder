@@ -88,6 +88,8 @@ Checkpoint validation state:
 - the current working tree passes `make kernel-test` with GCC debug flags,
   all 43 test-function invocations, and 40 summary lines;
 - the current working tree passes `make kernel` with `-O2 -Werror`;
+- the current working tree passes `make kernel-sanitize` with UBSan and all 40
+  summary lines;
 - `./build/kernel 1` emits the five-event neutral travel candidate with exact
   onsets `0`, `1`, `2`, `3`, and `4`; `./build/kernel 2` emits the one-event
   neutral stay candidate;
@@ -99,9 +101,12 @@ Checkpoint validation state:
   the current timing-policy render is 140640 frames with peak `0.92`;
 - `.github/workflows/kernel.yml` compiles both pinned Faust-generated C++
   sources and exercises both the independent and Faust runtime renderers
-  online; the timing-policy change is awaiting its exact-head remote run;
-- this evidence is for the current working tree and does not replace the
-  exact-head remote result;
+  online; exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed in run
+  `30755938899` with `debug-release`, `undefined`, `faust-probe`, and
+  `synthesis-render` all successful;
+- that run uploaded artifact `music-seeder-bayati-wav` (artifact id
+  `8836021086`, 605301 bytes), containing the independent and Faust WAVs plus
+  the repeated Faust render;
 - `.github/workflows/kernel.yml` provides the free remote debug, release, CLI,
   and undefined-behavior validation path on GitHub Actions;
 - AddressSanitizer remains a separate environmental check and is not counted
