@@ -37,10 +37,17 @@ jins::Descriptor root(const Key& key) {
         {motion::Direction::Rise},
         {key.gestureAscent},
     };
+    std::set<Identity> roles{
+        key.roleTonic,
+        key.roleGhammaz,
+        key.roleUpper,
+        key.roleExtension,
+    };
+    roles.insert(key.rootRoles.begin(), key.rootRoles.end());
     return {
         key.jinsRoot,
         key.roleTonic,
-        {key.roleTonic, key.roleGhammaz, key.roleExtension},
+        std::move(roles),
         {key.roleGhammaz},
         {key.regionRoot, key.regionUpper},
         {key.regionRoot, key.regionUpper},
@@ -62,7 +69,7 @@ jins::Descriptor root(const Key& key) {
 jins::Descriptor upper(const Key& key, const BranchKey& branch) {
     const gesture::Definition descent = one(
         key.gestureDescent,
-        branch.ghammaz,
+        branch.descent,
         key.regionUpper,
         branch.direction);
     return {

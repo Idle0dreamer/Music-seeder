@@ -1,13 +1,14 @@
 #include "../Test.hpp"
 
 #include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Bayati.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
 
 void test::bayati_case() {
     using namespace mq::kernel;
-    auto scaffold = maqam::make_bayati();
+    const auto catalog = maqam::Catalog::declared();
+    auto scaffold = catalog.build_executable("bayati");
     require(scaffold.has_value(), scaffold.error_or("Bayati scaffold failed"));
     const eval::Context context{
         .jins = {&scaffold->ajnas},
@@ -27,9 +28,21 @@ void test::bayati_case() {
         {},
         limits);
     require(result.has_value(), result ? "" : result.error().message);
-    require(
-        result->legal.size() == 4 && result->rejected.empty(),
-        "all four provisional Bayati routes must be legal");
+    if (result->legal.size() != 4 || !result->rejected.empty()) {
+        std::string message =
+            "all four provisional Bayati routes must be legal; legal=" +
+            std::to_string(result->legal.size()) +
+            " rejected=" + std::to_string(result->rejected.size());
+        for (const auto& rejected : result->rejected) {
+            message += " [" + rejected.candidate.str() + ":" +
+                       rejected.message + "]";
+        }
+        for (const auto& diagnostic : result->derivation) {
+            message += " {" + diagnostic.term.str() + ":" +
+                       diagnostic.message + "}";
+        }
+        require(false, message);
+    }
     const auto stay = std::ranges::find_if(
         result->legal,
         [](const auto& item) { return item.plan.events.size() == 1; });

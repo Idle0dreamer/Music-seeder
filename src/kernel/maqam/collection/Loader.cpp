@@ -2,6 +2,7 @@
 
 #include "mq/kernel/motion/Direction.hpp"
 
+#include <algorithm>
 #include <charconv>
 #include <cstdlib>
 #include <fstream>
@@ -124,6 +125,8 @@ struct Pending {
     std::string source;
     std::string ghammaz;
     std::string extension;
+    std::string upperRole;
+    std::vector<std::string> rootRoles;
     bool ordered{};
     bool sawOrdered{};
     std::vector<family::BranchSpec> branches;
@@ -188,8 +191,10 @@ std::expected<Record, std::string> finish(
         std::move(pending.packageFamily),
         *ghammaz,
         *extension,
+        std::move(pending.upperRole),
         std::move(pending.source),
         std::move(pending.branches),
+        std::move(pending.rootRoles),
         pending.ordered,
     };
     return result;
@@ -294,6 +299,19 @@ std::expected<Set, std::string> load(
         } else if (key == "extension") {
             pending.extension = value;
             pending.extensionLine = lineNumber;
+        } else if (key == "upper-role") {
+            pending.upperRole = value;
+        } else if (key == "root-roles") {
+            const auto fields = split(value, ',');
+            if (fields.empty() ||
+                std::ranges::any_of(fields, [](const auto& field) {
+                    return field.empty();
+                })) {
+                return std::unexpected(
+                    "root-roles requires comma-separated names at line " +
+                    std::to_string(lineNumber));
+            }
+            pending.rootRoles = fields;
         } else if (key == "ordered") {
             const auto parsed = boolean(value, key, lineNumber);
             if (!parsed) {
@@ -303,7 +321,8 @@ std::expected<Set, std::string> load(
             pending.sawOrdered = true;
         } else if (key == "branch") {
             const auto fields = split(value, '|');
-            if (fields.size() != 8 || fields[0].empty() || fields[1].empty() ||
+            if ((fields.size() != 8 && fields.size() != 9) ||
+                fields[0].empty() || fields[1].empty() ||
                 fields[2].empty() || fields[7].empty()) {
                 return std::unexpected(
                     "branch requires name|target|provenance|source-center|"
@@ -326,7 +345,8 @@ std::expected<Set, std::string> load(
                 fields[4],
                 fields[5],
                 fields[6],
-                *branchDirection);
+                *branchDirection,
+                fields.size() == 9 ? fields[8] : std::string{});
         } else {
             return std::unexpected(
                 "unknown package field " + key + " at line " +

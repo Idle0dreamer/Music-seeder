@@ -1,5 +1,7 @@
 #include "Internal.hpp"
 
+#include <algorithm>
+
 namespace mq::kernel::maqam::family::detail {
 
 Identity id(const Key& key, std::string name) {
@@ -19,8 +21,28 @@ Key key(const Spec& spec) {
     result.jinsRoot = id(result, "jins." + spec.package + ".root");
     result.roleTonic = id(result, "role.tonic");
     result.roleGhammaz = id(result, "role.ghammaz");
-    result.roleUpper = id(result, "role.upper");
+    result.roleUpper = id(
+        result,
+        "role." +
+            (spec.upper_role.empty() ? std::string("upper") :
+                                        spec.upper_role));
     result.roleExtension = id(result, "role.extension");
+    if (spec.root_roles.empty()) {
+        result.rootRoles = {
+            result.roleTonic,
+            result.roleGhammaz,
+            result.roleUpper,
+            result.roleExtension,
+        };
+    } else {
+        result.rootRoles.reserve(spec.root_roles.size());
+        for (const auto& name : spec.root_roles) {
+            if (name.empty()) {
+                continue;
+            }
+            result.rootRoles.push_back(id(result, "role." + name));
+        }
+    }
     result.regionRoot = id(result, "region.root");
     result.regionUpper = id(result, "region.upper");
     result.gestureEstablish = id(result, "gesture.establish");
@@ -73,6 +95,9 @@ Key key(const Spec& spec) {
         branch.ghammaz = source.ghammaz_role.empty()
                              ? result.roleUpper
                              : id(result, "role." + source.ghammaz_role);
+        branch.descent = source.descent_role.empty()
+                             ? branch.ghammaz
+                             : id(result, "role." + source.descent_role);
         branch.direction = source.direction;
         branch.motion = source.direction == motion::Direction::Rise
                             ? result.motionRise

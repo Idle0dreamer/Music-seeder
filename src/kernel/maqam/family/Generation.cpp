@@ -128,9 +128,9 @@ Stage branchDescent(
     return makeStage(key, candidate, "branch-descent", {
         operation::Begin{sort::PhraseId{p}, phrase::Function{key.phraseResponse}},
         operation::gesture::Begin{descent, key.gestureDescent},
-        operation::Place{
-            sort::EventId{event(key, candidate, "branch")},
-            sort::RoleId{branch.ghammaz},
+            operation::Place{
+                sort::EventId{event(key, candidate, "branch")},
+                sort::RoleId{branch.descent},
             branch.direction,
             sort::RegionId{key.regionUpper},
             std::nullopt,
@@ -356,6 +356,10 @@ pitch::field::Schema schema(const Key& key) {
             result.variables.end()) {
             result.variables.push_back(branch.ghammaz);
         }
+        if (std::ranges::find(result.variables, branch.descent) ==
+            result.variables.end()) {
+            result.variables.push_back(branch.descent);
+        }
     }
     result.tiers = {tier};
     result.rules.push_back(pf::Rule{
@@ -418,13 +422,13 @@ pitch::field::Schema schema(const Key& key) {
         key.source + ";upper-closure");
     for (const auto& branch : key.branches) {
         addAim(
-            {{key.keyJins, branch.jins},
-             {key.keyRole, branch.ghammaz},
+        {{key.keyJins, branch.jins},
+             {key.keyRole, branch.descent},
              {key.keyMotion, branch.motion},
              {key.keyRegion, key.regionUpper},
              {key.keyGesture, key.gestureDescent}},
             id(key, "pitch.rule.branch." + branch.jins.name),
-            {{branch.ghammaz, Rational(1)}, {key.roleTonic, Rational(-1)}},
+            {{branch.descent, Rational(1)}, {key.roleTonic, Rational(-1)}},
             branch.target,
             branch.source + ";branch-target");
     }

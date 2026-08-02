@@ -34,10 +34,17 @@ profile(const Key& key) {
     profile::Domain branchJins;
     profile::Domain branchPaths;
     profile::Domain routes;
+    profile::Domain placeRoles{
+        key.roleTonic,
+        key.roleGhammaz,
+        key.roleUpper,
+        key.roleExtension,
+    };
     for (const auto& branch : key.branches) {
         branchJins.insert(branch.jins);
         branchPaths.insert(branch.path);
         routes.insert(branch.route);
+        placeRoles.insert(branch.descent);
     }
     const std::vector<profile::Patch> rules{
         define("allow.anchor", {key.centerRoot}, source),
@@ -64,12 +71,7 @@ profile(const Key& key) {
         define("allow.cadence", {key.cadenceLocal, key.cadenceReturn}, source),
         define("allow.tonicize", branchJins, source),
         define("allow.modulate", branchPaths, source),
-        define("allow.place", {
-            key.roleTonic,
-            key.roleGhammaz,
-            key.roleUpper,
-            key.roleExtension,
-        }, source),
+        define("allow.place", std::move(placeRoles), source),
         define("allow.register", {key.regionRoot, key.regionUpper}, source),
         define("allow.baggage", {key.baggageExtension}, source),
         define("allow.gesture", {

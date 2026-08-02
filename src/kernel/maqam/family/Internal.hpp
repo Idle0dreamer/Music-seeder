@@ -12,6 +12,7 @@ struct BranchKey {
     Identity center;
     Identity tonic;
     Identity ghammaz;
+    Identity descent;
     Identity motion;
     motion::Direction direction{motion::Direction::Fall};
     Identity path;
@@ -34,6 +35,7 @@ struct Key {
     Identity roleGhammaz;
     Identity roleUpper;
     Identity roleExtension;
+    std::vector<Identity> rootRoles;
     Identity regionRoot;
     Identity regionUpper;
     Identity gestureEstablish;

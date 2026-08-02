@@ -18,6 +18,7 @@ struct BranchSpec {
     std::string center_name;
     std::string tonic_role;
     std::string ghammaz_role;
+    std::string descent_role;
     motion::Direction direction{motion::Direction::Fall};
 
     BranchSpec() = default;
@@ -30,7 +31,8 @@ struct BranchSpec {
         std::string branch_center = {},
         std::string branch_tonic = {},
         std::string branch_ghammaz = {},
-        motion::Direction branch_direction = motion::Direction::Fall)
+        motion::Direction branch_direction = motion::Direction::Fall,
+        std::string branch_descent = {})
         : name(std::move(branch_name)),
           target(std::move(branch_target)),
           provenance(std::move(branch_provenance)),
@@ -38,6 +40,7 @@ struct BranchSpec {
           center_name(std::move(branch_center)),
           tonic_role(std::move(branch_tonic)),
           ghammaz_role(std::move(branch_ghammaz)),
+          descent_role(std::move(branch_descent)),
           direction(branch_direction) {}
 };
 
@@ -46,8 +49,10 @@ struct Spec {
     std::string family;
     pitch::Expression ghammaz;
     pitch::Expression extension;
+    std::string upper_role;
     std::string provenance;
     std::vector<BranchSpec> branches;
+    std::vector<std::string> root_roles;
     bool ordered{};
 };
 
