@@ -78,9 +78,15 @@ std::expected<Result, Error> run(
             },
         };
         prefix.events.back().ornament = performance::Ornament{
+            Identity{
+                "performance.ornament",
+                "directional-approach",
+                "1",
+            },
             performance::OrnamentKind::Approach,
             *previous - center->second,
             Rational(1),
+            "derived:structural-motion;profile-may-refine",
         };
     }
     return Result{
