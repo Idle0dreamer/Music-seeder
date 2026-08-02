@@ -39,6 +39,13 @@ void test::timed::plan() {
         plan.well_formed(),
         "exact continuous pitch contour was rejected");
 
+    plan.events.front().ornament = mq::kernel::performance::Ornament{
+        mq::kernel::performance::OrnamentKind::Oscillation,
+        pitch::Expression::ratio(1, 100),
+        Rational(2),
+    };
+    require(plan.well_formed(), "exact ornament intent was rejected");
+
     plan.events.front().contour->points.back().position = Rational(3, 4);
     require(
         !plan.well_formed(),

@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numbers>
 
 namespace mq::synthesis::pitch {
 
@@ -36,8 +37,16 @@ namespace mq::synthesis::pitch {
     const ::mq::kernel::performance::TimedEvent& event,
     double tonic_hz,
     double position) {
+    double ornament = 0.0;
+    if (event.ornament && event.ornament->kind ==
+                              ::mq::kernel::performance::OrnamentKind::Oscillation) {
+        ornament = event.ornament->extent.cents() * std::sin(
+            2.0 * std::numbers::pi_v<double> *
+            event.ornament->cycles.decimal() * std::clamp(position, 0.0, 1.0));
+    }
     return tonic_hz * std::exp2(
-        (event.target.center.cents() + contour_cents(event, position)) /
+        (event.target.center.cents() + contour_cents(event, position) +
+         ornament) /
         1200.0);
 }
 

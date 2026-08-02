@@ -15,7 +15,8 @@ bridge/soundboard modes, and sympathetic tails. It renders a deterministic WAV.
 
 The Faust side now has both a modal probe and a coupled-course source, plus a
 dedicated generated-C++ runtime target that drives exact-contour frequency,
-intensity, articulation, and strike controls through the shared WAV boundary.
+ornament, intensity, articulation, and strike controls through the shared WAV
+boundary.
 The latest exact-head remote workflow is still running. Bayati
 phrase/motif/ornament coverage, instrument measurements, and remote workflow
 evidence remain open.

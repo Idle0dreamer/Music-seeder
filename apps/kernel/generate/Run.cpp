@@ -9,6 +9,40 @@
 #include <iostream>
 
 namespace app::generate {
+namespace {
+
+const char* ornament_name(
+    mq::kernel::performance::OrnamentKind kind) noexcept {
+    switch (kind) {
+    case mq::kernel::performance::OrnamentKind::Approach:
+        return "approach";
+    case mq::kernel::performance::OrnamentKind::Oscillation:
+        return "oscillation";
+    }
+    return "unknown";
+}
+
+void print_timed(const mq::kernel::performance::TimedEvent& timed) {
+    const auto& target = timed.target;
+    std::cout
+        << "  " << target.event.identity.str()
+        << " -> " << target.center.str()
+        << " @ " << timed.onset.str()
+        << " + " << timed.duration.str()
+        << " intensity " << timed.intensity.str();
+    if (timed.contour) {
+        std::cout << " contour "
+                  << timed.contour->points.front().offset.str()
+                  << " -> " << timed.contour->points.back().offset.str();
+    }
+    if (timed.ornament) {
+        std::cout << " ornament " << ornament_name(timed.ornament->kind)
+                  << " extent " << timed.ornament->extent.str();
+    }
+    std::cout << '\n';
+}
+
+} // namespace
 
 int run(std::uint64_t seed) {
     using namespace mq::kernel;
@@ -69,14 +103,7 @@ int run(std::uint64_t seed) {
         << "timed performance events: " << selected->plan.events.size()
         << '\n';
     for (const auto& timed : selected->plan.events) {
-        const auto& target = timed.target;
-        std::cout
-            << "  " << target.event.identity.str()
-            << " -> " << target.center.str()
-            << " @ " << timed.onset.str()
-            << " + " << timed.duration.str()
-            << " intensity " << timed.intensity.str()
-            << '\n';
+        print_timed(timed);
     }
     return 0;
 }
@@ -133,14 +160,7 @@ int bayati(std::uint64_t seed) {
                   << ": " << rejection.message << '\n';
     }
     for (const auto& timed : selected->plan.events) {
-        const auto& target = timed.target;
-        std::cout
-            << "  " << target.event.identity.str()
-            << " -> " << target.center.str()
-            << " @ " << timed.onset.str()
-            << " + " << timed.duration.str()
-            << " intensity " << timed.intensity.str()
-            << '\n';
+        print_timed(timed);
     }
     return 0;
 }

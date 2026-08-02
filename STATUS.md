@@ -41,7 +41,8 @@ Implemented so far:
     pitch fields;
 21. exact instrument-neutral pitch targets with plan-prefix validation;
 22. exact rational monophonic timed performance events with typed strands,
-    duration, intensity, articulation intent, and optional exact pitch contours;
+    duration, intensity, articulation, optional exact pitch contours, and
+    ornament intent;
 23. exact `Same`, `Rise`, and `Fall` order certificates;
 24. event-bounded phrase spans with exact cadence evidence and strength;
 25. typed phrase function, cadence, and boundary pitch projections;
@@ -76,8 +77,9 @@ Implemented so far:
     variation;
 43. a separate C++ synthesis target with a provisional coupled-course santur
     model that consumes timed plans and writes deterministic mono PCM WAV;
-44. a Faust-generated C++ renderer target with exact-contour frequency updates,
-    intensity, strike, and neutral/connected/detached attack-force mapping;
+44. a Faust-generated C++ renderer target with exact-contour and oscillation
+    frequency updates, intensity, strike, and neutral/connected/detached
+    attack-force mapping;
 
 Checkpoint validation state:
 

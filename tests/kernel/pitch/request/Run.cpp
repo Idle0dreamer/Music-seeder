@@ -76,6 +76,9 @@ void test::request::run() {
             second->plan.events.back().contour->well_formed() &&
             second->plan.events.back().contour->points.front().offset ==
                 pitch::Expression::ratio(3, 4) &&
+            second->plan.events.back().ornament &&
+            second->plan.events.back().ornament->kind ==
+                performance::OrnamentKind::Approach &&
             second->plan.well_formed() &&
             second->direction &&
             second->direction->relation ==

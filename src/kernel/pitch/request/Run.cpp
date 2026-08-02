@@ -77,6 +77,11 @@ std::expected<Result, Error> run(
                 {Rational(1), pitch::Expression{}},
             },
         };
+        prefix.events.back().ornament = performance::Ornament{
+            performance::OrnamentKind::Approach,
+            *previous - center->second,
+            Rational(1),
+        };
     }
     return Result{
         std::move(prefix),

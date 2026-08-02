@@ -50,6 +50,7 @@ struct Plan {
             articulation,
             std::move(strand),
             std::nullopt,
+            std::nullopt,
         });
     }
 };

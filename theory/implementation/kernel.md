@@ -88,7 +88,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Sayr scope restoration | explicit grammar scope component and non-leakage law |
 | Complete candidate evaluation | legal outcomes and retained diagnostics before seed |
 | Exact staged performance plans | one target per committed structural event, including exact `4:3` and `3:2` relations |
-| Exact monophonic timed performance plan | `performance::Plan::events` derives contiguous rational onsets and validates duration, intensity, articulation, typed strand, and optional exact pitch contours |
+| Exact monophonic timed performance plan | `performance::Plan::events` derives contiguous rational onsets and validates duration, intensity, articulation, typed strand, optional exact pitch contours, and ornament intent |
 | Executable profile comparison | reconstructed baggage prohibition changes the legal generation set |
 | Typed grammar output | `Stage` and `Candidate` term forms |
 | Scope-controlled generated output | explicit `Output` export and non-leakage law |
