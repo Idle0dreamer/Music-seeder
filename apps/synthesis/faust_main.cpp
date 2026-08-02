@@ -3,6 +3,9 @@
 #include "mq/synthesis/Player.hpp"
 #include "mq/kernel/performance/Profile.hpp"
 
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
 #include <iostream>
 #include <string_view>
 
@@ -19,8 +22,22 @@ int main(int argc, char** argv) {
         std::cerr << timing.error() << '\n';
         return 1;
     }
-    const auto generated = mq::synthesis::make_plan(
+    const auto preview = mq::synthesis::make_plan(
         options->maqam, options->seed, *timing);
+    if (!preview) {
+        std::cerr << preview.error() << '\n';
+        return 1;
+    }
+    const auto phrase_seconds = timing->seconds_per_unit.decimal() *
+                                preview->plan.end().decimal();
+    if (!(phrase_seconds > 0.0)) {
+        std::cerr << "timing profile produced no phrase span\n";
+        return 1;
+    }
+    const auto repetitions = static_cast<std::size_t>(std::max(
+        1.0, std::ceil(options->duration_seconds / phrase_seconds)));
+    const auto generated = mq::synthesis::make_plan(
+        options->maqam, options->seed, *timing, repetitions);
     if (!generated) {
         std::cerr << generated.error() << '\n';
         return 1;
@@ -44,6 +61,8 @@ int main(int argc, char** argv) {
         << "candidate: " << generated->candidate.str() << '\n'
         << "model: Faust-generated coupled-course physical model\n"
         << "frames: " << rendered->frames << '\n'
+        << "seconds: " << static_cast<double>(rendered->frames) /
+                               static_cast<double>(options->sample_rate) << '\n'
         << "peak: " << rendered->peak << '\n'
         << "tonic_hz: " << rendered->conversion_tonic_hz << '\n'
         << "wav: " << options->output << '\n';

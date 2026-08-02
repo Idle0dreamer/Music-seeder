@@ -96,10 +96,12 @@ std::expected<RenderReport, RenderError> render_faust_wav(
         onsets.push_back(onset);
     }
 
+    constexpr std::uint32_t block_size = 64;
+    std::vector<FAUSTFLOAT> block(block_size);
     std::size_t next = 0;
-    std::size_t active = 0;
-    for (std::uint64_t frame = 0; frame < *frames; ++frame) {
-        bool strike = false;
+    std::size_t active = plan.events.size();
+    std::uint64_t frame = 0;
+    while (frame < *frames) {
         while (next < plan.events.size() && onsets[next] <= frame) {
             active = next;
             const auto& event = plan.events[active];
@@ -128,11 +130,27 @@ std::expected<RenderReport, RenderError> render_faust_wav(
                     "Faust adapter failed to set an event control",
                 });
             }
-            strike = true;
             ++next;
         }
-        if (active < plan.events.size() &&
-            frame >= onsets[active]) {
+
+        // A strike is an edge, not a sustained control. Render that one
+        // sample separately, then allow the generated Faust DSP to run in
+        // blocks while retaining its modal state between calls.
+        if (active < plan.events.size() && frame == onsets[active]) {
+            FAUSTFLOAT output{};
+            FAUSTFLOAT* outputs[] = {&output};
+            dsp.compute(1, nullptr, outputs);
+            samples[frame] = static_cast<double>(output);
+            ++frame;
+            if (!set_parameter(ui, "strike", 0.0F)) {
+                return std::unexpected(RenderError{
+                    "Faust adapter failed to release strike control",
+                });
+            }
+            continue;
+        }
+
+        if (active < plan.events.size() && frame >= onsets[active]) {
             const auto& event = plan.events[active];
             const auto elapsed = static_cast<double>(frame - onsets[active]);
             const auto duration = static_cast<double>(std::max<std::uint64_t>(
@@ -148,18 +166,28 @@ std::expected<RenderReport, RenderError> render_faust_wav(
                 });
             }
         }
-        if (!strike && !set_parameter(ui, "strike", 0.0F)) {
+        if (!set_parameter(ui, "strike", 0.0F)) {
             return std::unexpected(RenderError{
                 "Faust adapter failed to clear strike control",
             });
         }
-        FAUSTFLOAT output{};
-        FAUSTFLOAT* outputs[] = {&output};
-        dsp.compute(1, nullptr, outputs);
-        samples[frame] = static_cast<double>(output);
-        if (strike && !set_parameter(ui, "strike", 0.0F)) {
+
+        const auto nextOnset = next < onsets.size() ? onsets[next] : *frames;
+        const auto count = static_cast<int>(std::min<std::uint64_t>(
+            block_size, std::min(*frames - frame, nextOnset - frame)));
+        if (count <= 0) {
+            continue;
+        }
+        FAUSTFLOAT* outputs[] = {block.data()};
+        dsp.compute(count, nullptr, outputs);
+        for (int index = 0; index < count; ++index) {
+            samples[frame + static_cast<std::uint64_t>(index)] =
+                static_cast<double>(block[static_cast<std::size_t>(index)]);
+        }
+        frame += static_cast<std::uint64_t>(count);
+        if (!set_parameter(ui, "strike", 0.0F)) {
             return std::unexpected(RenderError{
-                "Faust adapter failed to release strike control",
+                "Faust adapter failed to clear strike control",
             });
         }
     }

@@ -12,6 +12,7 @@ constexpr std::string_view default_timing =
     "theory/data/performance/free-rhythm-v1.timing";
 constexpr std::uint32_t default_sample_rate = 48'000;
 constexpr double default_tonic_hz = 146.8323839587;
+constexpr double default_duration_seconds = 30.0;
 
 std::expected<std::uint64_t, std::string> unsigned_value(
     std::string_view value,
@@ -48,7 +49,7 @@ std::expected<PlayerConfig, std::string> parse_player_args(
         return std::unexpected(
             "usage: " + program +
             " --maqam name --seed n [--output path] [--timing path]"
-            " [--sample-rate hz] [--tonic-hz hz]");
+            " [--sample-rate hz] [--tonic-hz hz] [--duration seconds]");
     }
     PlayerConfig result{
         .maqam = {},
@@ -57,6 +58,7 @@ std::expected<PlayerConfig, std::string> parse_player_args(
         .output = {},
         .sample_rate = default_sample_rate,
         .tonic_hz = default_tonic_hz,
+        .duration_seconds = default_duration_seconds,
     };
     for (int index = 1; index < argc; ++index) {
         const std::string_view option(argv[index]);
@@ -92,6 +94,15 @@ std::expected<PlayerConfig, std::string> parse_player_args(
                 return std::unexpected(parsed.error());
             }
             result.tonic_hz = *parsed;
+        } else if (option == "--duration") {
+            const auto parsed = real_value(value, "--duration");
+            if (!parsed) {
+                return std::unexpected(parsed.error());
+            }
+            if (*parsed > 90.0) {
+                return std::unexpected("--duration may not exceed 90 seconds");
+            }
+            result.duration_seconds = *parsed;
         } else {
             return std::unexpected("unknown option: " + std::string(option));
         }

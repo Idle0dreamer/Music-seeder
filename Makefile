@@ -8,7 +8,12 @@ KERNEL_APP_SRC := $(shell find apps/kernel -name '*.cpp' | sort)
 KERNEL_APP := $(KERNEL_SRC) $(KERNEL_APP_SRC)
 SYNTH_SRC := $(KERNEL_SRC) $(shell find src/synthesis -name '*.cpp' ! -name 'FaustRender.cpp' | sort)
 SYNTH_APP_SRC := $(shell find apps/synthesis -name '*.cpp' ! -name 'faust_main.cpp' | sort)
+SYNTH_APP_SRC := $(filter-out apps/synthesis/ui.cpp,$(SYNTH_APP_SRC))
 SYNTH_OBJ := $(patsubst %.cpp,build/synthesis/%.o,$(SYNTH_SRC) $(SYNTH_APP_SRC))
+UI_SRC := $(KERNEL_SRC) $(shell find src/synthesis -name '*.cpp' ! -name 'FaustRender.cpp' | sort) apps/synthesis/ui.cpp
+UI_OBJ := $(patsubst %.cpp,build/ui/%.o,$(UI_SRC))
+QT_CXXFLAGS := $(shell pkg-config --cflags Qt6Widgets 2>/dev/null)
+QT_LIBS := $(shell pkg-config --libs Qt6Widgets 2>/dev/null)
 FAUST_ROOT := third_party/audio/faust
 FAUST_LIBRARIES := third_party/audio/faustlibraries
 FAUST_ARCHITECTURE := $(FAUST_ROOT)/architecture/minimal-effect.cpp
@@ -26,7 +31,7 @@ AS_OBJ := $(patsubst %.cpp,build/address/%.o,$(TEST_SRC))
 DEPS := $(TEST_OBJ:.o=.d) $(APP_OBJ:.o=.d) \
 	$(UB_OBJ:.o=.d) $(AS_OBJ:.o=.d) $(SYNTH_OBJ:.o=.d)
 
-.PHONY: all test kernel synthesis synthesis-faust faust-compiler kernel-test kernel-sanitize kernel-address clean
+.PHONY: all test kernel synthesis synthesis-faust synthesis-ui faust-compiler kernel-test kernel-sanitize kernel-address clean
 
 all: kernel
 
@@ -38,11 +43,16 @@ synthesis: build/synthesis-render
 
 synthesis-faust: build/synthesis-faust-render
 
+synthesis-ui: build/synthesis-ui
+
 build/synthesis-render: $(SYNTH_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 build/synthesis-faust-render: $(FAUST_OBJ)
 	$(CXX) $(FAUST_CXXFLAGS) $^ -o $@
+
+build/synthesis-ui: $(UI_OBJ)
+	$(CXX) $(CXXFLAGS) $(QT_CXXFLAGS) $^ $(QT_LIBS) -o $@
 
 faust-compiler:
 	$(MAKE) -C $(FAUST_ROOT)/build CMAKE=cmake cmake \
@@ -72,6 +82,14 @@ build/release/%.o: %.cpp Makefile
 build/synthesis/%.o: %.cpp Makefile
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+
+build/ui/apps/synthesis/ui.o: apps/synthesis/ui.cpp Makefile
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(QT_CXXFLAGS) -MMD -MP -c $< -o $@
+
+build/ui/%.o: %.cpp Makefile
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(QT_CXXFLAGS) -MMD -MP -c $< -o $@
 
 build/faust/src/synthesis/FaustRender.o: src/synthesis/FaustRender.cpp \
 		Makefile $(FAUST_GENERATED)

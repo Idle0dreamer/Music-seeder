@@ -116,6 +116,14 @@ Implemented so far:
     profile, output path, sample rate, and tonic frequency;
 61. Faust release-duration control is consumed from each timed event rather
     than silently using a renderer timing default;
+62. configurable multi-phrase rendering with a duration target, deterministic
+    seeded continuation phrases, and continuous player looping;
+63. a Qt desktop generator/player with asynchronous rendering, WAV waveform
+    inspection, and soft Fourier magnitude inspection;
+64. prepared native santur voices with cached pitch/strike geometry, modal
+    wavetable lookup, and bounded audible-tail mixing for long renders;
+65. block-oriented Faust execution with persistent generated-DSP state between
+    audio blocks while preserving one-sample strike edges;
 
 Checkpoint validation state:
 
@@ -143,8 +151,8 @@ Checkpoint validation state:
 - `./build/kernel nikriz 43` emits a legal Nikriz result from two routes;
 - `make synthesis` and the flag-based named synthesis player produce a
   non-silent valid 48 kHz PCM WAV from the coupled-course model; the named
-  flag-based Sikah player also produces a valid 48 kHz PCM WAV;
-  the current timing-policy render is 140640 frames with peak `0.92`;
+  flag-based Sikah player also produces a valid 48 kHz PCM WAV. The player
+  accepts multi-phrase duration targets and loops the resulting WAV;
 - `.github/workflows/kernel.yml` compiles both pinned Faust-generated C++
   sources and exercises both the independent and Faust runtime renderers
   online; exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed in run

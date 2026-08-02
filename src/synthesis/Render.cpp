@@ -77,15 +77,27 @@ std::expected<RenderReport, RenderError> render_wav(
         config.seed,
     });
     std::vector<double> samples(frames);
-    double peak = 0.0;
-    for (std::uint64_t frame = 0; frame < frames; ++frame) {
-        const double at = static_cast<double>(frame) /
-                          static_cast<double>(config.sample_rate);
-        double sample = 0.0;
-        for (const auto& event : plan.events) {
-            sample += model.sample(event, at);
+    std::vector<santur::PreparedEvent> voices;
+    voices.reserve(plan.events.size());
+    for (const auto& event : plan.events) {
+        voices.push_back(model.prepare(event));
+    }
+    for (const auto& voice : voices) {
+        const auto onset = static_cast<std::uint64_t>(std::ceil(
+            std::max(0.0, voice.onset_seconds) *
+            static_cast<double>(config.sample_rate)));
+        const auto audibleUntil = static_cast<std::uint64_t>(std::ceil(
+            std::max(0.0, voice.audible_until_seconds) *
+            static_cast<double>(config.sample_rate)));
+        const auto end = std::min(frames, audibleUntil);
+        for (std::uint64_t frame = onset; frame < end; ++frame) {
+            const double at = static_cast<double>(frame) /
+                              static_cast<double>(config.sample_rate);
+            samples[frame] += model.sample(voice, at);
         }
-        samples[frame] = sample;
+    }
+    double peak = 0.0;
+    for (const double sample : samples) {
         peak = std::max(peak, std::abs(sample));
     }
     if (!(peak > 0.0) || !std::isfinite(peak)) {

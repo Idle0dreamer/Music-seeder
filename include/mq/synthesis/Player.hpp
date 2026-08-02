@@ -13,6 +13,7 @@ struct PlayerConfig {
     std::string output;
     std::uint32_t sample_rate{};
     double tonic_hz{};
+    double duration_seconds{};
 };
 
 [[nodiscard]] std::expected<PlayerConfig, std::string> parse_player_args(

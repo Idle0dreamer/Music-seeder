@@ -1,57 +1,38 @@
 #include "mq/synthesis/Plan.hpp"
 
 #include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Ajam.hpp"
-#include "mq/kernel/maqam/Bayati.hpp"
-#include "mq/kernel/maqam/Hijaz.hpp"
-#include "mq/kernel/maqam/Kurd.hpp"
-#include "mq/kernel/maqam/Nahawand.hpp"
-#include "mq/kernel/maqam/Nikriz.hpp"
-#include "mq/kernel/maqam/Rast.hpp"
-#include "mq/kernel/maqam/Sikah.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
-#include <array>
 
 namespace mq::synthesis {
-namespace {
 
-using Builder = std::expected<
-    ::mq::kernel::maqam::Scaffold,
-    std::string> (*)();
-
-struct Route {
-    std::string_view name;
-    Builder builder;
-};
-
-constexpr std::array routes{
-    Route{"ajam", ::mq::kernel::maqam::make_ajam},
-    Route{"bayati", ::mq::kernel::maqam::make_bayati},
-    Route{"hijaz", ::mq::kernel::maqam::make_hijaz},
-    Route{"kurd", ::mq::kernel::maqam::make_kurd},
-    Route{"nahawand", ::mq::kernel::maqam::make_nahawand},
-    Route{"nikriz", ::mq::kernel::maqam::make_nikriz},
-    Route{"rast", ::mq::kernel::maqam::make_rast},
-    Route{"sikah", ::mq::kernel::maqam::make_sikah},
-};
-
-const Route* find_route(std::string_view name) noexcept {
-    const auto found = std::ranges::find(routes, name, &Route::name);
-    return found == routes.end() ? nullptr : &*found;
+void append_plan(
+    ::mq::kernel::performance::Plan& destination,
+    const ::mq::kernel::performance::Plan& continuation) {
+    const auto offset = destination.end();
+    for (const auto& event : continuation.events) {
+        auto copied = event;
+        copied.onset += offset;
+        destination.events.push_back(std::move(copied));
+    }
+    for (const auto& pause : continuation.pauses) {
+        auto copied = pause;
+        copied.onset += offset;
+        destination.pauses.push_back(std::move(copied));
+    }
 }
-
-} // namespace
 
 std::expected<GeneratedPlan, std::string> make_plan(
     std::string_view maqam,
     std::uint64_t seed,
-    const ::mq::kernel::performance::Timing& timing) {
-    const auto* route = find_route(maqam);
-    if (route == nullptr) {
-        return std::unexpected("unknown maqam route: " + std::string(maqam));
+    const ::mq::kernel::performance::Timing& timing,
+    std::size_t repetitions) {
+    if (repetitions == 0) {
+        return std::unexpected("at least one performance phrase is required");
     }
-    const auto scaffold = route->builder();
+    const auto catalog = ::mq::kernel::maqam::Catalog::declared();
+    const auto scaffold = catalog.build_executable(maqam);
     if (!scaffold) {
         return std::unexpected(scaffold.error());
     }
@@ -81,7 +62,19 @@ std::expected<GeneratedPlan, std::string> make_plan(
         return std::unexpected(
             "selected maqam outcome is missing: " + std::string(maqam));
     }
-    return GeneratedPlan{generated->selected, selected->plan};
+    GeneratedPlan result{generated->selected, selected->plan};
+    for (std::size_t index = 1; index < repetitions; ++index) {
+        const auto continuation = make_plan(
+            maqam,
+            seed + static_cast<std::uint64_t>(index) * 0x9e3779b97f4a7c15ULL,
+            timing,
+            1);
+        if (!continuation) {
+            return std::unexpected(continuation.error());
+        }
+        append_plan(result.plan, continuation->plan);
+    }
+    return result;
 }
 
 } // namespace mq::synthesis

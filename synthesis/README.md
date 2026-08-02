@@ -32,10 +32,14 @@ kernel's exported performance-plan contract.
   not named-instrument or regional-authenticity claims.
 - `../src/synthesis/Render.cpp`, `../src/synthesis/santur/`, and
   `../apps/synthesis/` contain the coupled-course santur renderer and WAV
-  boundary.
-- `../src/synthesis/Plan.cpp` owns the synthesis-side maqam package registry;
-  both renderers consume its selected timed plan, so adding a package does not
-  require a renderer branch.
+  boundary. Native event coefficients and strike geometry are prepared once
+  per event; the renderer mixes only each voice's declared audible tail.
+- `../src/kernel/maqam/collection/` owns the data-driven package catalog used
+  by both renderers. Adding a collection-defined family does not require a
+  renderer branch.
+- The Qt player launches the renderer asynchronously, supports configurable
+  multi-phrase durations and continuous looping, and displays the rendered
+  WAV and a soft Fourier magnitude view.
 - `../src/synthesis/FaustRender.cpp` and the `synthesis-faust` Make target
   consume generated Faust C++ through the same boundary.
 - `../third_party/audio/` records pinned Git source checkouts for the future
@@ -49,8 +53,9 @@ The current santur adapter renders a deterministic WAV. It includes three
 detuned course strings, stiff-string partials, a hammer-contact attack, bridge
 and soundboard modes, and sympathetic tails. The registered maqam generator
 supplies exact timing, intensity, articulation, ornament, and release intent
-to this adapter. The Faust-generated coupled-course
-renderer is implemented as a separate target; exact head
+to this adapter. The Faust-generated coupled-course renderer is a separate
+compiled C++ DSP target. Faust retains resonator state between audio blocks;
+it is an executable instrument, not a pre-rendered sample bank. Exact head
 `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed its remote build and
 uploaded the independent and Faust WAV artifacts in run `30755938899`.
 Neither is yet a validated instrument reproduction: geometry, material

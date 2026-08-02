@@ -3,18 +3,10 @@
 #include "mq/kernel/fixture/generation/Set.hpp"
 #include "mq/kernel/generate/Engine.hpp"
 #include "mq/kernel/grammar/Catalog.hpp"
-#include "mq/kernel/maqam/Bayati.hpp"
-#include "mq/kernel/maqam/Ajam.hpp"
-#include "mq/kernel/maqam/Hijaz.hpp"
-#include "mq/kernel/maqam/Kurd.hpp"
-#include "mq/kernel/maqam/Nahawand.hpp"
-#include "mq/kernel/maqam/Nikriz.hpp"
-#include "mq/kernel/maqam/Rast.hpp"
-#include "mq/kernel/maqam/Sikah.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 #include "mq/kernel/performance/Profile.hpp"
 
 #include <algorithm>
-#include <array>
 #include <iostream>
 #include <string_view>
 
@@ -157,7 +149,7 @@ int run(std::uint64_t seed) {
 int maqam(
     std::uint64_t seed,
     std::expected<mq::kernel::maqam::Scaffold, std::string> scaffold,
-    const char* name) {
+    std::string_view name) {
     using namespace mq::kernel;
 
     if (!scaffold) {
@@ -226,43 +218,17 @@ int maqam(
     return 0;
 }
 
-using Builder = std::expected<
-    mq::kernel::maqam::Scaffold,
-    std::string> (*)();
-
-struct Route {
-    std::string_view name;
-    const char* label;
-    Builder builder;
-};
-
-constexpr std::array routes{
-    Route{"ajam", "Ajam", mq::kernel::maqam::make_ajam},
-    Route{"bayati", "Bayati", mq::kernel::maqam::make_bayati},
-    Route{"hijaz", "Hijaz", mq::kernel::maqam::make_hijaz},
-    Route{"kurd", "Kurd", mq::kernel::maqam::make_kurd},
-    Route{"nahawand", "Nahawand", mq::kernel::maqam::make_nahawand},
-    Route{"nikriz", "Nikriz", mq::kernel::maqam::make_nikriz},
-    Route{"rast", "Rast", mq::kernel::maqam::make_rast},
-    Route{"sikah", "Sikah", mq::kernel::maqam::make_sikah},
-};
-
-const Route* find_route(std::string_view name) noexcept {
-    const auto found = std::ranges::find(routes, name, &Route::name);
-    return found == routes.end() ? nullptr : &*found;
-}
-
 bool is_named(std::string_view name) noexcept {
-    return find_route(name) != nullptr;
+    return mq::kernel::maqam::Catalog::declared().find(name) != nullptr;
 }
 
 int named(std::string_view name, std::uint64_t seed) {
-    const auto* route = find_route(name);
-    if (route == nullptr) {
+    const auto catalog = mq::kernel::maqam::Catalog::declared();
+    if (catalog.find(name) == nullptr) {
         std::cerr << "unknown maqam route: " << name << '\n';
         return 2;
     }
-    return maqam(seed, route->builder(), route->label);
+    return maqam(seed, catalog.build_executable(name), name);
 }
 
 } // namespace app::generate
