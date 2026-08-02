@@ -30,6 +30,17 @@ void print_timed(const mq::kernel::performance::TimedEvent& timed) {
         << " @ " << timed.onset.str()
         << " + " << timed.duration.str()
         << " intensity " << timed.intensity.str();
+    switch (timed.articulation) {
+    case mq::kernel::performance::Articulation::Neutral:
+        std::cout << " articulation neutral";
+        break;
+    case mq::kernel::performance::Articulation::Connected:
+        std::cout << " articulation connected";
+        break;
+    case mq::kernel::performance::Articulation::Detached:
+        std::cout << " articulation detached";
+        break;
+    }
     if (timed.contour) {
         std::cout << " contour "
                   << timed.contour->points.front().offset.str()
@@ -81,7 +92,8 @@ int run(std::uint64_t seed) {
         model->production,
         model->projection,
         model->schema,
-        initial);
+        initial,
+        mq::kernel::generate::Limits{.timing = model->timing});
     if (!result) {
         std::cerr << result.error().message << '\n';
         return 1;
@@ -131,7 +143,10 @@ int bayati(std::uint64_t seed) {
         scaffold->generation.production,
         scaffold->generation.projection,
         scaffold->generation.schema,
-        initial);
+        initial,
+        mq::kernel::generate::Limits{
+            .timing = scaffold->generation.timing,
+        });
     if (!result) {
         std::cerr << result.error().message << '\n';
         for (const auto& rejection : result.error().rejected) {

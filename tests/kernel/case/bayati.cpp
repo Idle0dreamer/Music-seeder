@@ -16,12 +16,16 @@ void test::bayati_case() {
         .grammar = {},
     };
     const mq::kernel::generate::Engine engine(*scaffold->profile, context);
+    mq::kernel::generate::Limits limits;
+    limits.timing = scaffold->generation.timing;
     const auto result = engine.run(
         17,
         scaffold->generation.choice,
         scaffold->generation.production,
         scaffold->generation.projection,
-        scaffold->generation.schema);
+        scaffold->generation.schema,
+        {},
+        limits);
     require(result.has_value(), result ? "" : result.error().message);
     require(
         result->legal.size() == 4 && result->rejected.empty(),
@@ -46,4 +50,29 @@ void test::bayati_case() {
                        item.state.phrase.completed.size() >= 1;
             }),
         "Bayati routes did not produce complete timed plans");
+    require(
+        std::ranges::all_of(
+            result->legal,
+            [](const auto& item) {
+                if (item.plan.events.size() == 1) {
+                    return item.plan.events.front().duration ==
+                               Rational(3, 2) &&
+                           item.plan.events.front().intensity ==
+                               Rational(3, 4) &&
+                           item.plan.events.front().articulation ==
+                               performance::Articulation::Neutral;
+                }
+                return item.plan.events.size() == 5 &&
+                       item.plan.events[0].onset == Rational(0) &&
+                       item.plan.events[1].onset == Rational(3, 2) &&
+                       item.plan.events[2].onset == Rational(9, 4) &&
+                       item.plan.events[3].onset == Rational(3) &&
+                       item.plan.events[4].onset == Rational(7, 2) &&
+                       item.plan.end() == Rational(4) &&
+                       item.plan.events[1].articulation ==
+                           performance::Articulation::Connected &&
+                       item.plan.events[3].articulation ==
+                           performance::Articulation::Detached;
+            }),
+        "Bayati timing policy was not consumed by generated plans");
 }

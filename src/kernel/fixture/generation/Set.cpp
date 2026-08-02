@@ -41,6 +41,7 @@ std::expected<Set, std::string> make(
         std::move(*production),
         detail::projection(key),
         detail::schema(fixture, key),
+        performance::Timing{},
     };
 }
 

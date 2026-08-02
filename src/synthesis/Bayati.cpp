@@ -25,7 +25,11 @@ std::expected<BayatiPlan, std::string> make_bayati_plan(
         scaffold->generation.choice,
         scaffold->generation.production,
         scaffold->generation.projection,
-        scaffold->generation.schema);
+        scaffold->generation.schema,
+        {},
+        mq::kernel::generate::Limits{
+            .timing = scaffold->generation.timing,
+        });
     if (!generated) {
         return std::unexpected(generated.error().message);
     }

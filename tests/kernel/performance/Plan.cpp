@@ -1,6 +1,7 @@
 #include "../Test.hpp"
 
 #include "mq/kernel/performance/Plan.hpp"
+#include "mq/kernel/performance/Timing.hpp"
 
 namespace {
 
@@ -52,4 +53,9 @@ void test::timed::plan() {
     require(
         !plan.well_formed(),
         "unterminated pitch contour was accepted");
+
+    mq::kernel::performance::Timing timing;
+    require(timing.well_formed(), "neutral timing policy was rejected");
+    timing.rise.duration = mq::kernel::Rational(0);
+    require(!timing.well_formed(), "invalid timing policy was accepted");
 }

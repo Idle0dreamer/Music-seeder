@@ -10,7 +10,9 @@ The current kernel carries stable structural events and exact structural pitch
 targets in `performance::Plan::events`. Each current event also carries an
 exact rational onset and duration, intensity, articulation intent, typed
 monophonic strand, optional exact pitch contour, and ornament intent. This is
-the first executable timing seam; the complete
+the first executable timing seam. Profile generation may supply a separate
+exact direction-conditioned timing policy; the Bayati policy is explicitly
+provisional and carries no authenticity claim. The complete
 future contract also carries:
 
 - stable event and gesture identities;

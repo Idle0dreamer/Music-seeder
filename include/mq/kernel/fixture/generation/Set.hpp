@@ -3,6 +3,7 @@
 #include "mq/kernel/fixture/Set.hpp"
 #include "mq/kernel/generate/Candidate.hpp"
 #include "mq/kernel/grammar/Term.hpp"
+#include "mq/kernel/performance/Timing.hpp"
 #include "mq/kernel/pitch/field/Schema.hpp"
 #include "mq/kernel/pitch/field/project/Plan.hpp"
 
@@ -21,6 +22,7 @@ struct Set {
     grammar::Term production;
     pitch::field::project::Plan projection;
     pitch::field::Schema schema;
+    performance::Timing timing;
 };
 
 [[nodiscard]] std::expected<Set, std::string> make(

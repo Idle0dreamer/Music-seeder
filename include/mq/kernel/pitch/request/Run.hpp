@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mq/kernel/performance/Plan.hpp"
+#include "mq/kernel/performance/Timing.hpp"
 #include "mq/kernel/pitch/field/project/Run.hpp"
 #include "mq/kernel/pitch/field/solve/Run.hpp"
 #include "mq/kernel/pitch/order/Compare.hpp"
@@ -12,6 +13,7 @@ struct Limits {
     field::project::Limits projection{};
     field::solve::Limits field{};
     order::Limits order{};
+    performance::Timing timing{};
 };
 
 struct Error {

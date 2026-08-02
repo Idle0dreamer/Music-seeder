@@ -42,7 +42,7 @@ Implemented so far:
 21. exact instrument-neutral pitch targets with plan-prefix validation;
 22. exact rational monophonic timed performance events with typed strands,
     duration, intensity, articulation, optional exact pitch contours, and
-    ornament intent;
+    ornament intent, with an explicit direction-conditioned timing policy;
 23. exact `Same`, `Rise`, and `Fall` order certificates;
 24. event-bounded phrase spans with exact cadence evidence and strength;
 25. typed phrase function, cadence, and boundary pitch projections;
@@ -80,6 +80,8 @@ Implemented so far:
 44. a Faust-generated C++ renderer target with exact-contour and oscillation
     frequency updates, intensity, strike, and neutral/connected/detached
     attack-force mapping;
+45. Bayati's provisional execution policy carries exact rational durations,
+    intensities, and articulation through generation into both renderers;
 
 Checkpoint validation state:
 
@@ -90,13 +92,14 @@ Checkpoint validation state:
   onsets `0`, `1`, `2`, `3`, and `4`; `./build/kernel 2` emits the one-event
   neutral stay candidate;
 - `./build/kernel bayati 17` emits one selected five-event Bayati route from
-  four legal routes, with branch-conditioned exact pitch targets;
+  four legal routes, with branch-conditioned exact pitch targets and exact
+  onsets `0`, `3/2`, `9/4`, `3`, and `7/2` for the selected journey;
 - `make synthesis` and `./build/synthesis-render 17 /tmp/bayati.wav` produce a
   non-silent valid 48 kHz PCM WAV from the provisional coupled-course model;
-  repeated renders have the same SHA-256;
+  the current timing-policy render is 140640 frames with peak `0.92`;
 - `.github/workflows/kernel.yml` compiles both pinned Faust-generated C++
   sources and exercises both the independent and Faust runtime renderers
-  online; the latest run for `9038e84` is still in progress;
+  online; the timing-policy change is awaiting its exact-head remote run;
 - this evidence is for the current working tree and does not replace the
   exact-head remote result;
 - `.github/workflows/kernel.yml` provides the free remote debug, release, CLI,

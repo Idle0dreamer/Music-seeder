@@ -60,6 +60,17 @@ std::expected<Result, Error> run(
         return std::unexpected(proof.error());
     }
 
+    if (!limits.timing.well_formed()) {
+        return std::unexpected(Error{
+            Error::Code::Plan,
+            "timing policy is not well formed",
+            std::nullopt,
+            std::nullopt,
+            std::nullopt,
+        });
+    }
+    const auto& timing = limits.timing.for_direction((*current)->direction);
+
     const auto previous = prefix.events.empty()
                               ? std::optional<pitch::Expression>{}
                               : std::optional<pitch::Expression>{
@@ -67,7 +78,7 @@ std::expected<Result, Error> run(
     prefix.append(performance::Target{
         **current,
         center->second,
-    });
+    }, timing.duration, timing.intensity, timing.articulation);
     if (previous &&
         ((*current)->direction == motion::Direction::Rise ||
          (*current)->direction == motion::Direction::Fall)) {

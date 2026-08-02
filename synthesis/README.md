@@ -45,10 +45,12 @@ kernel's exported performance-plan contract.
 The first provisional santur adapter is implemented and renders a deterministic
 WAV. It includes three detuned course strings, stiff-string partials, a
 hammer-contact attack, bridge and soundboard modes, and sympathetic tails. The
-Faust-generated coupled-course renderer is implemented as a separate target;
-its latest clean remote build and artifact are still pending. Neither is yet a
-validated instrument reproduction: geometry, material parameters, measurements,
-and perceptual comparison remain open.
+Bayati generator now supplies exact provisional timing, intensity, and
+articulation policy to this adapter. The Faust-generated coupled-course
+renderer is implemented as a separate target; its timing-policy exact-head
+remote build and artifact are pending. Neither is yet a validated instrument
+reproduction: geometry, material parameters, measurements, and perceptual
+comparison remain open.
 
 Future code belongs under independent `include/mq/synthesis`,
 `src/synthesis`, and `tests/synthesis` trees. It does not belong under
