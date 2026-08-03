@@ -146,6 +146,9 @@ struct Pending {
     std::vector<family::ObligationSpec> obligations;
     std::vector<family::FormulaSpec> formulas;
     std::vector<family::FormulaVariationSpec> formulaVariations;
+    std::string performanceStart;
+    std::vector<std::string> performanceTerminals;
+    std::vector<family::PerformanceStageSpec> performanceStages;
     std::size_t beginLine{};
     std::size_t ghammazLine{};
     std::size_t extensionLine{};
@@ -391,6 +394,56 @@ std::expected<Record, std::string> finish(
             }
         }
     }
+    if (!pending.performanceStart.empty() ||
+        !pending.performanceTerminals.empty() ||
+        !pending.performanceStages.empty()) {
+        if (pending.performanceStart.empty() ||
+            pending.performanceTerminals.empty() ||
+            pending.performanceStages.empty()) {
+            return std::unexpected(
+                "performance graph requires start, terminals, and stages "
+                "for " + pending.name);
+        }
+        std::set<std::string> performanceNames;
+        for (const auto& stage : pending.performanceStages) {
+            if (stage.name.empty() || stage.candidate_prefixes.empty() ||
+                stage.provenance.empty() || stage.minimum == 0 ||
+                stage.minimum > stage.maximum ||
+                !performanceNames.insert(stage.name).second) {
+                return std::unexpected(
+                    "performance stage is incomplete or duplicated for " +
+                    pending.name);
+            }
+            if (std::ranges::any_of(
+                    stage.candidate_prefixes,
+                    [](const auto& prefix) { return prefix.empty(); })) {
+                return std::unexpected(
+                    "performance stage contains an empty candidate prefix "
+                    "for " + pending.name);
+            }
+        }
+        if (!performanceNames.contains(pending.performanceStart)) {
+            return std::unexpected(
+                "performance start references an unknown stage for " +
+                pending.name);
+        }
+        for (const auto& terminal : pending.performanceTerminals) {
+            if (!performanceNames.contains(terminal)) {
+                return std::unexpected(
+                    "performance terminal references an unknown stage for " +
+                    pending.name);
+            }
+        }
+        for (const auto& stage : pending.performanceStages) {
+            for (const auto& next : stage.next) {
+                if (!performanceNames.contains(next)) {
+                    return std::unexpected(
+                        "performance stage references an unknown next stage "
+                        "for " + pending.name);
+                }
+            }
+        }
+    }
     if (pending.implementation == "complete") {
         for (const auto& authority : pending.authorities) {
             if (authority.kind != "formula") continue;
@@ -422,6 +475,18 @@ std::expected<Record, std::string> finish(
         .obligations = std::move(pending.obligations),
         .formulas = std::move(pending.formulas),
         .formula_variations = std::move(pending.formulaVariations),
+        .performance = [&]() -> std::optional<family::PerformanceSpec> {
+            if (pending.performanceStart.empty() &&
+                pending.performanceTerminals.empty() &&
+                pending.performanceStages.empty()) {
+                return std::nullopt;
+            }
+            return family::PerformanceSpec{
+                std::move(pending.performanceStart),
+                std::move(pending.performanceTerminals),
+                std::move(pending.performanceStages),
+            };
+        }(),
         .routes = std::move(pending.routes),
     };
     return result;
@@ -754,6 +819,64 @@ std::expected<Set, std::string> load(
                     std::to_string(lineNumber));
             }
             pending.authorities.push_back({fields[0], names});
+        } else if (key == "performance-start") {
+            if (value.empty() || !pending.performanceStart.empty()) {
+                return std::unexpected(
+                    "performance-start must be declared once at line " +
+                    std::to_string(lineNumber));
+            }
+            pending.performanceStart = value;
+        } else if (key == "performance-terminal") {
+            if (value.empty()) {
+                return std::unexpected(
+                    "performance-terminal requires a stage at line " +
+                    std::to_string(lineNumber));
+            }
+            pending.performanceTerminals.push_back(value);
+        } else if (key == "performance-stage") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 6 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty() || fields[3].empty() ||
+                fields[4].empty() || fields[5].empty()) {
+                return std::unexpected(
+                    "performance-stage requires name|candidate-prefixes|"
+                    "next|min|max|provenance at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto minimum = integer(
+                fields[3], "performance minimum", lineNumber);
+            const auto maximum = integer(
+                fields[4], "performance maximum", lineNumber);
+            if (!minimum) return std::unexpected(minimum.error());
+            if (!maximum) return std::unexpected(maximum.error());
+            if (*minimum <= 0 || *maximum < *minimum) {
+                return std::unexpected(
+                    "performance-stage requires positive min <= max at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto candidatePrefixes = split(fields[1], ',');
+            const auto next = fields[2] == "-"
+                                  ? std::vector<std::string>{}
+                                  : split(fields[2], ',');
+            if (candidatePrefixes.empty() ||
+                std::ranges::any_of(
+                    candidatePrefixes,
+                    [](const auto& prefix) { return prefix.empty(); }) ||
+                std::ranges::any_of(
+                    next,
+                    [](const auto& stage) { return stage.empty(); })) {
+                return std::unexpected(
+                    "performance-stage contains an empty reference at line " +
+                    std::to_string(lineNumber));
+            }
+            pending.performanceStages.push_back({
+                fields[0],
+                candidatePrefixes,
+                next,
+                static_cast<std::size_t>(*minimum),
+                static_cast<std::size_t>(*maximum),
+                fields[5],
+            });
         } else if (key == "route") {
             const auto fields = split(value, '|');
             if (fields.size() != 2 || fields[0].empty()) {

@@ -4,16 +4,39 @@
 #include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
-#include <sstream>
 #include <optional>
+#include <span>
+#include <sstream>
 
 namespace mq::synthesis {
 namespace {
+
+std::uint64_t mix(
+    std::uint64_t seed,
+    std::size_t ordinal) noexcept {
+    auto value = seed + 0x9e3779b97f4a7c15ULL +
+                 static_cast<std::uint64_t>(ordinal);
+    value = (value ^ (value >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    value = (value ^ (value >> 27)) * 0x94d049bb133111ebULL;
+    return value ^ (value >> 31);
+}
+
+bool matches_prefix(
+    const ::mq::kernel::Identity& candidate,
+    std::span<const std::string> prefixes) {
+    const auto value = candidate.str();
+    return std::ranges::any_of(
+        prefixes,
+        [&](const auto& prefix) {
+            return value.find(prefix) != std::string::npos;
+        });
+}
 
 std::expected<GeneratedPlan, std::string> make_phrase(
     std::string_view maqam,
     std::uint64_t seed,
     const ::mq::kernel::performance::Timing& timing,
+    std::span<const std::string> candidate_prefixes,
     const std::optional<::mq::kernel::Identity>& avoid) {
     const auto catalog = ::mq::kernel::maqam::Catalog::declared();
     const auto scaffold = catalog.build_executable(maqam);
@@ -41,18 +64,18 @@ std::expected<GeneratedPlan, std::string> make_phrase(
         if (!generated) {
             return std::unexpected(generated.error().message);
         }
-        const auto selected = std::ranges::find(
-            generated->legal,
-            generated->selected,
-            &::mq::kernel::generate::Outcome::candidate);
-        if (selected == generated->legal.end()) {
-            return std::unexpected(
-                "selected maqam outcome is missing: " + std::string(maqam));
+        std::vector<const ::mq::kernel::generate::Outcome*> compatible;
+        for (const auto& outcome : generated->legal) {
+            if (matches_prefix(outcome.candidate, candidate_prefixes) &&
+                (!avoid || generated->legal.size() == 1 ||
+                 outcome.candidate != *avoid)) {
+                compatible.push_back(&outcome);
+            }
         }
-        if (avoid && generated->legal.size() > 1 &&
-            selected->candidate == *avoid) {
+        if (compatible.empty()) {
             continue;
         }
+        const auto* selected = compatible[mix(seed, attempt) % compatible.size()];
         selected_plan = GeneratedPlan{
             selected->candidate,
             selected->plan,
@@ -66,9 +89,9 @@ std::expected<GeneratedPlan, std::string> make_phrase(
             std::string(maqam));
     }
 
-    // Every outcome here is already a complete, legal candidate. Selection is
-    // made by the kernel for this phrase seed; the player never manufactures
-    // variation by cycling through route order.
+    // Every outcome here is already a complete, legal candidate. The active
+    // collection performance state filters the legal set; the seed only
+    // selects within that set.
     return std::move(*selected_plan);
 }
 
@@ -98,28 +121,96 @@ std::expected<GeneratedPlan, std::string> make_plan(
     if (repetitions == 0) {
         return std::unexpected("at least one performance phrase is required");
     }
-    const auto first = make_phrase(maqam, seed, timing, std::nullopt);
-    if (!first) {
-        return std::unexpected(first.error());
+    const auto catalog = ::mq::kernel::maqam::Catalog::declared();
+    const auto* entry = catalog.find(maqam);
+    if (entry == nullptr || !entry->specification ||
+        !entry->specification->performance) {
+        return std::unexpected(
+            "maqam has no collection-owned performance graph: " +
+            std::string(maqam));
     }
-    GeneratedPlan result{
-        first->candidate,
-        first->plan,
-        {first->candidate},
+    const auto& performance = *entry->specification->performance;
+    const auto find_stage = [&](std::string_view name)
+        -> const ::mq::kernel::maqam::family::PerformanceStageSpec* {
+        const auto found = std::ranges::find(
+            performance.stages,
+            name,
+            &::mq::kernel::maqam::family::PerformanceStageSpec::name);
+        return found == performance.stages.end() ? nullptr : &*found;
     };
-    for (std::size_t index = 1; index < repetitions; ++index) {
-        const auto continuation = make_phrase(
-            maqam,
-            seed + static_cast<std::uint64_t>(index) * 0x9e3779b97f4a7c15ULL,
-            timing,
-            result.phrase_candidates.back());
-        if (!continuation) {
-            return std::unexpected(continuation.error());
-        }
-        result.phrase_candidates.push_back(continuation->candidate);
-        append_plan(result.plan, continuation->plan);
+    const auto* current = find_stage(performance.start);
+    if (current == nullptr) {
+        return std::unexpected(
+            "performance graph start stage disappeared for " +
+            std::string(maqam));
     }
-    return result;
+    std::size_t emitted{};
+    std::size_t transitionOrdinal{};
+    std::optional<GeneratedPlan> result;
+    std::optional<::mq::kernel::Identity> previous;
+    const auto terminal = [&](const auto* stage) {
+        return std::ranges::find(
+                   performance.terminals,
+                   stage->name) != performance.terminals.end();
+    };
+    while (emitted < repetitions || !terminal(current)) {
+        const auto requested = repetitions > emitted
+                                   ? repetitions - emitted
+                                   : std::size_t{1};
+        const auto count = std::min(
+            current->minimum +
+                static_cast<std::size_t>(mix(seed, transitionOrdinal) %
+                                          (current->maximum -
+                                           current->minimum + 1)),
+            requested);
+        for (std::size_t occurrence{}; occurrence < count; ++occurrence) {
+            const auto phrase = make_phrase(
+                maqam,
+                seed + static_cast<std::uint64_t>(emitted) *
+                           0x9e3779b97f4a7c15ULL,
+                timing,
+                current->candidate_prefixes,
+                previous);
+            if (!phrase) {
+                return std::unexpected(phrase.error());
+            }
+            if (!result) {
+                result = GeneratedPlan{
+                    phrase->candidate,
+                    phrase->plan,
+                    {phrase->candidate},
+                };
+            } else {
+                result->phrase_candidates.push_back(phrase->candidate);
+                append_plan(result->plan, phrase->plan);
+            }
+            previous = phrase->candidate;
+            ++emitted;
+        }
+        ++transitionOrdinal;
+        if (emitted >= repetitions && terminal(current)) {
+            break;
+        }
+        if (current->next.empty()) {
+            return std::unexpected(
+                "performance graph reached a terminal before the requested "
+                "duration for " + std::string(maqam));
+        }
+        const auto nextIndex = mix(seed, transitionOrdinal) %
+                               current->next.size();
+        current = find_stage(current->next[nextIndex]);
+        if (current == nullptr) {
+            return std::unexpected(
+                "performance graph transition disappeared for " +
+                std::string(maqam));
+        }
+    }
+    if (!result) {
+        return std::unexpected(
+            "performance graph emitted no complete phrase for " +
+            std::string(maqam));
+    }
+    return std::move(*result);
 }
 
 std::string describe_plan(

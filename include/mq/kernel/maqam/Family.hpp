@@ -71,6 +71,25 @@ struct RouteSpec {
     std::vector<StepSpec> steps;
 };
 
+// A performance state is a phrase-level authority.  Candidate prefixes name
+// complete route derivations admitted by the collection; they are not note
+// generators or fallback routes.  The graph may cycle, but its traversal is
+// bounded by the requested performance duration.
+struct PerformanceStageSpec {
+    std::string name;
+    std::vector<std::string> candidate_prefixes;
+    std::vector<std::string> next;
+    std::size_t minimum{1};
+    std::size_t maximum{1};
+    std::string provenance;
+};
+
+struct PerformanceSpec {
+    std::string start;
+    std::vector<std::string> terminals;
+    std::vector<PerformanceStageSpec> stages;
+};
+
 struct AuthoritySpec {
     std::string kind;
     std::vector<std::string> names;
@@ -164,6 +183,7 @@ struct Spec {
     std::vector<ObligationSpec> obligations;
     std::vector<FormulaSpec> formulas;
     std::vector<FormulaVariationSpec> formula_variations;
+    std::optional<PerformanceSpec> performance;
     std::vector<RouteSpec> routes;
 };
 
