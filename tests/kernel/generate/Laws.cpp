@@ -137,13 +137,7 @@ void test::generate::laws() {
 
     auto malformed = value.program.stay;
     malformed.identity = id("malformed");
-    malformed.stages.front().actions.push_back(operation::Place{
-        mq::kernel::sort::EventId{id("extra")},
-        mq::kernel::sort::RoleId{set.role.root},
-        motion::Direction::Same,
-        mq::kernel::sort::RegionId{set.region.root},
-        std::nullopt,
-    });
+    malformed.stages.front().actions.clear();
     const std::vector invalid{malformed};
     const auto rejected = engine.run(
         0,
@@ -157,7 +151,34 @@ void test::generate::laws() {
         !rejected &&
             rejected.error().code ==
                 mq::kernel::generate::Error::Code::Input,
-        "stage accepted more than one structural event");
+        "stage without a structural event was accepted");
+
+    auto multi = value.program.travel;
+    multi.identity = id("multi");
+    multi.stages[1].actions.push_back(operation::Place{
+        mq::kernel::sort::EventId{id("multi.extra")},
+        mq::kernel::sort::RoleId{set.role.ghammaz},
+        motion::Direction::Rise,
+        mq::kernel::sort::RegionId{set.region.upper},
+        std::nullopt,
+    });
+    multi.stages[1].actions.push_back(operation::Emit{
+        mq::kernel::sort::CellId{set.cell},
+        std::nullopt,
+    });
+    const auto multiResult = engine.run(
+        0,
+        value.choice,
+        std::vector{multi},
+        value.projection,
+        value.schema,
+        {},
+        limits);
+    require(
+        multiResult && multiResult->legal.size() == 1 &&
+            multiResult->legal.front().plan.events.size() == 6 &&
+            multiResult->legal.front().state.cell.owners.size() == 6,
+        "multi-note structural stage was not evaluated as a complete unit");
 
     auto limited = mq::kernel::generate::Limits{};
     limited.candidates = 1;

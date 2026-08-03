@@ -61,10 +61,10 @@ std::expected<void, Error> check(
             if (!complete(stage.identity) ||
                 !stages.insert(stage.identity).second ||
                 stage.actions.empty() ||
-                places != 1) {
+                places == 0) {
                 return std::unexpected(Error{
                     Error::Code::Input,
-                    "stage identity or single-Place invariant failed",
+                    "stage identity or structural-event invariant failed",
                     {},
                     {},
                 });
