@@ -74,6 +74,14 @@ int main(int argc, char** argv) {
     }
     std::cout
         << '\n'
+        << "phrase_spans: ";
+    for (std::size_t index = 0;
+         index < generated->phrase_spans.size(); ++index) {
+        if (index != 0) std::cout << ',';
+        std::cout << generated->phrase_spans[index];
+    }
+    std::cout
+        << '\n'
         << "phrase_candidates: ";
     for (std::size_t index = 0;
          index < generated->phrase_candidates.size(); ++index) {

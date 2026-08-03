@@ -264,6 +264,7 @@ std::expected<Phrase, std::string> make_phrase(
                 std::move(selectedPlan),
                 {selected->candidate},
                 {},
+                {phrase_span ? *phrase_span : "full"},
             },
             selected->state,
             std::move(facts),
@@ -380,10 +381,13 @@ std::expected<GeneratedPlan, std::string> make_plan(
                     phrase->generated.plan,
                     {phrase->generated.candidate},
                     {current->name},
+                    {current->phrase_span ? *current->phrase_span : "full"},
                 };
             } else {
                 result->phrase_candidates.push_back(phrase->generated.candidate);
                 result->phrase_stages.push_back(current->name);
+                result->phrase_spans.push_back(
+                    current->phrase_span ? *current->phrase_span : "full");
                 append_plan(result->plan, phrase->generated.plan);
             }
             memory.insert(phrase->facts.begin(), phrase->facts.end());
