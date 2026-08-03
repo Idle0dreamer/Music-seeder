@@ -155,17 +155,11 @@ void test::generate::laws() {
 
     auto multi = value.program.travel;
     multi.identity = id("multi");
-    multi.stages[1].actions.push_back(operation::Place{
-        mq::kernel::sort::EventId{id("multi.extra")},
-        mq::kernel::sort::RoleId{set.role.ghammaz},
-        motion::Direction::Rise,
-        mq::kernel::sort::RegionId{set.region.upper},
-        std::nullopt,
-    });
-    multi.stages[1].actions.push_back(operation::Emit{
-        mq::kernel::sort::CellId{set.cell},
-        std::nullopt,
-    });
+    multi.stages[1].actions.insert(
+        multi.stages[1].actions.end(),
+        multi.stages[2].actions.begin(),
+        multi.stages[2].actions.end());
+    multi.stages.erase(multi.stages.begin() + 2);
     const auto multiResult = engine.run(
         0,
         value.choice,
@@ -176,8 +170,8 @@ void test::generate::laws() {
         limits);
     require(
         multiResult && multiResult->legal.size() == 1 &&
-            multiResult->legal.front().plan.events.size() == 6 &&
-            multiResult->legal.front().state.cell.owners.size() == 6,
+            multiResult->legal.front().plan.events.size() == 5 &&
+            multiResult->legal.front().state.cell.owners.size() == 5,
         "multi-note structural stage was not evaluated as a complete unit");
 
     auto limited = mq::kernel::generate::Limits{};
