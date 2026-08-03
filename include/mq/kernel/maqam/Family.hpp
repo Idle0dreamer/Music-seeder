@@ -44,17 +44,27 @@ struct BranchSpec {
           direction(branch_direction) {}
 };
 
-enum class RouteKind {
+enum class RouteStageKind {
     Stay,
-    Branch,
-    Sequence,
+    Establish,
+    Develop,
+    Climax,
+    Descent,
+    Continuation,
+    Restore,
+    SequenceRestore,
+};
+
+struct RouteStageSpec {
+    RouteStageKind kind{RouteStageKind::Establish};
+    std::string branch;
 };
 
 struct RouteSpec {
     std::string name;
-    RouteKind kind{RouteKind::Branch};
     std::vector<std::string> branches;
     std::size_t variants{1};
+    std::vector<RouteStageSpec> stages;
 };
 
 struct Spec {

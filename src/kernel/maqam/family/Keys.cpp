@@ -115,7 +115,6 @@ Key key(const Spec& spec) {
     for (const auto& source : spec.routes) {
         RouteKey route;
         route.route = id(result, "route." + source.name);
-        route.kind = source.kind;
         route.variants = source.variants;
         for (const auto& branch : source.branches) {
             const auto found = std::ranges::find_if(
@@ -127,6 +126,21 @@ Key key(const Spec& spec) {
             }
             route.branches.push_back(
                 static_cast<std::size_t>(std::distance(result.branches.begin(), found)));
+        }
+        for (const auto& stage : source.stages) {
+            RouteKey::Stage translated{stage.kind, std::nullopt};
+            if (!stage.branch.empty()) {
+                const auto found = std::ranges::find_if(
+                    result.branches,
+                    [&](const auto& value) { return value.name == stage.branch; });
+                if (found == result.branches.end()) {
+                    route.valid = false;
+                } else {
+                    translated.branch = static_cast<std::size_t>(
+                        std::distance(result.branches.begin(), found));
+                }
+            }
+            route.stages.push_back(std::move(translated));
         }
         result.routes.push_back(std::move(route));
     }

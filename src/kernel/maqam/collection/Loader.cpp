@@ -80,20 +80,35 @@ std::expected<pitch::Expression, std::string> ratio(
     return pitch::Expression::ratio(*numerator, *denominator);
 }
 
-std::expected<family::RouteKind, std::string> route_kind(
+std::expected<family::RouteStageKind, std::string> stage_kind(
     const std::string& value,
     std::size_t line) {
     if (value == "stay") {
-        return family::RouteKind::Stay;
+        return family::RouteStageKind::Stay;
     }
-    if (value == "branch") {
-        return family::RouteKind::Branch;
+    if (value == "establish") {
+        return family::RouteStageKind::Establish;
     }
-    if (value == "sequence") {
-        return family::RouteKind::Sequence;
+    if (value == "develop") {
+        return family::RouteStageKind::Develop;
+    }
+    if (value == "climax") {
+        return family::RouteStageKind::Climax;
+    }
+    if (value == "descent") {
+        return family::RouteStageKind::Descent;
+    }
+    if (value == "continuation") {
+        return family::RouteStageKind::Continuation;
+    }
+    if (value == "restore") {
+        return family::RouteStageKind::Restore;
+    }
+    if (value == "sequence-restore") {
+        return family::RouteStageKind::SequenceRestore;
     }
     return std::unexpected(
-        "invalid route kind at line " + std::to_string(line));
+        "invalid route stage at line " + std::to_string(line));
 }
 
 std::expected<motion::Direction, std::string> direction(
@@ -190,6 +205,12 @@ std::expected<Record, std::string> finish(
         return std::unexpected(
             "family package " + pending.name +
             " has no declared routes");
+    }
+    for (const auto& route : pending.routes) {
+        if (route.stages.empty()) {
+            return std::unexpected(
+                "route " + route.name + " has no declared stages");
+        }
     }
     result.specification = family::Spec{
         .package = std::move(pending.packageName),
@@ -319,34 +340,46 @@ std::expected<Set, std::string> load(
             pending.rootRoles = fields;
         } else if (key == "route") {
             const auto fields = split(value, '|');
-            if (fields.size() != 3 || fields[0].empty() ||
-                fields[1].empty()) {
+            if (fields.size() != 2 || fields[0].empty()) {
                 return std::unexpected(
-                    "route requires name|kind|branches at line " +
+                    "route requires name|branches at line " +
                     std::to_string(lineNumber));
             }
-            const auto kind = route_kind(fields[1], lineNumber);
+            family::RouteSpec route{fields[0], {}, 1, {}};
+            if (!fields[1].empty()) {
+                route.branches = split(fields[1], ',');
+                if (std::ranges::any_of(
+                        route.branches,
+                        [](const auto& branch) { return branch.empty(); })) {
+                    return std::unexpected(
+                        "route contains an empty branch name at line " +
+                        std::to_string(lineNumber));
+                }
+            }
+            pending.routes.push_back(std::move(route));
+        } else if (key == "stage") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 3 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty()) {
+                return std::unexpected(
+                    "stage requires route|kind|branch-or-root at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto found = std::ranges::find_if(
+                pending.routes,
+                [&](const auto& route) { return route.name == fields[0]; });
+            if (found == pending.routes.end()) {
+                return std::unexpected(
+                    "stage references unknown route at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto kind = stage_kind(fields[1], lineNumber);
             if (!kind) {
                 return std::unexpected(kind.error());
             }
-            family::RouteSpec route{
-                fields[0], *kind, {}, 1};
-            if (*kind != family::RouteKind::Stay) {
-                route.branches = split(fields[2], ',');
-                if (route.branches.empty() ||
-                    std::ranges::any_of(route.branches, [](const auto& branch) {
-                        return branch.empty();
-                    })) {
-                    return std::unexpected(
-                        "non-stay route requires branch names at line " +
-                        std::to_string(lineNumber));
-                }
-            } else if (!fields[2].empty()) {
-                return std::unexpected(
-                    "stay route cannot name branches at line " +
-                    std::to_string(lineNumber));
-            }
-            pending.routes.push_back(std::move(route));
+            found->stages.push_back({
+                *kind,
+                fields[2] == "-" ? std::string{} : fields[2]});
         } else if (key == "route-variants") {
             if (pending.routes.empty()) {
                 return std::unexpected(
@@ -363,7 +396,7 @@ std::expected<Set, std::string> load(
             pending.routes.back().variants = static_cast<std::size_t>(*parsed);
         } else if (key == "ordered") {
             return std::unexpected(
-                "ordered is obsolete; declare route records at line " +
+                "ordered is obsolete; declare route and stage records at line " +
                 std::to_string(lineNumber));
         } else if (key == "branch") {
             const auto fields = split(value, '|');

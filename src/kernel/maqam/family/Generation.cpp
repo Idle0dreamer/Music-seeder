@@ -323,76 +323,117 @@ grammar::Term candidateTerm(
         std::move(body));
 }
 
-std::vector<Stage> routeStages(
+Stage stayStage(const Key& key, const Identity& candidate) {
+    const auto stayPhrase = phrase(key, candidate, "establish");
+    return makeStage(key, candidate, "stay", {
+        operation::Anchor{sort::CenterId{key.centerRoot}},
+        operation::Enter{sort::JinsId{key.jinsRoot}},
+        operation::Begin{
+            sort::PhraseId{stayPhrase},
+            phrase::Function{key.phraseQuestion}},
+        operation::Place{
+            sort::EventId{event(key, candidate, "tonic")},
+            sort::RoleId{key.roleTonic},
+            motion::Direction::Start,
+            sort::RegionId{key.regionRoot},
+            std::nullopt,
+        },
+        operation::Emit{
+            sort::CellId{key.cellEstablish},
+            sort::FormulaId{key.formulaEstablish}},
+        operation::Cadence{
+            sort::FamilyId{key.cadenceLocal},
+            Rational(1),
+            Rational(1)},
+        operation::End{
+            sort::PhraseId{stayPhrase},
+            phrase::Boundary::Closed},
+        operation::sayr::Fulfill{
+            sort::ObligationId{id(key, "obligation.establish")}},
+        operation::sayr::Fulfill{
+            sort::ObligationId{id(key, "obligation.settle")}},
+    });
+}
+
+std::expected<std::vector<Stage>, std::string> routeStages(
     const Key& key,
     const Identity& candidate,
     const RouteKey& route,
     std::size_t variant) {
-    if (route.kind == RouteKind::Stay) {
-        const auto stayPhrase = phrase(key, candidate, "establish");
-        return {makeStage(key, candidate, "stay", {
-            operation::Anchor{sort::CenterId{key.centerRoot}},
-            operation::Enter{sort::JinsId{key.jinsRoot}},
-            operation::Begin{
-                sort::PhraseId{stayPhrase},
-                phrase::Function{key.phraseQuestion}},
-            operation::Place{
-                sort::EventId{event(key, candidate, "tonic")},
-                sort::RoleId{key.roleTonic},
-                motion::Direction::Start,
-                sort::RegionId{key.regionRoot},
-                std::nullopt,
-            },
-            operation::Emit{
-                sort::CellId{key.cellEstablish},
-                sort::FormulaId{key.formulaEstablish}},
-            operation::Cadence{
-                sort::FamilyId{key.cadenceLocal},
-                Rational(1),
-                Rational(1)},
-            operation::End{
-                sort::PhraseId{stayPhrase},
-                phrase::Boundary::Closed},
-            operation::sayr::Fulfill{
-                sort::ObligationId{id(key, "obligation.establish")}},
-            operation::sayr::Fulfill{
-                sort::ObligationId{id(key, "obligation.settle")}},
-        })};
-    }
-    if (route.branches.empty()) {
-        return {};
-    }
     const bool varied = variant % 2 == 1;
-    std::vector<Stage> stages{
-        establishment(key, candidate),
-        development(key, candidate, varied),
-    };
-    if (route.kind == RouteKind::Branch || route.branches.size() == 1) {
-        const auto& branch = key.branches[route.branches.front()];
-        stages.push_back(climax(key, candidate, branch));
-        stages.push_back(branchDescent(key, candidate, branch));
-        stages.push_back(restore(key, candidate, branch));
-        return stages;
+    std::vector<Stage> stages;
+    bool responseStarted = false;
+    std::optional<Identity> previousDescent;
+    for (const auto& stage : route.stages) {
+        const auto branch = [&]() -> const BranchKey* {
+            if (!stage.branch || *stage.branch >= key.branches.size()) {
+                return nullptr;
+            }
+            return &key.branches[*stage.branch];
+        }();
+        switch (stage.kind) {
+        case RouteStageKind::Stay:
+            stages.push_back(stayStage(key, candidate));
+            break;
+        case RouteStageKind::Establish:
+            stages.push_back(establishment(key, candidate));
+            break;
+        case RouteStageKind::Develop:
+            stages.push_back(development(key, candidate, varied));
+            break;
+        case RouteStageKind::Climax:
+            if (branch == nullptr) {
+                return std::unexpected(
+                    "climax stage has no declared branch in " +
+                    route.route.str());
+            }
+            stages.push_back(climax(key, candidate, *branch));
+            break;
+        case RouteStageKind::Descent:
+            if (branch == nullptr) {
+                return std::unexpected(
+                    "descent stage has no declared branch in " +
+                    route.route.str());
+            }
+            stages.push_back(branchDescent(key, candidate, *branch));
+            break;
+        case RouteStageKind::Continuation:
+            if (branch == nullptr) {
+                return std::unexpected(
+                    "continuation stage has no declared branch in " +
+                    route.route.str());
+            }
+            stages.push_back(orderedContinuation(
+                key,
+                candidate,
+                *branch,
+                !responseStarted,
+                previousDescent,
+                varied));
+            responseStarted = true;
+            previousDescent = occurrence(
+                key,
+                candidate,
+                "ordered-descent." + branch->jins.name);
+            break;
+        case RouteStageKind::Restore:
+            if (branch == nullptr) {
+                return std::unexpected(
+                    "restore stage has no declared branch in " +
+                    route.route.str());
+            }
+            stages.push_back(restore(key, candidate, *branch));
+            break;
+        case RouteStageKind::SequenceRestore:
+            if (route.branches.empty()) {
+                return std::unexpected(
+                    "sequence restore has no declared branches in " +
+                    route.route.str());
+            }
+            stages.push_back(orderedRestore(key, candidate, route));
+            break;
+        }
     }
-    stages.push_back(
-        climax(key, candidate, key.branches[route.branches.front()]));
-    for (std::size_t position = 1; position < route.branches.size(); ++position) {
-        stages.push_back(orderedContinuation(
-            key,
-            candidate,
-            key.branches[route.branches[position]],
-            position == 1,
-            position == 1
-                ? std::nullopt
-                : std::optional<Identity>{occurrence(
-                      key,
-                      candidate,
-                      "ordered-descent." +
-                          key.branches[route.branches[position - 1]]
-                              .jins.name)},
-            varied));
-    }
-    stages.push_back(orderedRestore(key, candidate, route));
     return stages;
 }
 
@@ -553,11 +594,6 @@ std::expected<Generation, std::string> generation(const Key& key) {
                 "generation route references an unknown branch: " +
                 route.route.str());
         }
-        if (route.kind != RouteKind::Stay && route.branches.empty()) {
-            return std::unexpected(
-                "generation route declares no branch stations: " +
-                route.route.str());
-        }
         if (route.variants == 0) {
             return std::unexpected(
                 "generation route declares zero variants: " +
@@ -570,7 +606,10 @@ std::expected<Generation, std::string> generation(const Key& key) {
                                            std::to_string(variant);
             const auto candidate = id(key, "candidate." + suffix);
             const auto stages = routeStages(key, candidate, route, variant);
-            if (stages.empty()) {
+            if (!stages) {
+                return std::unexpected(stages.error());
+            }
+            if (stages->empty()) {
                 return std::unexpected(
                     "generation route produced no stages: " +
                     route.route.str());
@@ -578,7 +617,7 @@ std::expected<Generation, std::string> generation(const Key& key) {
             branches.push_back({
                 id(key, "branch." + suffix),
                 {},
-                candidateTerm(key, stages, candidate),
+                candidateTerm(key, *stages, candidate),
             });
         }
     }

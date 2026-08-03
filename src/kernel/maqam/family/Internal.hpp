@@ -2,6 +2,7 @@
 
 #include "mq/kernel/maqam/Family.hpp"
 
+#include <optional>
 #include <vector>
 
 namespace mq::kernel::maqam::family::detail {
@@ -26,8 +27,12 @@ struct BranchKey {
 
 struct RouteKey {
     Identity route;
-    RouteKind kind{RouteKind::Branch};
     std::vector<std::size_t> branches;
+    struct Stage {
+        RouteStageKind kind{RouteStageKind::Establish};
+        std::optional<std::size_t> branch;
+    };
+    std::vector<Stage> stages;
     std::size_t variants{1};
     bool valid{true};
 };

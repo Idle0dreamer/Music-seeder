@@ -1,5 +1,6 @@
 #include "Internal.hpp"
 
+#include <algorithm>
 #include <set>
 
 namespace mq::kernel::maqam::family::detail {
@@ -110,7 +111,12 @@ std::expected<sayr::Plan, std::string> sayr(const Key& key) {
     }
     std::vector<ks::Route> routes;
     for (const auto& route : key.routes) {
-        if (route.kind == RouteKind::Stay) {
+        const bool stay = std::ranges::any_of(
+            route.stages,
+            [](const auto& stage) {
+                return stage.kind == RouteStageKind::Stay;
+            });
+        if (stay) {
             routes.push_back({
                 route.route,
                 {id(key, "obligation.settle")},
