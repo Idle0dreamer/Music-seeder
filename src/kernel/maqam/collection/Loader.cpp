@@ -6,6 +6,7 @@
 #include <charconv>
 #include <cstdlib>
 #include <fstream>
+#include <set>
 #include <sstream>
 
 namespace mq::kernel::maqam::collection {
@@ -114,6 +115,7 @@ struct Pending {
     std::vector<std::string> rootRoles;
     std::vector<family::BranchSpec> branches;
     std::vector<family::RouteSpec> routes;
+    std::vector<family::AuthoritySpec> authorities;
     std::size_t beginLine{};
     std::size_t ghammazLine{};
     std::size_t extensionLine{};
@@ -175,6 +177,27 @@ std::expected<Record, std::string> finish(
             "family package " + pending.name +
             " has no declared routes");
     }
+    for (const auto& authority : pending.authorities) {
+        if (authority.kind.empty() || authority.names.empty() ||
+            std::ranges::any_of(authority.names, [](const auto& name) {
+                return name.empty();
+            })) {
+            return std::unexpected(
+                "authority declarations must contain a kind and names for " +
+                pending.name);
+        }
+    }
+    std::set<std::string> authorityNames;
+    for (const auto& authority : pending.authorities) {
+        for (const auto& name : authority.names) {
+            const auto token = authority.kind + "." + name;
+            if (!authorityNames.insert(token).second) {
+                return std::unexpected(
+                    "duplicate authority declaration " + token + " for " +
+                    pending.name);
+            }
+        }
+    }
     for (const auto& route : pending.routes) {
         if (route.steps.empty()) {
             return std::unexpected(
@@ -199,6 +222,7 @@ std::expected<Record, std::string> finish(
         .provenance = std::move(pending.source),
         .branches = std::move(pending.branches),
         .root_roles = std::move(pending.rootRoles),
+        .authorities = std::move(pending.authorities),
         .routes = std::move(pending.routes),
     };
     return result;
@@ -316,6 +340,23 @@ std::expected<Set, std::string> load(
                     std::to_string(lineNumber));
             }
             pending.rootRoles = fields;
+        } else if (key == "authority") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 2 || fields[0].empty() || fields[1].empty()) {
+                return std::unexpected(
+                    "authority requires kind|comma-separated-names at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto names = split(fields[1], ',');
+            if (names.empty() ||
+                std::ranges::any_of(names, [](const auto& name) {
+                    return name.empty();
+                })) {
+                return std::unexpected(
+                    "authority contains an empty name at line " +
+                    std::to_string(lineNumber));
+            }
+            pending.authorities.push_back({fields[0], names});
         } else if (key == "route") {
             const auto fields = split(value, '|');
             if (fields.size() != 2 || fields[0].empty()) {

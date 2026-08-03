@@ -65,6 +65,11 @@ struct RouteSpec {
     std::vector<StepSpec> steps;
 };
 
+struct AuthoritySpec {
+    std::string kind;
+    std::vector<std::string> names;
+};
+
 struct Spec {
     std::string package;
     std::string family;
@@ -74,6 +79,7 @@ struct Spec {
     std::string provenance;
     std::vector<BranchSpec> branches;
     std::vector<std::string> root_roles;
+    std::vector<AuthoritySpec> authorities;
     std::vector<RouteSpec> routes;
 };
 

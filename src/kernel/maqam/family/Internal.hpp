@@ -3,6 +3,7 @@
 #include "mq/kernel/maqam/Family.hpp"
 
 #include <optional>
+#include <map>
 #include <vector>
 
 namespace mq::kernel::maqam::family::detail {
@@ -86,6 +87,7 @@ struct Key {
     Identity motionFall;
     Identity boundaryOpen;
     Identity boundaryClosed;
+    std::map<std::string, Identity> authorities;
     pitch::Expression ghammaz;
     pitch::Expression extension;
     std::vector<BranchKey> branches;

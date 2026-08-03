@@ -83,6 +83,7 @@ grammar::Term candidateTerm(
 struct ActionContext {
     const Key& key;
     const Identity& candidate;
+    const RouteKey& route;
     const BranchKey* branch{};
     std::optional<Identity> previousDescent;
 };
@@ -168,6 +169,10 @@ std::expected<Identity, std::string> reference(
     };
     if (const auto found = fixed.find(std::string(token));
         found != fixed.end()) {
+        return found->second;
+    }
+    if (const auto found = context.key.authorities.find(std::string(token));
+        found != context.key.authorities.end()) {
         return found->second;
     }
     if (token == "previous-descent" || token == "current-descent") {
@@ -298,6 +303,10 @@ std::expected<Identity, std::string> function(
     }
     if (token == "response") {
         return key.phraseResponse;
+    }
+    if (const auto found = key.authorities.find("phrase." + std::string(token));
+        found != key.authorities.end()) {
+        return found->second;
     }
     return std::unexpected(
         "unknown collection phrase function: " + std::string(token));
@@ -584,6 +593,55 @@ std::expected<operation::Any, std::string> makeAction(
     return found->second(context, action);
 }
 
+using ActionExpansion = std::function<std::expected<
+    std::vector<operation::Any>, std::string>(
+    const ActionContext&, const ActionSpec&)>;
+
+std::expected<std::vector<operation::Any>, std::string> expandAction(
+    const ActionContext& context,
+    const ActionSpec& specification) {
+    const std::map<std::string, ActionExpansion> expansions{
+        {"gesture.end.if-active", [](const ActionContext& c,
+                                     const ActionSpec& a)
+             -> std::expected<std::vector<operation::Any>, std::string> {
+             if (a.arguments.size() != 1 ||
+                 a.arguments.front() != "previous-descent") {
+                 return std::unexpected(
+                     "invalid conditional gesture close");
+             }
+             if (!c.previousDescent) {
+                 return std::vector<operation::Any>{};
+             }
+             return std::vector<operation::Any>{operation::gesture::End{
+                 *c.previousDescent}};
+         }},
+        {"sayr.fulfill.route", [](const ActionContext& c,
+                                  const ActionSpec& a)
+             -> std::expected<std::vector<operation::Any>, std::string> {
+             if (a.arguments.size() != 1 ||
+                 a.arguments.front() != "restore") {
+                 return std::unexpected(
+                     "invalid route fulfillment action");
+             }
+             std::vector<operation::Any> result;
+             for (const auto index : c.route.branches) {
+                 result.push_back(operation::sayr::Fulfill{
+                     sort::ObligationId{c.key.branches[index].restore}});
+             }
+             return result;
+         }},
+    };
+    if (const auto found = expansions.find(specification.operation);
+        found != expansions.end()) {
+        return found->second(context, specification);
+    }
+    const auto action = makeAction(context, specification);
+    if (!action) {
+        return std::unexpected(action.error());
+    }
+    return std::vector<operation::Any>{*action};
+}
+
 std::expected<std::vector<Stage>, std::string> routeSteps(
     const Key& key,
     const Identity& candidate,
@@ -598,42 +656,19 @@ std::expected<std::vector<Stage>, std::string> routeSteps(
             }
             return &key.branches[*step.branch];
         }();
-        ActionContext context{key, candidate, branch, previousDescent};
+        ActionContext context{key, candidate, route, branch, previousDescent};
         std::vector<operation::Any> actions;
         for (const auto& specification : step.actions) {
             if (specification.variant && *specification.variant != variant) {
                 continue;
             }
-            if (specification.operation == "gesture.end.if-active") {
-                if (specification.arguments.size() != 1 ||
-                    specification.arguments.front() != "previous-descent") {
-                    return std::unexpected(
-                        step.name + ": invalid conditional gesture close");
-                }
-                if (context.previousDescent) {
-                    actions.push_back(operation::gesture::End{
-                        *context.previousDescent});
-                }
-                continue;
-            }
-            if (specification.operation == "sayr.fulfill.route") {
-                if (specification.arguments.size() != 1 ||
-                    specification.arguments.front() != "restore") {
-                    return std::unexpected(
-                        step.name + ": invalid route fulfillment action");
-                }
-                for (const auto index : route.branches) {
-                    actions.push_back(operation::sayr::Fulfill{
-                        sort::ObligationId{key.branches[index].restore}});
-                }
-                continue;
-            }
-            const auto action = makeAction(context, specification);
-            if (!action) {
+            const auto expanded = expandAction(context, specification);
+            if (!expanded) {
                 return std::unexpected(
-                    step.name + ": " + action.error());
+                    step.name + ": " + expanded.error());
             }
-            actions.push_back(*action);
+            actions.insert(
+                actions.end(), expanded->begin(), expanded->end());
         }
         if (actions.empty()) {
             return std::unexpected(

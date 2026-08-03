@@ -1,5 +1,7 @@
 #include "Internal.hpp"
 
+#include <string_view>
+
 namespace mq::kernel::maqam::family::detail {
 namespace {
 
@@ -25,6 +27,19 @@ profile::Patch parameter(
     };
 }
 
+profile::Domain authorities(
+    const Key& key,
+    std::string_view kind) {
+    profile::Domain result;
+    const auto prefix = std::string(kind) + ".";
+    for (const auto& [name, identity] : key.authorities) {
+        if (name.starts_with(prefix)) {
+            result.insert(identity);
+        }
+    }
+    return result;
+}
+
 } // namespace
 
 std::expected<std::shared_ptr<profile::Set>, std::string>
@@ -34,12 +49,42 @@ profile(const Key& key) {
     profile::Domain branchJins;
     profile::Domain branchPaths;
     profile::Domain routes;
-    profile::Domain placeRoles{
-        key.roleTonic,
-        key.roleGhammaz,
-        key.roleUpper,
-        key.roleExtension,
-    };
+    auto placeRoles = authorities(key, "role");
+    auto centers = authorities(key, "center");
+    auto jins = authorities(key, "jins");
+    auto regions = authorities(key, "region");
+    auto gestures = authorities(key, "gesture");
+    auto phrases = authorities(key, "phrase");
+    auto cells = authorities(key, "cell");
+    auto formulas = authorities(key, "formula");
+    auto cadences = authorities(key, "cadence");
+    auto baggage = authorities(key, "baggage");
+    centers.insert(key.centerRoot);
+    jins.insert(key.jinsRoot);
+    regions.insert(key.regionRoot);
+    regions.insert(key.regionUpper);
+    gestures.insert(key.gestureEstablish);
+    gestures.insert(key.gestureAscent);
+    gestures.insert(key.gestureDescent);
+    gestures.insert(key.gestureResolution);
+    phrases.insert(key.phraseQuestion);
+    phrases.insert(key.phraseResponse);
+    cells.insert(key.cellEstablish);
+    cells.insert(key.cellDevelop);
+    cells.insert(key.cellClimax);
+    cells.insert(key.cellReturn);
+    formulas.insert(key.formulaEstablish);
+    formulas.insert(key.formulaDevelop);
+    formulas.insert(key.formulaDevelopVariation);
+    formulas.insert(key.formulaClimax);
+    formulas.insert(key.formulaReturn);
+    cadences.insert(key.cadenceLocal);
+    cadences.insert(key.cadenceReturn);
+    baggage.insert(key.baggageExtension);
+    placeRoles.insert(key.roleTonic);
+    placeRoles.insert(key.roleGhammaz);
+    placeRoles.insert(key.roleUpper);
+    placeRoles.insert(key.roleExtension);
     for (const auto& branch : key.branches) {
         branchJins.insert(branch.jins);
         branchPaths.insert(branch.path);
@@ -47,43 +92,24 @@ profile(const Key& key) {
         placeRoles.insert(branch.descent);
     }
     const std::vector<profile::Patch> rules{
-        define("allow.anchor", {key.centerRoot}, source),
+        define("allow.anchor", std::move(centers), source),
         define("allow.enter", [&] {
-            profile::Domain result{key.jinsRoot};
+            profile::Domain result = jins;
             result.insert(branchJins.begin(), branchJins.end());
             return result;
         }(), source),
-        define("allow.emphasize", {key.roleGhammaz}, source),
-        define("allow.dwell", {key.roleGhammaz}, source),
-        define("allow.emit", {
-            key.cellEstablish,
-            key.cellDevelop,
-            key.cellClimax,
-            key.cellReturn,
-        }, source),
-        define("allow.variation", {
-            key.formulaEstablish,
-            key.formulaDevelop,
-            key.formulaDevelopVariation,
-            key.formulaClimax,
-            key.formulaReturn,
-        }, source),
-        define("allow.cadence", {key.cadenceLocal, key.cadenceReturn}, source),
+        define("allow.emphasize", placeRoles, source),
+        define("allow.dwell", placeRoles, source),
+        define("allow.emit", cells, source),
+        define("allow.variation", formulas, source),
+        define("allow.cadence", cadences, source),
         define("allow.tonicize", branchJins, source),
         define("allow.modulate", branchPaths, source),
         define("allow.place", std::move(placeRoles), source),
-        define("allow.register", {key.regionRoot, key.regionUpper}, source),
-        define("allow.baggage", {key.baggageExtension}, source),
-        define("allow.gesture", {
-            key.gestureEstablish,
-            key.gestureAscent,
-            key.gestureDescent,
-            key.gestureResolution,
-        }, source),
-        define("allow.phrase.function", {
-            key.phraseQuestion,
-            key.phraseResponse,
-        }, source),
+        define("allow.register", std::move(regions), source),
+        define("allow.baggage", std::move(baggage), source),
+        define("allow.gesture", std::move(gestures), source),
+        define("allow.phrase.function", std::move(phrases), source),
         parameter("threshold.internal.emphasis", Rational(2), source),
         parameter("threshold.internal.dwell", Rational(2), source),
         parameter("threshold.internal.cell", Rational(1), source),

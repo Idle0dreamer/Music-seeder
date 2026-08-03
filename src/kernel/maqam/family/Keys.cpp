@@ -2,11 +2,22 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string_view>
 
 namespace mq::kernel::maqam::family::detail {
 
 Identity id(const Key& key, std::string name) {
     return {"maqam." + key.package, std::move(name), "1"};
+}
+
+Identity declared(
+    const Key& key,
+    std::string_view kind,
+    std::string_view name,
+    Identity fallback) {
+    const auto found = key.authorities.find(
+        std::string(kind) + "." + std::string(name));
+    return found == key.authorities.end() ? std::move(fallback) : found->second;
 }
 
 Key key(const Spec& spec) {
@@ -16,18 +27,39 @@ Key key(const Spec& spec) {
     result.source = spec.provenance;
     result.ghammaz = spec.ghammaz;
     result.extension = spec.extension;
+    for (const auto& authority : spec.authorities) {
+        for (const auto& name : authority.names) {
+            const auto token = authority.kind + "." + name;
+            const auto identityName = authority.kind == "jins" && name == "root"
+                                          ? "jins." + spec.package + ".root"
+                                          : token;
+            result.authorities.emplace(
+                token,
+                id(result, identityName));
+        }
+    }
     result.choice = id(result, "choice");
-    result.centerRoot = id(result, "center.root");
-    result.centerUpper = id(result, "center.upper");
-    result.jinsRoot = id(result, "jins." + spec.package + ".root");
-    result.roleTonic = id(result, "role.tonic");
-    result.roleGhammaz = id(result, "role.ghammaz");
+    result.centerRoot = declared(
+        result, "center", "root", id(result, "center.root"));
+    result.centerUpper = declared(
+        result, "center", "upper", id(result, "center.upper"));
+    result.jinsRoot = declared(
+        result, "jins", "root", id(result, "jins." + spec.package + ".root"));
+    result.roleTonic = declared(
+        result, "role", "tonic", id(result, "role.tonic"));
+    result.roleGhammaz = declared(
+        result, "role", "ghammaz", id(result, "role.ghammaz"));
     result.roleUpper = id(
+        result, "role." +
+                    (spec.upper_role.empty() ? std::string("upper") :
+                                                spec.upper_role));
+    result.roleUpper = declared(
         result,
-        "role." +
-            (spec.upper_role.empty() ? std::string("upper") :
-                                        spec.upper_role));
-    result.roleExtension = id(result, "role.extension");
+        "role",
+        spec.upper_role.empty() ? "upper" : spec.upper_role,
+        result.roleUpper);
+    result.roleExtension = declared(
+        result, "role", "extension", id(result, "role.extension"));
     if (spec.root_roles.empty()) {
         result.rootRoles = {
             result.roleTonic,
@@ -41,29 +73,53 @@ Key key(const Spec& spec) {
             if (name.empty()) {
                 continue;
             }
-            result.rootRoles.push_back(id(result, "role." + name));
+            result.rootRoles.push_back(declared(
+                result, "role", name, id(result, "role." + name)));
         }
     }
-    result.regionRoot = id(result, "region.root");
-    result.regionUpper = id(result, "region.upper");
-    result.gestureEstablish = id(result, "gesture.establish");
-    result.gestureAscent = id(result, "gesture.ascent");
-    result.gestureDescent = id(result, "gesture.descent");
-    result.gestureResolution = id(result, "gesture.resolution");
-    result.phraseQuestion = id(result, "phrase.question");
-    result.phraseResponse = id(result, "phrase.response");
-    result.cellEstablish = id(result, "cell.establish");
-    result.cellDevelop = id(result, "cell.develop");
-    result.cellClimax = id(result, "cell.climax");
-    result.cellReturn = id(result, "cell.return");
-    result.formulaEstablish = id(result, "formula.establish");
-    result.formulaDevelop = id(result, "formula.develop");
-    result.formulaDevelopVariation = id(result, "formula.develop-variation");
-    result.formulaClimax = id(result, "formula.climax");
-    result.formulaReturn = id(result, "formula.return");
-    result.cadenceLocal = id(result, "cadence.local");
-    result.cadenceReturn = id(result, "cadence.return");
-    result.baggageExtension = id(result, "baggage.extension");
+    result.regionRoot = declared(
+        result, "region", "root", id(result, "region.root"));
+    result.regionUpper = declared(
+        result, "region", "upper", id(result, "region.upper"));
+    result.gestureEstablish = declared(
+        result, "gesture", "establish", id(result, "gesture.establish"));
+    result.gestureAscent = declared(
+        result, "gesture", "ascent", id(result, "gesture.ascent"));
+    result.gestureDescent = declared(
+        result, "gesture", "descent", id(result, "gesture.descent"));
+    result.gestureResolution = declared(
+        result, "gesture", "resolution", id(result, "gesture.resolution"));
+    result.phraseQuestion = declared(
+        result, "phrase", "question", id(result, "phrase.question"));
+    result.phraseResponse = declared(
+        result, "phrase", "response", id(result, "phrase.response"));
+    result.cellEstablish = declared(
+        result, "cell", "establish", id(result, "cell.establish"));
+    result.cellDevelop = declared(
+        result, "cell", "develop", id(result, "cell.develop"));
+    result.cellClimax = declared(
+        result, "cell", "climax", id(result, "cell.climax"));
+    result.cellReturn = declared(
+        result, "cell", "return", id(result, "cell.return"));
+    result.formulaEstablish = declared(
+        result, "formula", "establish", id(result, "formula.establish"));
+    result.formulaDevelop = declared(
+        result, "formula", "develop", id(result, "formula.develop"));
+    result.formulaDevelopVariation = declared(
+        result,
+        "formula",
+        "develop-variation",
+        id(result, "formula.develop-variation"));
+    result.formulaClimax = declared(
+        result, "formula", "climax", id(result, "formula.climax"));
+    result.formulaReturn = declared(
+        result, "formula", "return", id(result, "formula.return"));
+    result.cadenceLocal = declared(
+        result, "cadence", "local", id(result, "cadence.local"));
+    result.cadenceReturn = declared(
+        result, "cadence", "return", id(result, "cadence.return"));
+    result.baggageExtension = declared(
+        result, "baggage", "extension", id(result, "baggage.extension"));
     result.keyRole = id(result, "key.role");
     result.keyJins = id(result, "key.jins");
     result.keyMotion = id(result, "key.motion");
@@ -86,19 +142,24 @@ Key key(const Spec& spec) {
         branch.jins = id(result, "jins." + source.name + ".upper");
         branch.source_center = source.source_center_name.empty()
                                    ? result.centerRoot
-                                   : id(result, "center." + source.source_center_name);
+                                   : declared(result, "center", source.source_center_name,
+                                              id(result, "center." + source.source_center_name));
         branch.center = source.center_name.empty()
                             ? result.centerUpper
-                            : id(result, "center." + source.center_name);
+                            : declared(result, "center", source.center_name,
+                                       id(result, "center." + source.center_name));
         branch.tonic = source.tonic_role.empty()
                            ? result.roleGhammaz
-                           : id(result, "role." + source.tonic_role);
+                           : declared(result, "role", source.tonic_role,
+                                      id(result, "role." + source.tonic_role));
         branch.ghammaz = source.ghammaz_role.empty()
                              ? result.roleUpper
-                             : id(result, "role." + source.ghammaz_role);
+                             : declared(result, "role", source.ghammaz_role,
+                                        id(result, "role." + source.ghammaz_role));
         branch.descent = source.descent_role.empty()
                              ? branch.ghammaz
-                             : id(result, "role." + source.descent_role);
+                             : declared(result, "role", source.descent_role,
+                                        id(result, "role." + source.descent_role));
         branch.direction = source.direction;
         branch.motion = source.direction == motion::Direction::Rise
                             ? result.motionRise
