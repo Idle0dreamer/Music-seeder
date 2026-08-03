@@ -191,6 +191,20 @@ void test::bayati_case() {
                           ? " transformation=" +
                                 target.transformation->identity.str()
                           : " transformation=none";
+            detail += " transformation_provenance=" +
+                      (target.transformation_provenance.empty()
+                           ? std::string("none")
+                           : target.transformation_provenance);
+            detail += " direction=" +
+                      std::string(motion::name(target.event.direction));
+            detail += " ornament=" +
+                      (item.plan.events[index].ornament
+                           ? std::string("present")
+                           : std::string("none"));
+            detail += " contour=" +
+                      (item.plan.events[index].contour
+                           ? std::string("present")
+                           : std::string("none"));
         }
         detail += " owners=" + std::to_string(item.state.cell.owners.size());
         for (const auto& [event, owner] : item.state.cell.owners) {
