@@ -86,7 +86,14 @@ struct ActionContext {
     const RouteKey& route;
     const BranchKey* branch{};
     std::optional<Identity> previousDescent;
+    std::size_t repetition{};
 };
+
+std::string repetitionSuffix(std::size_t repetition) {
+    return repetition == 0
+               ? std::string{}
+               : ".repeat." + std::to_string(repetition);
+}
 
 std::expected<Rational, std::string> rational(std::string_view value) {
     const auto separator = value.find('/');
@@ -210,13 +217,15 @@ std::expected<Identity, std::string> reference(
         return event(
             context.key,
             context.candidate,
-            "branch." + context.branch->jins.name);
+            "branch." + context.branch->jins.name +
+                repetitionSuffix(context.repetition));
     }
     if (token.starts_with("event.")) {
         return event(
             context.key,
             context.candidate,
-            std::string(token.substr(6)));
+            std::string(token.substr(6)) +
+                repetitionSuffix(context.repetition));
     }
     if (token == "occurrence.branch-descent") {
         if (context.branch == nullptr) {
@@ -226,19 +235,22 @@ std::expected<Identity, std::string> reference(
         return occurrence(
             context.key,
             context.candidate,
-            "sequence-descent." + context.branch->jins.name);
+            "sequence-descent." + context.branch->jins.name +
+                repetitionSuffix(context.repetition));
     }
     if (token.starts_with("occurrence.")) {
         return occurrence(
             context.key,
             context.candidate,
-            std::string(token.substr(11)));
+            std::string(token.substr(11)) +
+                repetitionSuffix(context.repetition));
     }
     if (token == "phrase.establish" || token == "phrase.return") {
         return phrase(
             context.key,
             context.candidate,
-            std::string(token.substr(7)));
+            std::string(token.substr(7)) +
+                repetitionSuffix(context.repetition));
     }
     return std::unexpected(
         "unknown collection reference: " + std::string(token));
@@ -642,58 +654,107 @@ std::expected<std::vector<operation::Any>, std::string> expandAction(
     return std::vector<operation::Any>{*action};
 }
 
-std::expected<std::vector<Stage>, std::string> routeSteps(
+struct RouteExpansion {
+    std::string suffix;
+    std::vector<Stage> stages;
+};
+
+std::expected<std::vector<RouteExpansion>, std::string> routeSteps(
     const Key& key,
     const Identity& candidate,
     const RouteKey& route,
-    std::size_t variant) {
-    std::vector<Stage> stages;
-    std::optional<Identity> previousDescent;
-    for (const auto& step : route.steps) {
+    std::size_t variant,
+    const std::string& baseSuffix) {
+    std::vector<RouteExpansion> result;
+    std::function<std::expected<void, std::string>(
+        std::size_t,
+        std::vector<Stage>,
+        std::optional<Identity>,
+        std::string)> visit;
+    visit = [&](std::size_t stepIndex,
+                std::vector<Stage> stages,
+                std::optional<Identity> previousDescent,
+                std::string suffix) -> std::expected<void, std::string> {
+        if (stepIndex == route.steps.size()) {
+            result.push_back({std::move(suffix), std::move(stages)});
+            return {};
+        }
+        const auto& step = route.steps[stepIndex];
         const auto branch = [&]() -> const BranchKey* {
             if (!step.branch || *step.branch >= key.branches.size()) {
                 return nullptr;
             }
             return &key.branches[*step.branch];
         }();
-        ActionContext context{key, candidate, route, branch, previousDescent};
-        std::vector<operation::Any> actions;
-        for (const auto& specification : step.actions) {
-            if (specification.variant && *specification.variant != variant) {
-                continue;
-            }
-            const auto expanded = expandAction(context, specification);
-            if (!expanded) {
-                return std::unexpected(
-                    step.name + ": " + expanded.error());
-            }
-            actions.insert(
-                actions.end(), expanded->begin(), expanded->end());
-        }
-        if (actions.empty()) {
-            return std::unexpected(
-                "collection step has no operations: " + step.name);
-        }
-        stages.push_back(makeStage(
-            key,
-            candidate,
-            route.route.name + "." + step.name,
-            std::move(actions)));
-        const auto descended = std::ranges::find_if(
-            step.actions,
-            [](const auto& action) {
-                return action.operation == "gesture.begin" &&
-                       !action.arguments.empty() &&
-                       action.arguments.front() == "occurrence.branch-descent";
-            });
-        if (descended != step.actions.end() && branch != nullptr) {
-            previousDescent = occurrence(
+        for (std::size_t repetition = step.minimum;
+             repetition <= step.maximum;
+             ++repetition) {
+            ActionContext context{
                 key,
                 candidate,
-                "sequence-descent." + branch->jins.name);
+                route,
+                branch,
+                previousDescent,
+                repetition};
+            std::vector<operation::Any> actions;
+            for (const auto& specification : step.actions) {
+                if (specification.variant && *specification.variant != variant) {
+                    continue;
+                }
+                const auto expanded = expandAction(context, specification);
+                if (!expanded) {
+                    return std::unexpected(
+                        step.name + ": " + expanded.error());
+                }
+                actions.insert(
+                    actions.end(), expanded->begin(), expanded->end());
+            }
+            if (actions.empty()) {
+                return std::unexpected(
+                    "collection step has no operations: " + step.name);
+            }
+            auto nextStages = stages;
+            nextStages.push_back(makeStage(
+                key,
+                candidate,
+                route.route.name + "." + step.name +
+                    repetitionSuffix(repetition),
+                std::move(actions)));
+            auto nextSuffix = suffix;
+            if (step.minimum != step.maximum) {
+                nextSuffix += "." + step.name + repetitionSuffix(repetition);
+            }
+            auto nextDescent = previousDescent;
+            const auto descended = std::ranges::find_if(
+                step.actions,
+                [](const auto& action) {
+                    return action.operation == "gesture.begin" &&
+                           !action.arguments.empty() &&
+                           action.arguments.front() == "occurrence.branch-descent";
+                });
+            if (descended != step.actions.end() && branch != nullptr) {
+                nextDescent = occurrence(
+                    key,
+                    candidate,
+                    "sequence-descent." + branch->jins.name +
+                        repetitionSuffix(repetition));
+            }
+            const auto expanded = visit(
+                stepIndex + 1,
+                std::move(nextStages),
+                std::move(nextDescent),
+                std::move(nextSuffix));
+            if (!expanded) {
+                return expanded;
+            }
         }
+        return {};
+    };
+    const auto expanded = visit(0, {}, std::nullopt, baseSuffix);
+    if (!expanded) {
+        return std::unexpected(expanded.error());
     }
-    return stages;
+    return result;
 }
 
 pitch::field::project::Plan projection(const Key& key) {
@@ -864,20 +925,38 @@ std::expected<Generation, std::string> generation(const Key& key) {
                                      : route.route.name + ".variant." +
                                            std::to_string(variant);
             const auto candidate = id(key, "candidate." + suffix);
-            const auto stages = routeSteps(key, candidate, route, variant);
-            if (!stages) {
-                return std::unexpected(stages.error());
+            const auto expansions = routeSteps(
+                key,
+                candidate,
+                route,
+                variant,
+                suffix);
+            if (!expansions) {
+                return std::unexpected(expansions.error());
             }
-            if (stages->empty()) {
+            if (expansions->empty()) {
                 return std::unexpected(
                     "generation route produced no stages: " +
                     route.route.str());
             }
-            branches.push_back({
-                id(key, "branch." + suffix),
-                {},
-                candidateTerm(key, *stages, candidate),
-            });
+            for (const auto& expansion : *expansions) {
+                if (expansion.stages.empty()) {
+                    return std::unexpected(
+                        "generation route produced no stages: " +
+                        route.route.str());
+                }
+                const auto candidateIdentity = id(
+                    key,
+                    "candidate." + expansion.suffix);
+                branches.push_back({
+                    id(key, "branch." + expansion.suffix),
+                    {},
+                    candidateTerm(
+                        key,
+                        expansion.stages,
+                        candidateIdentity),
+                });
+            }
         }
     }
     auto production = grammar::Term::alt(id(key, "production"), std::move(branches));

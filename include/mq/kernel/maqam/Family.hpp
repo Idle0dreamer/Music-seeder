@@ -56,6 +56,8 @@ struct StepSpec {
     std::string name;
     std::string branch;
     std::vector<ActionSpec> actions;
+    std::size_t minimum{1};
+    std::size_t maximum{1};
 };
 
 struct RouteSpec {

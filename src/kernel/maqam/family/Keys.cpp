@@ -193,6 +193,8 @@ Key key(const Spec& spec) {
                 step.name,
                 std::nullopt,
                 step.actions};
+            translated.minimum = step.minimum;
+            translated.maximum = step.maximum;
             if (!step.branch.empty()) {
                 const auto found = std::ranges::find_if(
                     result.branches,

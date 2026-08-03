@@ -204,6 +204,11 @@ std::expected<Record, std::string> finish(
                 "route " + route.name + " has no declared steps");
         }
         for (const auto& step : route.steps) {
+            if (step.minimum > step.maximum) {
+                return std::unexpected(
+                    "route " + route.name + " step " + step.name +
+                    " declares an invalid repetition range");
+            }
             for (const auto& action : step.actions) {
                 if (action.variant && *action.variant >= route.variants) {
                     return std::unexpected(
@@ -438,6 +443,48 @@ std::expected<Set, std::string> load(
                 fields[1],
                 fields[2] == "-" ? std::string{} : fields[2],
                 std::move(actions)});
+        } else if (key == "step-repeat") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 4 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty() || fields[3].empty()) {
+                return std::unexpected(
+                    "step-repeat requires route|step|min|max at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto minimum = integer(
+                fields[2], "step-repeat minimum", lineNumber);
+            const auto maximum = integer(
+                fields[3], "step-repeat maximum", lineNumber);
+            if (!minimum) return std::unexpected(minimum.error());
+            if (!maximum) return std::unexpected(maximum.error());
+            if (*minimum < 0 || *maximum < 0 || *minimum > *maximum) {
+                return std::unexpected(
+                    "step-repeat requires a nonnegative min <= max at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto foundRoute = std::ranges::find_if(
+                pending.routes,
+                [&](const auto& route) { return route.name == fields[0]; });
+            if (foundRoute == pending.routes.end()) {
+                return std::unexpected(
+                    "step-repeat references unknown route at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto foundStep = std::ranges::find_if(
+                foundRoute->steps,
+                [&](const auto& step) { return step.name == fields[1]; });
+            if (foundStep == foundRoute->steps.end()) {
+                return std::unexpected(
+                    "step-repeat references unknown step at line " +
+                    std::to_string(lineNumber));
+            }
+            if (foundStep->minimum != 1 || foundStep->maximum != 1) {
+                return std::unexpected(
+                    "step-repeat repeats a step declaration at line " +
+                    std::to_string(lineNumber));
+            }
+            foundStep->minimum = static_cast<std::size_t>(*minimum);
+            foundStep->maximum = static_cast<std::size_t>(*maximum);
         } else if (key == "route-variants") {
             if (pending.routes.empty()) {
                 return std::unexpected(
