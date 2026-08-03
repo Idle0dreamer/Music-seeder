@@ -37,6 +37,7 @@ struct RouteKey {
         std::size_t maximum{1};
     };
     std::vector<Step> steps;
+    std::vector<Identity> terminals;
     std::size_t variants{1};
     bool valid{true};
 };
@@ -90,6 +91,10 @@ struct Key {
     Identity boundaryOpen;
     Identity boundaryClosed;
     std::map<std::string, Identity> authorities;
+    std::vector<JinsSpec> jins;
+    std::vector<GestureSpec> gestures;
+    std::vector<BaggageSpec> baggage;
+    std::vector<ObligationSpec> obligations;
     pitch::Expression ghammaz;
     pitch::Expression extension;
     std::vector<BranchKey> branches;

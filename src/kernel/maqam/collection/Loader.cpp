@@ -3,6 +3,7 @@
 #include "mq/kernel/motion/Direction.hpp"
 
 #include <algorithm>
+#include <array>
 #include <charconv>
 #include <cstdlib>
 #include <fstream>
@@ -37,6 +38,10 @@ std::vector<std::string> split(
         start = end + 1;
     }
     return result;
+}
+
+std::vector<std::string> list(const std::string& value) {
+    return value == "-" ? std::vector<std::string>{} : split(value, ',');
 }
 
 std::expected<std::int64_t, std::string> integer(
@@ -116,6 +121,10 @@ struct Pending {
     std::vector<family::BranchSpec> branches;
     std::vector<family::RouteSpec> routes;
     std::vector<family::AuthoritySpec> authorities;
+    std::vector<family::JinsSpec> jins;
+    std::vector<family::GestureSpec> gestures;
+    std::vector<family::BaggageSpec> baggage;
+    std::vector<family::ObligationSpec> obligations;
     std::size_t beginLine{};
     std::size_t ghammazLine{};
     std::size_t extensionLine{};
@@ -218,6 +227,49 @@ std::expected<Record, std::string> finish(
             }
         }
     }
+    const auto validate_unique = [&](const auto& values,
+                                     auto identity,
+                                     const std::string& kind)
+        -> std::expected<void, std::string> {
+        std::set<std::string> names;
+        for (const auto& value : values) {
+            const auto name = identity(value);
+            if (!names.insert(name).second) {
+                return std::unexpected(
+                    "duplicate " + kind + " declaration " + name +
+                    " for " + pending.name);
+            }
+        }
+        return {};
+    };
+    if (const auto checked = validate_unique(
+            pending.jins,
+            [](const auto& value) { return value.name; },
+            "jins");
+        !checked) {
+        return std::unexpected(checked.error());
+    }
+    if (const auto checked = validate_unique(
+            pending.gestures,
+            [](const auto& value) { return value.owner + "." + value.name; },
+            "gesture");
+        !checked) {
+        return std::unexpected(checked.error());
+    }
+    if (const auto checked = validate_unique(
+            pending.baggage,
+            [](const auto& value) { return value.owner + "." + value.name; },
+            "baggage");
+        !checked) {
+        return std::unexpected(checked.error());
+    }
+    if (const auto checked = validate_unique(
+            pending.obligations,
+            [](const auto& value) { return value.name; },
+            "obligation");
+        !checked) {
+        return std::unexpected(checked.error());
+    }
     result.specification = family::Spec{
         .package = std::move(pending.packageName),
         .family = std::move(pending.packageFamily),
@@ -228,6 +280,10 @@ std::expected<Record, std::string> finish(
         .branches = std::move(pending.branches),
         .root_roles = std::move(pending.rootRoles),
         .authorities = std::move(pending.authorities),
+        .jins = std::move(pending.jins),
+        .gestures = std::move(pending.gestures),
+        .baggage = std::move(pending.baggage),
+        .obligations = std::move(pending.obligations),
         .routes = std::move(pending.routes),
     };
     return result;
@@ -345,6 +401,154 @@ std::expected<Set, std::string> load(
                     std::to_string(lineNumber));
             }
             pending.rootRoles = fields;
+        } else if (key == "jins") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 11 || fields[0].empty() ||
+                fields[1].empty()) {
+                return std::unexpected(
+                    "jins requires name|tonic|roles|ghammaz|regions|"
+                    "characteristic|emphasis|entry|exit|cadences|motifs at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto values = std::array<std::vector<std::string>, 9>{
+                list(fields[2]),
+                list(fields[3]),
+                list(fields[4]),
+                list(fields[5]),
+                list(fields[6]),
+                list(fields[7]),
+                list(fields[8]),
+                list(fields[9]),
+                list(fields[10]),
+            };
+            if (std::ranges::any_of(
+                    values,
+                    [](const auto& names) {
+                        return std::ranges::any_of(
+                            names,
+                            [](const auto& name) { return name.empty(); });
+                    })) {
+                return std::unexpected(
+                    "jins contains an empty list name at line " +
+                    std::to_string(lineNumber));
+            }
+            pending.jins.push_back({
+                fields[0],
+                fields[1],
+                values[0],
+                values[1],
+                values[2],
+                values[3],
+                values[4],
+                values[5],
+                values[6],
+                values[7],
+                values[8],
+            });
+        } else if (key == "gesture") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 3 || fields[0].empty() ||
+                fields[1].empty() || fields[2] == "-") {
+                return std::unexpected(
+                    "gesture requires owner|name|step-list at line " +
+                    std::to_string(lineNumber));
+            }
+            std::vector<family::GestureStepSpec> steps;
+            for (const auto& rawStep : split(fields[2], ';')) {
+                const auto step = split(rawStep, ',');
+                if (step.size() != 4 || step[0].empty() ||
+                    step[1].empty() || step[2].empty() || step[3].empty()) {
+                    return std::unexpected(
+                        "gesture step requires roles,regions,direction,"
+                        "baggage at line " + std::to_string(lineNumber));
+                }
+                const auto stepDirection = direction(step[2], lineNumber);
+                if (!stepDirection) {
+                    return std::unexpected(stepDirection.error());
+                }
+                const auto roles = list(step[0]);
+                const auto regions = list(step[1]);
+                if (roles.empty() || regions.empty() ||
+                    roles.size() != regions.size()) {
+                    return std::unexpected(
+                        "gesture step roles and regions must be nonempty and "
+                        "parallel at line " + std::to_string(lineNumber));
+                }
+                steps.push_back({
+                    roles,
+                    regions,
+                    *stepDirection,
+                    step[3] == "-"
+                        ? std::nullopt
+                        : std::optional<std::string>{step[3]},
+                });
+            }
+            pending.gestures.push_back({
+                fields[0], fields[1], std::move(steps)});
+        } else if (key == "baggage") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 6 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty() ||
+                fields[3].empty() || fields[4].empty() ||
+                fields[5].empty()) {
+                return std::unexpected(
+                    "baggage requires owner|name|role|regions|directions|"
+                    "gestures at line " + std::to_string(lineNumber));
+            }
+            const auto regions = list(fields[3]);
+            const auto directionNames = list(fields[4]);
+            const auto gestures = list(fields[5]);
+            if (regions.empty() || directionNames.empty() || gestures.empty()) {
+                return std::unexpected(
+                    "baggage requires nonempty regions, directions, and "
+                    "gestures at line " + std::to_string(lineNumber));
+            }
+            std::vector<motion::Direction> directions;
+            for (const auto& name : directionNames) {
+                const auto parsed = direction(name, lineNumber);
+                if (!parsed) return std::unexpected(parsed.error());
+                directions.push_back(*parsed);
+            }
+            pending.baggage.push_back({
+                fields[0],
+                fields[1],
+                fields[2],
+                regions,
+                std::move(directions),
+                gestures,
+            });
+        } else if (key == "sayr-obligation") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 3 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty()) {
+                return std::unexpected(
+                    "sayr-obligation requires name|after|needs at line " +
+                    std::to_string(lineNumber));
+            }
+            std::vector<family::NeedSpec> needs;
+            if (fields[2] != "-") {
+                for (const auto& rawNeed : split(fields[2], ';')) {
+                    const auto parts = split(rawNeed, ':');
+                    if (parts.size() < 2 || parts[0].empty()) {
+                        return std::unexpected(
+                            "sayr need requires kind:arguments at line " +
+                            std::to_string(lineNumber));
+                    }
+                    std::vector<std::string> arguments(parts.begin() + 1, parts.end());
+                    if (std::ranges::any_of(
+                            arguments,
+                            [](const auto& argument) {
+                                return argument.empty();
+                            })) {
+                        return std::unexpected(
+                            "sayr need contains an empty argument at line " +
+                            std::to_string(lineNumber));
+                    }
+                    needs.push_back({parts[0], std::move(arguments)});
+                }
+            }
+            pending.obligations.push_back({
+                fields[0], list(fields[1]), std::move(needs)});
         } else if (key == "authority") {
             const auto fields = split(value, '|');
             if (fields.size() != 2 || fields[0].empty() || fields[1].empty()) {
@@ -369,7 +573,7 @@ std::expected<Set, std::string> load(
                     "route requires name|branches at line " +
                     std::to_string(lineNumber));
             }
-            family::RouteSpec route{fields[0], {}, 1, {}};
+            family::RouteSpec route{fields[0], {}, {}, 1, {}};
             if (!fields[1].empty()) {
                 route.branches = split(fields[1], ',');
                 if (std::ranges::any_of(
@@ -499,6 +703,35 @@ std::expected<Set, std::string> load(
                            : parsed.error());
             }
             pending.routes.back().variants = static_cast<std::size_t>(*parsed);
+        } else if (key == "route-terminals") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 2 || fields[0].empty() || fields[1].empty()) {
+                return std::unexpected(
+                    "route-terminals requires route|comma-separated-"
+                    "obligations at line " + std::to_string(lineNumber));
+            }
+            const auto found = std::ranges::find_if(
+                pending.routes,
+                [&](const auto& route) { return route.name == fields[0]; });
+            if (found == pending.routes.end()) {
+                return std::unexpected(
+                    "route-terminals references unknown route at line " +
+                    std::to_string(lineNumber));
+            }
+            if (!found->terminals.empty()) {
+                return std::unexpected(
+                    "route-terminals repeats a route at line " +
+                    std::to_string(lineNumber));
+            }
+            found->terminals = list(fields[1]);
+            if (found->terminals.empty() ||
+                std::ranges::any_of(
+                    found->terminals,
+                    [](const auto& terminal) { return terminal.empty(); })) {
+                return std::unexpected(
+                    "route-terminals contains an empty obligation at line " +
+                    std::to_string(lineNumber));
+            }
         } else if (key == "ordered") {
             return std::unexpected(
                 "ordered is obsolete; declare route and step records at line " +

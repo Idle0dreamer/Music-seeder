@@ -169,10 +169,6 @@ std::expected<Identity, std::string> reference(
         {"cadence.local", context.key.cadenceLocal},
         {"cadence.return", context.key.cadenceReturn},
         {"baggage.extension", context.key.baggageExtension},
-        {"obligation.establish", id(context.key, "obligation.establish")},
-        {"obligation.settle", id(context.key, "obligation.settle")},
-        {"obligation.expand", id(context.key, "obligation.expand")},
-        {"obligation.climax", id(context.key, "obligation.climax")},
     };
     if (const auto found = fixed.find(std::string(token));
         found != fixed.end()) {
@@ -181,6 +177,9 @@ std::expected<Identity, std::string> reference(
     if (const auto found = context.key.authorities.find(std::string(token));
         found != context.key.authorities.end()) {
         return found->second;
+    }
+    if (token.starts_with("obligation.")) {
+        return id(context.key, std::string(token));
     }
     if (token == "previous-descent" || token == "current-descent") {
         if (!context.previousDescent) {

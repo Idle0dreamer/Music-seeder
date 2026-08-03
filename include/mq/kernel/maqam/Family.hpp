@@ -63,6 +63,7 @@ struct StepSpec {
 struct RouteSpec {
     std::string name;
     std::vector<std::string> branches;
+    std::vector<std::string> terminals;
     std::size_t variants{1};
     std::vector<StepSpec> steps;
 };
@@ -70,6 +71,53 @@ struct RouteSpec {
 struct AuthoritySpec {
     std::string kind;
     std::vector<std::string> names;
+};
+
+struct JinsSpec {
+    std::string name;
+    std::string tonic;
+    std::vector<std::string> roles;
+    std::vector<std::string> ghammaz;
+    std::vector<std::string> regions;
+    std::vector<std::string> characteristic;
+    std::vector<std::string> emphasis;
+    std::vector<std::string> entry;
+    std::vector<std::string> exit;
+    std::vector<std::string> cadences;
+    std::vector<std::string> motifs;
+};
+
+struct GestureStepSpec {
+    std::vector<std::string> roles;
+    std::vector<std::string> regions;
+    motion::Direction direction{motion::Direction::Start};
+    std::optional<std::string> baggage;
+};
+
+struct GestureSpec {
+    std::string owner;
+    std::string name;
+    std::vector<GestureStepSpec> steps;
+};
+
+struct BaggageSpec {
+    std::string owner;
+    std::string name;
+    std::string role;
+    std::vector<std::string> regions;
+    std::vector<motion::Direction> directions;
+    std::vector<std::string> gestures;
+};
+
+struct NeedSpec {
+    std::string kind;
+    std::vector<std::string> arguments;
+};
+
+struct ObligationSpec {
+    std::string name;
+    std::vector<std::string> after;
+    std::vector<NeedSpec> needs;
 };
 
 struct Spec {
@@ -82,6 +130,10 @@ struct Spec {
     std::vector<BranchSpec> branches;
     std::vector<std::string> root_roles;
     std::vector<AuthoritySpec> authorities;
+    std::vector<JinsSpec> jins;
+    std::vector<GestureSpec> gestures;
+    std::vector<BaggageSpec> baggage;
+    std::vector<ObligationSpec> obligations;
     std::vector<RouteSpec> routes;
 };
 

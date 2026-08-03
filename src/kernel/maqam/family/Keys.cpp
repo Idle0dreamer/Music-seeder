@@ -25,6 +25,10 @@ Key key(const Spec& spec) {
     result.package = spec.package;
     result.family = spec.family;
     result.source = spec.provenance;
+    result.jins = spec.jins;
+    result.gestures = spec.gestures;
+    result.baggage = spec.baggage;
+    result.obligations = spec.obligations;
     result.ghammaz = spec.ghammaz;
     result.extension = spec.extension;
     for (const auto& authority : spec.authorities) {
@@ -170,6 +174,18 @@ Key key(const Spec& spec) {
         branch.route = id(result, "route." + source.name);
         branch.target = source.target;
         branch.source = source.provenance;
+        result.authorities.emplace(
+            "jins." + source.name, branch.jins);
+        result.authorities.emplace(
+            "center." + source.name, branch.center);
+        result.authorities.emplace(
+            "path." + source.name, branch.path);
+        result.authorities.emplace(
+            "route." + source.name, branch.route);
+        result.authorities.emplace(
+            "obligation.travel." + source.name, branch.travel);
+        result.authorities.emplace(
+            "obligation.restore." + source.name, branch.restore);
         result.branches.push_back(std::move(branch));
     }
     result.routes.reserve(spec.routes.size());
@@ -187,6 +203,17 @@ Key key(const Spec& spec) {
             }
             route.branches.push_back(
                 static_cast<std::size_t>(std::distance(result.branches.begin(), found)));
+        }
+        for (const auto& terminal : source.terminals) {
+            const auto token = terminal.starts_with("obligation.")
+                                   ? terminal
+                                   : "obligation." + terminal;
+            route.terminals.push_back(id(result, token));
+        }
+        if (route.terminals.empty()) {
+            for (const auto index : route.branches) {
+                route.terminals.push_back(result.branches[index].restore);
+            }
         }
         for (const auto& step : source.steps) {
             RouteKey::Step translated{
