@@ -141,6 +141,10 @@ void test::bayati_case() {
                        first.formula->identity == developFormula &&
                        second.formula &&
                        second.formula->identity == developFormula &&
+                       first.motif && second.motif &&
+                       first.motif->identity ==
+                           Identity{"maqam.bayati", "motif.develop", "1"} &&
+                       first.motif == second.motif &&
                        !first.variation && second.variation &&
                        second.variation->identity == variedFormula &&
                        item.plan.events[4].ornament &&

@@ -57,6 +57,7 @@ profile(const Key& key) {
     auto phrases = authorities(key, "phrase");
     auto cells = authorities(key, "cell");
     auto formulas = authorities(key, "formula");
+    auto motifs = authorities(key, "motif");
     auto cadences = authorities(key, "cadence");
     auto baggage = authorities(key, "baggage");
     centers.insert(key.centerRoot);
@@ -102,6 +103,7 @@ profile(const Key& key) {
         define("allow.dwell", placeRoles, source),
         define("allow.emit", cells, source),
         define("allow.variation", formulas, source),
+        define("allow.motif", std::move(motifs), source),
         define("allow.cadence", cadences, source),
         define("allow.tonicize", branchJins, source),
         define("allow.modulate", branchPaths, source),

@@ -48,6 +48,7 @@ struct FormulaKey {
     std::string name;
     Identity identity;
     Identity cell;
+    Identity motif;
     std::string provenance;
     std::vector<FormulaNoteSpec> notes;
 };

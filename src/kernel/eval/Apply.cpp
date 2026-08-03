@@ -90,6 +90,11 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                         "allow.variation",
                         value.variation->str()));
                 }
+                if (value.motif &&
+                    !profile_.allows("allow.motif", value.motif->identity)) {
+                    return std::unexpected(denied(
+                        index, label, "allow.motif", value.motif->str()));
+                }
                 if (value.variation) {
                     if (!value.formula) {
                         return std::unexpected(Violation{
@@ -121,7 +126,8 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                     state::Cell::Owner{
                         value.cell,
                         value.formula,
-                        value.variation});
+                        value.variation,
+                        value.motif});
                 const auto previous = state.cell.occurrences[value.cell]++;
                 state.evidence.amount[evidence::Kind::Cell] += Rational(1);
                 if (previous > 0) {

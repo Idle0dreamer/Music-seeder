@@ -136,6 +136,7 @@ struct FormulaNoteSpec {
 struct FormulaSpec {
     std::string name;
     std::string cell;
+    std::string motif;
     std::string provenance;
     std::vector<FormulaNoteSpec> notes;
 };

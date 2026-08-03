@@ -23,6 +23,7 @@
 #include "mq/kernel/sort/PathId.hpp"
 #include "mq/kernel/sort/ObligationId.hpp"
 #include "mq/kernel/sort/ProductionId.hpp"
+#include "mq/kernel/sort/MotifId.hpp"
 
 namespace mq::kernel::state {
 
@@ -55,6 +56,7 @@ struct Cell {
         sort::CellId cell;
         std::optional<sort::FormulaId> formula;
         std::optional<sort::FormulaId> variation;
+        std::optional<sort::MotifId> motif;
 
         bool operator==(const Owner&) const = default;
     };

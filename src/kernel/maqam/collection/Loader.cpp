@@ -339,18 +339,30 @@ std::expected<Record, std::string> finish(
                 "formula variation changes cell authority " + pair +
                 " for " + pending.name);
         }
+        if (base->motif != changed->motif) {
+            return std::unexpected(
+                "formula variation changes motif authority " + pair +
+                " for " + pending.name);
+        }
     }
     for (const auto& formula : pending.formulas) {
-        if (formula.cell.empty() || formula.provenance.empty() ||
+        if (formula.cell.empty() || formula.motif.empty() ||
+            formula.provenance.empty() ||
             formula.notes.empty()) {
             return std::unexpected(
-                "formula declarations require cell, provenance, and notes "
+                "formula declarations require cell, motif, provenance, and "
+                "notes "
                 "for " + pending.name);
         }
         if (!authorityNames.contains("cell." + formula.cell)) {
             return std::unexpected(
                 "formula references an undeclared cell authority " +
                 formula.cell + " in " + pending.name);
+        }
+        if (!authorityNames.contains("motif." + formula.motif)) {
+            return std::unexpected(
+                "formula references an undeclared motif authority " +
+                formula.motif + " in " + pending.name);
         }
         for (const auto& note : formula.notes) {
             if (note.event.empty() || note.role.empty() ||
@@ -660,15 +672,15 @@ std::expected<Set, std::string> load(
                 fields[0], list(fields[1]), std::move(needs)});
         } else if (key == "formula") {
             const auto fields = split(value, '|');
-            if (fields.size() != 4 || fields[0].empty() ||
-                fields[1].empty() || fields[2].empty() ||
-                fields[3] == "-") {
+            if (fields.size() != 5 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty() || fields[3].empty() ||
+                fields[4] == "-") {
                 return std::unexpected(
-                    "formula requires name|cell|provenance|note-list at line " +
-                    std::to_string(lineNumber));
+                    "formula requires name|cell|motif|provenance|note-list "
+                    "at line " + std::to_string(lineNumber));
             }
             std::vector<family::FormulaNoteSpec> notes;
-            for (const auto& rawNote : split(fields[3], ';')) {
+            for (const auto& rawNote : split(fields[4], ';')) {
                 const auto note = split(rawNote, ',');
                 if (note.size() != 7 || note[0].empty() || note[1].empty() ||
                     note[2].empty() || note[3].empty() || note[4].empty()) {
@@ -696,7 +708,7 @@ std::expected<Set, std::string> load(
                 notes.push_back(std::move(parsed));
             }
             pending.formulas.push_back({
-                fields[0], fields[1], fields[2], std::move(notes)});
+                fields[0], fields[1], fields[2], fields[3], std::move(notes)});
         } else if (key == "formula-variation") {
             const auto fields = split(value, '|');
             if (fields.size() != 4 || fields[0].empty() ||

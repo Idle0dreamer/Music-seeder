@@ -225,6 +225,18 @@ std::expected<Identity, std::string> reference(
         "unknown collection reference: " + std::string(token));
 }
 
+std::optional<sort::MotifId> formulaMotif(
+    const Key& key,
+    const Identity& formula) {
+    const auto found = std::ranges::find_if(
+        key.formulas,
+        [&](const auto& value) { return value.identity == formula; });
+    if (found == key.formulas.end()) {
+        return std::nullopt;
+    }
+    return sort::MotifId{found->motif};
+}
+
 std::expected<motion::Direction, std::string> direction(
     const ActionContext& context,
     std::string_view token) {
@@ -334,7 +346,8 @@ std::expected<operation::Any, std::string> makeAction(
         return operation::Any{operation::Emit{
             sort::CellId{*cellValue},
             sort::FormulaId{*formulaValue},
-            std::nullopt}};
+            std::nullopt,
+            formulaMotif(c.key, *formulaValue)}};
     };
     const ActionBuilder emitVariation =
         [](const ActionContext& c,
@@ -357,7 +370,8 @@ std::expected<operation::Any, std::string> makeAction(
         return operation::Any{operation::Emit{
             sort::CellId{*cellValue},
             sort::FormulaId{*formulaValue},
-            sort::FormulaId{*variationValue}}};
+            sort::FormulaId{*variationValue},
+            formulaMotif(c.key, *formulaValue)}};
     };
     const std::map<std::string, ActionBuilder> builders{
         {"anchor", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
@@ -685,12 +699,13 @@ std::expected<std::vector<operation::Any>, std::string> expandAction(
                      result.push_back(operation::Dwell{
                          sort::RoleId{*roleValue}, specification.dwell});
                  }
-                 result.push_back(operation::Emit{
-                     sort::CellId{base->cell},
-                     sort::FormulaId{base->identity},
-                     variation ? std::optional<sort::FormulaId>{
+                result.push_back(operation::Emit{
+                    sort::CellId{base->cell},
+                    sort::FormulaId{base->identity},
+                    variation ? std::optional<sort::FormulaId>{
                                      sort::FormulaId{*variation}}
-                               : std::nullopt});
+                               : std::nullopt,
+                    sort::MotifId{base->motif}});
              }
              return result;
          }},

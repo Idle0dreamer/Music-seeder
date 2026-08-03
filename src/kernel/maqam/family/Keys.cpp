@@ -159,6 +159,11 @@ Key key(const Spec& spec) {
                 "cell",
                 source.cell,
                 id(result, "cell." + source.cell)),
+            declared(
+                result,
+                "motif",
+                source.motif,
+                id(result, "motif." + source.motif)),
             source.provenance,
             source.notes,
         });

@@ -25,6 +25,7 @@
 #include "mq/kernel/sort/PhraseId.hpp"
 #include "mq/kernel/sort/RegionId.hpp"
 #include "mq/kernel/sort/RoleId.hpp"
+#include "mq/kernel/sort/MotifId.hpp"
 
 namespace mq::kernel::operation {
 
@@ -50,14 +51,17 @@ struct Emit {
     sort::CellId cell;
     std::optional<sort::FormulaId> formula;
     std::optional<sort::FormulaId> variation;
+    std::optional<sort::MotifId> motif;
 
     Emit(
         sort::CellId emitted_cell,
         std::optional<sort::FormulaId> emitted_formula,
-        std::optional<sort::FormulaId> emitted_variation = std::nullopt)
+        std::optional<sort::FormulaId> emitted_variation = std::nullopt,
+        std::optional<sort::MotifId> emitted_motif = std::nullopt)
         : cell(std::move(emitted_cell)),
           formula(std::move(emitted_formula)),
-          variation(std::move(emitted_variation)) {}
+          variation(std::move(emitted_variation)),
+          motif(std::move(emitted_motif)) {}
 };
 
 struct Cadence {
