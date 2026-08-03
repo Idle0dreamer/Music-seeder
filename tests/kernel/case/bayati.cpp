@@ -4,6 +4,7 @@
 #include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
+#include <string>
 
 void test::bayati_case() {
     using namespace mq::kernel;
@@ -127,54 +128,86 @@ void test::bayati_case() {
         Identity{"maqam.bayati", "motif.develop", "1"}};
     const Identity transformation{
         "maqam.bayati", "transformation.upper-jins-descent", "1"};
-    require(
-        std::ranges::all_of(
-            result->legal,
-            [&](const auto& item) {
-                if (item.plan.events.size() == 1) {
-                    return true;
-                }
-                const auto& owners = item.state.cell.owners;
-                const auto motifs = item.state.motif.occurrences.find(
-                    developMotif);
-                const auto first = owners.at(sort::EventId{
-                    item.plan.events[1].target.event.identity});
-                const auto second = owners.at(sort::EventId{
-                    item.plan.events[4].target.event.identity});
-                const auto& target = item.plan.events[1].target;
-                return first.cell.identity == developCell &&
-                       second.cell.identity == developCell &&
-                       target.cell && target.cell->identity == developCell &&
-                       target.formula &&
-                       target.formula->identity == developFormula &&
-                       target.motif &&
-                       target.motif->identity ==
-                           Identity{"maqam.bayati", "motif.develop", "1"} &&
-                       target.transformation &&
-                       target.transformation->identity == transformation &&
-                       target.transformation_provenance.find(
-                           "MaqamWorld:jins-rast") != std::string::npos &&
-                       motifs != item.state.motif.occurrences.end() &&
-                       motifs->second.size() == 2 &&
-                       motifs->second.front().formula &&
-                       motifs->second.back().variation &&
-                       first.formula &&
-                       first.formula->identity == developFormula &&
-                       second.formula &&
-                       second.formula->identity == developFormula &&
-                       first.motif && second.motif &&
-                       first.motif->identity ==
-                           Identity{"maqam.bayati", "motif.develop", "1"} &&
-                       first.motif == second.motif &&
-                       !first.variation && second.variation &&
-                       !first.transformation &&
-                       second.transformation &&
-                       second.transformation->identity == transformation &&
-                       !second.transformation_provenance.empty() &&
-                       second.variation->identity == variedFormula &&
-                       item.plan.events[4].ornament &&
-                       item.plan.events[4].ornament->kind ==
-                           performance::OrnamentKind::Oscillation;
-            }),
-        "Bayati did not preserve a repeated cell with an explicit variation");
+    const auto preserves_variation = [&](const auto& item) {
+        if (item.plan.events.size() == 1) {
+            return true;
+        }
+        const auto& owners = item.state.cell.owners;
+        const auto motifs = item.state.motif.occurrences.find(developMotif);
+        const auto first = owners.at(sort::EventId{
+            item.plan.events[1].target.event.identity});
+        const auto second = owners.at(sort::EventId{
+            item.plan.events[4].target.event.identity});
+        const auto& target = item.plan.events[1].target;
+        return first.cell.identity == developCell &&
+               second.cell.identity == developCell && target.cell &&
+               target.cell->identity == developCell && target.formula &&
+               target.formula->identity == developFormula && target.motif &&
+               target.motif->identity ==
+                   Identity{"maqam.bayati", "motif.develop", "1"} &&
+               target.transformation &&
+               target.transformation->identity == transformation &&
+               target.transformation_provenance.find(
+                   "MaqamWorld:jins-rast") != std::string::npos &&
+               motifs != item.state.motif.occurrences.end() &&
+               motifs->second.size() == 2 && motifs->second.front().formula &&
+               motifs->second.back().variation && first.formula &&
+               first.formula->identity == developFormula && second.formula &&
+               second.formula->identity == developFormula && first.motif &&
+               second.motif &&
+               first.motif->identity ==
+                   Identity{"maqam.bayati", "motif.develop", "1"} &&
+               first.motif == second.motif && !first.variation &&
+               second.variation && !first.transformation &&
+               second.transformation &&
+               second.transformation->identity == transformation &&
+               !second.transformation_provenance.empty() &&
+               second.variation->identity == variedFormula &&
+               item.plan.events[4].ornament &&
+               item.plan.events[4].ornament->kind ==
+                   performance::OrnamentKind::Oscillation;
+    };
+    for (const auto& item : result->legal) {
+        if (preserves_variation(item)) {
+            continue;
+        }
+        std::string detail =
+            "candidate=" + item.candidate.str() + " events=" +
+            std::to_string(item.plan.events.size());
+        for (std::size_t index = 0; index < item.plan.events.size(); ++index) {
+            const auto& target = item.plan.events[index].target;
+            detail += " event[" + std::to_string(index) + "]=" +
+                       target.event.identity.str();
+            detail += target.formula
+                          ? " formula=" + target.formula->identity.str()
+                          : " formula=none";
+            detail += target.variation
+                          ? " variation=" + target.variation->identity.str()
+                          : " variation=none";
+            detail += target.motif
+                          ? " motif=" + target.motif->identity.str()
+                          : " motif=none";
+            detail += target.transformation
+                          ? " transformation=" +
+                                target.transformation->identity.str()
+                          : " transformation=none";
+        }
+        detail += " owners=" + std::to_string(item.state.cell.owners.size());
+        for (const auto& [event, owner] : item.state.cell.owners) {
+            detail += " owner=" + event.identity.str() +
+                      " cell=" + owner.cell.identity.str();
+            detail += owner.formula
+                          ? " formula=" + owner.formula->identity.str()
+                          : " formula=none";
+            detail += owner.variation
+                          ? " variation=" + owner.variation->identity.str()
+                          : " variation=none";
+        }
+        const auto motifs = item.state.motif.occurrences.find(developMotif);
+        detail += " develop_motif_occurrences=" +
+                  (motifs == item.state.motif.occurrences.end()
+                       ? std::string("missing")
+                       : std::to_string(motifs->second.size()));
+        require(false, "Bayati variation invariant failed: " + detail);
+    }
 }
