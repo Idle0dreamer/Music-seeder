@@ -65,9 +65,16 @@ std::expected<Rational, std::string> rational(
     const std::string& field,
     std::size_t line) {
     const auto parts = split(value, '/');
+    if (parts.size() == 1 && !parts[0].empty()) {
+        const auto whole = integer(parts[0], field, line);
+        if (!whole) {
+            return std::unexpected(whole.error());
+        }
+        return Rational(*whole);
+    }
     if (parts.size() != 2 || parts[0].empty() || parts[1].empty()) {
         return std::unexpected(
-            "expected numerator/denominator for " + field +
+            "expected rational numerator/denominator for " + field +
             " at line " + std::to_string(line));
     }
     const auto numerator = integer(parts[0], field, line);

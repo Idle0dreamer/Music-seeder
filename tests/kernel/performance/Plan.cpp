@@ -34,6 +34,12 @@ void test::timed::plan() {
         Rational(1),
         performance::Articulation::Neutral);
     require(plan.well_formed(), "stationary timed plan was rejected");
+    require(
+        !plan.events.front().target.cell &&
+            !plan.events.front().target.formula &&
+            !plan.events.front().target.variation &&
+            !plan.events.front().target.motif,
+        "neutral fixture unexpectedly acquired collection ownership");
 
     plan.events.front().contour = mq::kernel::performance::PitchContour{
         {

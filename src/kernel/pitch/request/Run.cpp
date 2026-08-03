@@ -108,6 +108,18 @@ std::expected<Result, Error> run(
         performance::Target{
             **current,
             center->second,
+            owner == state.cell.owners.end()
+                ? std::nullopt
+                : std::optional<sort::CellId>{owner->second.cell},
+            owner == state.cell.owners.end()
+                ? std::nullopt
+                : owner->second.formula,
+            owner == state.cell.owners.end()
+                ? std::nullopt
+                : owner->second.variation,
+            owner == state.cell.owners.end()
+                ? std::nullopt
+                : owner->second.motif,
         },
         timing.duration,
         timing.intensity,

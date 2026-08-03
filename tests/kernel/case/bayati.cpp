@@ -135,8 +135,15 @@ void test::bayati_case() {
                     item.plan.events[1].target.event.identity});
                 const auto second = owners.at(sort::EventId{
                     item.plan.events[4].target.event.identity});
+                const auto& target = item.plan.events[1].target;
                 return first.cell.identity == developCell &&
                        second.cell.identity == developCell &&
+                       target.cell && target.cell->identity == developCell &&
+                       target.formula &&
+                       target.formula->identity == developFormula &&
+                       target.motif &&
+                       target.motif->identity ==
+                           Identity{"maqam.bayati", "motif.develop", "1"} &&
                        first.formula &&
                        first.formula->identity == developFormula &&
                        second.formula &&
