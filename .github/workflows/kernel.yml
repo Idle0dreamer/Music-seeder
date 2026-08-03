@@ -166,6 +166,8 @@ jobs:
             /tmp/music-seeder-bayati-report.txt
           grep -Eq 'phrase_spans: (phrase.establish,phrase.return,phrase.establish,){2,}' \
             /tmp/music-seeder-bayati-report.txt
+          awk '$1 == "seconds:" && ($2 + 0) < 30 { exit 1 }' \
+            /tmp/music-seeder-bayati-report.txt
           grep -Eq 'distinct_phrase_candidates: [2-9]' \
             /tmp/music-seeder-bayati-report.txt
           ./build/synthesis-faust-render --maqam bayati --seed 17 \
@@ -177,6 +179,8 @@ jobs:
           grep -Eq 'phrase_stages: (main,branch,return,){2,}' \
             /tmp/music-seeder-bayati-faust-report.txt
           grep -Eq 'phrase_spans: (phrase.establish,phrase.return,phrase.establish,){2,}' \
+            /tmp/music-seeder-bayati-faust-report.txt
+          awk '$1 == "seconds:" && ($2 + 0) < 30 { exit 1 }' \
             /tmp/music-seeder-bayati-faust-report.txt
       - name: Upload deterministic Sikah artifacts
         uses: actions/upload-artifact@v4

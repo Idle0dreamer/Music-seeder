@@ -27,6 +27,13 @@ struct GeneratedPlan {
     const ::mq::kernel::performance::Timing& timing,
     std::size_t repetitions = 1);
 
+[[nodiscard]] std::expected<GeneratedPlan, std::string>
+make_plan_for_duration(
+    std::string_view maqam,
+    std::uint64_t seed,
+    const ::mq::kernel::performance::Timing& timing,
+    double duration_seconds);
+
 void append_plan(
     ::mq::kernel::performance::Plan& destination,
     const ::mq::kernel::performance::Plan& continuation);

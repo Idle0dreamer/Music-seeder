@@ -3,8 +3,6 @@
 #include "mq/synthesis/Render.hpp"
 #include "mq/kernel/performance/Profile.hpp"
 
-#include <algorithm>
-#include <cmath>
 #include <iostream>
 #include <set>
 #include <string_view>
@@ -23,18 +21,8 @@ int main(int argc, char** argv) {
         std::cerr << timing.error() << '\n';
         return 1;
     }
-    const auto preview = mq::synthesis::make_plan(
-        options->maqam, options->seed, *timing);
-    if (!preview) {
-        std::cerr << preview.error() << '\n';
-        return 1;
-    }
-    const auto phrase_seconds = timing->seconds_per_unit.decimal() *
-                                preview->plan.end().decimal();
-    const auto repetitions = static_cast<std::size_t>(std::max(
-        1.0, std::ceil(options->duration_seconds / phrase_seconds)));
-    const auto generated = mq::synthesis::make_plan(
-        options->maqam, options->seed, *timing, repetitions);
+    const auto generated = mq::synthesis::make_plan_for_duration(
+        options->maqam, options->seed, *timing, options->duration_seconds);
     if (!generated) {
         std::cerr << generated.error() << '\n';
         return 1;

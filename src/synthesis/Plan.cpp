@@ -4,6 +4,7 @@
 #include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <optional>
 #include <set>
@@ -427,6 +428,40 @@ std::expected<GeneratedPlan, std::string> make_plan(
             std::string(maqam));
     }
     return std::move(*result);
+}
+
+std::expected<GeneratedPlan, std::string> make_plan_for_duration(
+    std::string_view maqam,
+    std::uint64_t seed,
+    const ::mq::kernel::performance::Timing& timing,
+    double duration_seconds) {
+    if (!(duration_seconds > 0.0)) {
+        return std::unexpected("performance duration must be positive");
+    }
+    std::size_t repetitions = 1;
+    constexpr std::size_t refinement_limit = 16;
+    for (std::size_t refinement{}; refinement < refinement_limit; ++refinement) {
+        const auto generated = make_plan(
+            maqam, seed, timing, repetitions);
+        if (!generated) {
+            return std::unexpected(generated.error());
+        }
+        const auto seconds = timing.seconds_per_unit.decimal() *
+                             generated->plan.end().decimal();
+        if (!(seconds > 0.0)) {
+            return std::unexpected(
+                "performance timing produced an empty continuous plan");
+        }
+        if (seconds >= duration_seconds) {
+            return std::move(*generated);
+        }
+        const auto estimate = static_cast<std::size_t>(std::ceil(
+            static_cast<double>(repetitions) * duration_seconds / seconds));
+        repetitions = std::max(repetitions + 1, estimate);
+    }
+    return std::unexpected(
+        "could not reach the requested performance duration within the "
+        "bounded generation refinement");
 }
 
 std::string describe_plan(
