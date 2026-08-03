@@ -187,19 +187,20 @@ jobs:
           packages=(ajam bayati hijaz kurd nahawand nikriz rast sikah)
           seed=101
           for maqam in "${packages[@]}"; do
+            if [[ "$maqam" == "sikah" ]]; then
+              expected_stages='main,development,return,'
+            else
+              expected_stages='main,development,branch,return,'
+            fi
             ./build/synthesis-render --maqam "$maqam" --seed "$seed" \
               --duration 10 \
               --output "/tmp/music-seeder-${maqam}.wav" \
               > "/tmp/music-seeder-${maqam}-report.txt"
             test -s "/tmp/music-seeder-${maqam}.wav"
             grep -a -q RIFF "/tmp/music-seeder-${maqam}.wav"
-            grep -Eq 'phrase_stages: .*main' \
+            grep -Eq "phrase_stages: (${expected_stages}){2,}" \
               "/tmp/music-seeder-${maqam}-report.txt"
-            grep -Eq 'phrase_stages: .*development' \
-              "/tmp/music-seeder-${maqam}-report.txt"
-            grep -Eq 'phrase_spans: .*phrase.establish' \
-              "/tmp/music-seeder-${maqam}-report.txt"
-            grep -Eq 'phrase_spans: .*phrase.develop' \
+            grep -Eq 'phrase_spans: (phrase.establish,phrase.develop,phrase.return,phrase.establish,){2,}' \
               "/tmp/music-seeder-${maqam}-report.txt"
             awk '$1 == "seconds:" && ($2 + 0) < 10 { exit 1 }' \
               "/tmp/music-seeder-${maqam}-report.txt"
@@ -209,13 +210,9 @@ jobs:
               > "/tmp/music-seeder-${maqam}-faust-report.txt"
             test -s "/tmp/music-seeder-${maqam}-faust.wav"
             grep -a -q RIFF "/tmp/music-seeder-${maqam}-faust.wav"
-            grep -Eq 'phrase_stages: .*main' \
+            grep -Eq "phrase_stages: (${expected_stages}){2,}" \
               "/tmp/music-seeder-${maqam}-faust-report.txt"
-            grep -Eq 'phrase_stages: .*development' \
-              "/tmp/music-seeder-${maqam}-faust-report.txt"
-            grep -Eq 'phrase_spans: .*phrase.establish' \
-              "/tmp/music-seeder-${maqam}-faust-report.txt"
-            grep -Eq 'phrase_spans: .*phrase.develop' \
+            grep -Eq 'phrase_spans: (phrase.establish,phrase.develop,phrase.return,phrase.establish,){2,}' \
               "/tmp/music-seeder-${maqam}-faust-report.txt"
             awk '$1 == "seconds:" && ($2 + 0) < 10 { exit 1 }' \
               "/tmp/music-seeder-${maqam}-faust-report.txt"

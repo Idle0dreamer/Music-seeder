@@ -124,7 +124,7 @@ void test::bayati_case() {
                        spans[1].function.identity == response &&
                        spans.back().function.identity == response &&
                        spans.front().boundary ==
-                           mq::kernel::phrase::Boundary::Open &&
+                           mq::kernel::phrase::Boundary::Closed &&
                        spans[1].boundary ==
                            mq::kernel::phrase::Boundary::Closed &&
                        spans[1].cadences.size() > 0 &&
