@@ -4,6 +4,7 @@
 #include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
+#include <optional>
 
 namespace mq::synthesis {
 namespace {
@@ -11,7 +12,8 @@ namespace {
 std::expected<GeneratedPlan, std::string> make_phrase(
     std::string_view maqam,
     std::uint64_t seed,
-    const ::mq::kernel::performance::Timing& timing) {
+    const ::mq::kernel::performance::Timing& timing,
+    const std::optional<::mq::kernel::Identity>& avoid) {
     const auto catalog = ::mq::kernel::maqam::Catalog::declared();
     const auto scaffold = catalog.build_executable(maqam);
     if (!scaffold) {
@@ -24,32 +26,49 @@ std::expected<GeneratedPlan, std::string> make_phrase(
         .grammar = {},
     };
     const ::mq::kernel::generate::Engine engine(*scaffold->profile, context);
-    const auto generated = engine.run(
-        seed,
-        scaffold->generation.choice,
-        scaffold->generation.production,
-        scaffold->generation.projection,
-        scaffold->generation.schema,
-        {},
-        ::mq::kernel::generate::Limits{.timing = timing});
-    if (!generated) {
-        return std::unexpected(generated.error().message);
+    std::optional<GeneratedPlan> selected_plan;
+    constexpr std::uint64_t retry_stride = 0x9e3779b97f4a7c15ULL;
+    for (std::size_t attempt = 0; attempt < 32; ++attempt) {
+        const auto generated = engine.run(
+            seed + static_cast<std::uint64_t>(attempt) * retry_stride,
+            scaffold->generation.choice,
+            scaffold->generation.production,
+            scaffold->generation.projection,
+            scaffold->generation.schema,
+            {},
+            ::mq::kernel::generate::Limits{.timing = timing});
+        if (!generated) {
+            return std::unexpected(generated.error().message);
+        }
+        const auto selected = std::ranges::find(
+            generated->legal,
+            generated->selected,
+            &::mq::kernel::generate::Outcome::candidate);
+        if (selected == generated->legal.end()) {
+            return std::unexpected(
+                "selected maqam outcome is missing: " + std::string(maqam));
+        }
+        if (avoid && generated->legal.size() > 1 &&
+            selected->candidate == *avoid) {
+            continue;
+        }
+        selected_plan = GeneratedPlan{
+            selected->candidate,
+            selected->plan,
+            {selected->candidate},
+        };
+        break;
     }
-
-    const auto selected = std::ranges::find(
-        generated->legal,
-        generated->selected,
-        &::mq::kernel::generate::Outcome::candidate);
-    if (selected == generated->legal.end()) {
+    if (!selected_plan) {
         return std::unexpected(
-            "selected maqam outcome is missing: " + std::string(maqam));
+            "could not select a non-repeating legal phrase for " +
+            std::string(maqam));
     }
 
     // Every outcome here is already a complete, legal candidate. Selection is
     // made by the kernel for this phrase seed; the player never manufactures
     // variation by cycling through route order.
-    const auto& outcome = *selected;
-    return GeneratedPlan{outcome.candidate, outcome.plan, {outcome.candidate}};
+    return std::move(*selected_plan);
 }
 
 } // namespace
@@ -78,7 +97,7 @@ std::expected<GeneratedPlan, std::string> make_plan(
     if (repetitions == 0) {
         return std::unexpected("at least one performance phrase is required");
     }
-    const auto first = make_phrase(maqam, seed, timing);
+    const auto first = make_phrase(maqam, seed, timing, std::nullopt);
     if (!first) {
         return std::unexpected(first.error());
     }
@@ -91,7 +110,8 @@ std::expected<GeneratedPlan, std::string> make_plan(
         const auto continuation = make_phrase(
             maqam,
             seed + static_cast<std::uint64_t>(index) * 0x9e3779b97f4a7c15ULL,
-            timing);
+            timing,
+            result.phrase_candidates.back());
         if (!continuation) {
             return std::unexpected(continuation.error());
         }

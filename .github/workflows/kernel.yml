@@ -137,22 +137,42 @@ jobs:
       - name: Render deterministic Sikah WAV through both adapters
         run: |
           ./build/synthesis-render --maqam sikah --seed 53 \
-            --output /tmp/music-seeder-sikah.wav
+            --duration 30 \
+            --output /tmp/music-seeder-sikah.wav \
+            > /tmp/music-seeder-sikah-report.txt
           test -s /tmp/music-seeder-sikah.wav
           grep -a -q RIFF /tmp/music-seeder-sikah.wav
+          grep -Eq 'distinct_phrase_candidates: [2-9]' \
+            /tmp/music-seeder-sikah-report.txt
           ./build/synthesis-faust-render --maqam sikah --seed 53 \
+            --duration 30 \
             --output /tmp/music-seeder-sikah-faust.wav
           test -s /tmp/music-seeder-sikah-faust.wav
           grep -a -q RIFF /tmp/music-seeder-sikah-faust.wav
           ./build/synthesis-faust-render --maqam sikah --seed 53 \
+            --duration 30 \
             --output /tmp/music-seeder-sikah-faust-repeat.wav
           cmp -s /tmp/music-seeder-sikah-faust.wav /tmp/music-seeder-sikah-faust-repeat.wav
+      - name: Render a continuous Bayati performance through both adapters
+        run: |
+          ./build/synthesis-render --maqam bayati --seed 17 \
+            --duration 30 \
+            --output /tmp/music-seeder-bayati.wav
+          test -s /tmp/music-seeder-bayati.wav
+          grep -a -q RIFF /tmp/music-seeder-bayati.wav
+          ./build/synthesis-faust-render --maqam bayati --seed 17 \
+            --duration 30 \
+            --output /tmp/music-seeder-bayati-faust.wav
+          test -s /tmp/music-seeder-bayati-faust.wav
+          grep -a -q RIFF /tmp/music-seeder-bayati-faust.wav
       - name: Upload deterministic Sikah artifacts
         uses: actions/upload-artifact@v4
         with:
           name: music-seeder-sikah-wav
           if-no-files-found: error
-          path: /tmp/music-seeder-sikah*.wav
+          path: |
+            /tmp/music-seeder-sikah*.wav
+            /tmp/music-seeder-bayati*.wav
       - name: Upload synthesis binaries
         uses: actions/upload-artifact@v4
         with:
