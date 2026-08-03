@@ -813,13 +813,15 @@ std::expected<std::vector<RouteExpansion>, std::string> routeSteps(
         for (std::size_t repetition = step.minimum;
              repetition <= step.maximum;
              ++repetition) {
+            const auto occurrenceNumber =
+                step.minimum == 1 && step.maximum == 1 ? 0 : repetition;
             ActionContext context{
                 key,
                 candidate,
                 route,
                 branch,
                 previousDescent,
-                repetition};
+                occurrenceNumber};
             std::vector<operation::Any> actions;
             for (const auto& specification : step.actions) {
                 if (specification.variant && *specification.variant != variant) {
@@ -842,11 +844,12 @@ std::expected<std::vector<RouteExpansion>, std::string> routeSteps(
                 key,
                 candidate,
                 route.route.name + "." + step.name +
-                    repetitionSuffix(repetition),
+                    repetitionSuffix(occurrenceNumber),
                 std::move(actions)));
             auto nextSuffix = suffix;
             if (step.minimum != step.maximum) {
-                nextSuffix += "." + step.name + repetitionSuffix(repetition);
+                nextSuffix += "." + step.name +
+                              repetitionSuffix(occurrenceNumber);
             }
             auto nextDescent = previousDescent;
             const auto descended = std::ranges::find_if(
@@ -861,7 +864,7 @@ std::expected<std::vector<RouteExpansion>, std::string> routeSteps(
                     key,
                     candidate,
                     "sequence-descent." + branch->jins.name +
-                        repetitionSuffix(repetition));
+                        repetitionSuffix(occurrenceNumber));
             }
             std::vector<std::size_t> nextSteps;
             if (!step.next) {
