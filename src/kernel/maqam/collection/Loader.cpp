@@ -285,6 +285,11 @@ std::expected<Record, std::string> finish(
                 "formula declarations require cell, provenance, and notes "
                 "for " + pending.name);
         }
+        if (!authorityNames.contains("cell." + formula.cell)) {
+            return std::unexpected(
+                "formula references an undeclared cell authority " +
+                formula.cell + " in " + pending.name);
+        }
         for (const auto& note : formula.notes) {
             if (note.event.empty() || note.role.empty() ||
                 note.direction.empty() || note.region.empty() ||
@@ -292,6 +297,21 @@ std::expected<Record, std::string> finish(
                 return std::unexpected(
                     "formula note is incomplete or has negative evidence "
                     "for " + formula.name + " in " + pending.name);
+            }
+        }
+    }
+    if (pending.implementation == "complete") {
+        for (const auto& authority : pending.authorities) {
+            if (authority.kind != "formula") continue;
+            for (const auto& name : authority.names) {
+                const auto declaredFormula = std::ranges::find_if(
+                    pending.formulas,
+                    [&](const auto& formula) { return formula.name == name; });
+                if (declaredFormula == pending.formulas.end()) {
+                    return std::unexpected(
+                        "complete package formula authority has no declared "
+                        "surface: " + name + " in " + pending.name);
+                }
             }
         }
     }
