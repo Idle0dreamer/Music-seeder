@@ -4,6 +4,7 @@
 #include "mq/kernel/maqam/Sikah.hpp"
 
 #include <string>
+#include <stdexcept>
 
 void test::sikah_case() {
     using namespace mq::kernel;
@@ -53,7 +54,30 @@ void test::sikah_case() {
                 sort::EventId{left.plan.events[3].target.event.identity});
             const auto right_owner = right.state.cell.owners.at(
                 sort::EventId{right.plan.events[3].target.event.identity});
-            return left_owner.variation != right_owner.variation &&
+            const auto left_formula = left_owner.variation
+                                          ? left_owner.variation->str()
+                                          : std::string("none");
+            const auto right_formula = right_owner.variation
+                                           ? right_owner.variation->str()
+                                           : std::string("none");
+            const auto left_kind = left.plan.events[3].ornament
+                                       ? static_cast<int>(left.plan.events[3].ornament->kind)
+                                       : -1;
+            const auto right_kind = right.plan.events[3].ornament
+                                        ? static_cast<int>(right.plan.events[3].ornament->kind)
+                                        : -1;
+            if (left_owner.variation == right_owner.variation ||
+                !left.plan.events[3].ornament ||
+                !right.plan.events[3].ornament ||
+                left.plan.events[3].ornament->kind ==
+                    right.plan.events[3].ornament->kind) {
+                throw std::runtime_error(
+                    "left-formula=" + left_formula +
+                    " right-formula=" + right_formula +
+                    " left-kind=" + std::to_string(left_kind) +
+                    " right-kind=" + std::to_string(right_kind));
+            }
+            return true &&
                    left.plan.events[3].ornament &&
                    right.plan.events[3].ornament &&
                    left.plan.events[3].ornament->kind !=
