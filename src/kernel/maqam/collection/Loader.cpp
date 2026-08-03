@@ -80,19 +80,20 @@ std::expected<pitch::Expression, std::string> ratio(
     return pitch::Expression::ratio(*numerator, *denominator);
 }
 
-std::expected<bool, std::string> boolean(
+std::expected<family::RouteKind, std::string> route_kind(
     const std::string& value,
-    const std::string& field,
     std::size_t line) {
-    if (value == "true") {
-        return true;
+    if (value == "stay") {
+        return family::RouteKind::Stay;
     }
-    if (value == "false") {
-        return false;
+    if (value == "branch") {
+        return family::RouteKind::Branch;
+    }
+    if (value == "sequence") {
+        return family::RouteKind::Sequence;
     }
     return std::unexpected(
-        "expected true or false for " + field + " at line " +
-        std::to_string(line));
+        "invalid route kind at line " + std::to_string(line));
 }
 
 std::expected<motion::Direction, std::string> direction(
@@ -127,9 +128,8 @@ struct Pending {
     std::string extension;
     std::string upperRole;
     std::vector<std::string> rootRoles;
-    bool ordered{};
-    bool sawOrdered{};
     std::vector<family::BranchSpec> branches;
+    std::vector<family::RouteSpec> routes;
     std::size_t beginLine{};
     std::size_t ghammazLine{};
     std::size_t extensionLine{};
@@ -186,16 +186,21 @@ std::expected<Record, std::string> finish(
     if (!extension) {
         return std::unexpected(extension.error());
     }
+    if (pending.routes.empty()) {
+        return std::unexpected(
+            "family package " + pending.name +
+            " has no declared routes");
+    }
     result.specification = family::Spec{
-        std::move(pending.packageName),
-        std::move(pending.packageFamily),
-        *ghammaz,
-        *extension,
-        std::move(pending.upperRole),
-        std::move(pending.source),
-        std::move(pending.branches),
-        std::move(pending.rootRoles),
-        pending.ordered,
+        .package = std::move(pending.packageName),
+        .family = std::move(pending.packageFamily),
+        .ghammaz = *ghammaz,
+        .extension = *extension,
+        .upper_role = std::move(pending.upperRole),
+        .provenance = std::move(pending.source),
+        .branches = std::move(pending.branches),
+        .root_roles = std::move(pending.rootRoles),
+        .routes = std::move(pending.routes),
     };
     return result;
 }
@@ -312,13 +317,54 @@ std::expected<Set, std::string> load(
                     std::to_string(lineNumber));
             }
             pending.rootRoles = fields;
-        } else if (key == "ordered") {
-            const auto parsed = boolean(value, key, lineNumber);
-            if (!parsed) {
-                return std::unexpected(parsed.error());
+        } else if (key == "route") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 3 || fields[0].empty() ||
+                fields[1].empty()) {
+                return std::unexpected(
+                    "route requires name|kind|branches at line " +
+                    std::to_string(lineNumber));
             }
-            pending.ordered = *parsed;
-            pending.sawOrdered = true;
+            const auto kind = route_kind(fields[1], lineNumber);
+            if (!kind) {
+                return std::unexpected(kind.error());
+            }
+            family::RouteSpec route{
+                fields[0], *kind, {}, 1};
+            if (*kind != family::RouteKind::Stay) {
+                route.branches = split(fields[2], ',');
+                if (route.branches.empty() ||
+                    std::ranges::any_of(route.branches, [](const auto& branch) {
+                        return branch.empty();
+                    })) {
+                    return std::unexpected(
+                        "non-stay route requires branch names at line " +
+                        std::to_string(lineNumber));
+                }
+            } else if (!fields[2].empty()) {
+                return std::unexpected(
+                    "stay route cannot name branches at line " +
+                    std::to_string(lineNumber));
+            }
+            pending.routes.push_back(std::move(route));
+        } else if (key == "route-variants") {
+            if (pending.routes.empty()) {
+                return std::unexpected(
+                    "route-variants must follow route at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto parsed = integer(value, key, lineNumber);
+            if (!parsed || *parsed <= 0) {
+                return std::unexpected(
+                    parsed ? "route-variants must be positive at line " +
+                                  std::to_string(lineNumber)
+                           : parsed.error());
+            }
+            pending.routes.back().variants = static_cast<std::size_t>(*parsed);
+        } else if (key == "ordered") {
+            return std::unexpected(
+                "ordered is obsolete; declare route records at line " +
+                std::to_string(lineNumber));
         } else if (key == "branch") {
             const auto fields = split(value, '|');
             if ((fields.size() != 8 && fields.size() != 9) ||

@@ -1,6 +1,7 @@
 #include "Internal.hpp"
 
 #include <algorithm>
+#include <iterator>
 
 namespace mq::kernel::maqam::family::detail {
 
@@ -78,10 +79,10 @@ Key key(const Spec& spec) {
     result.motionFall = id(result, "motion.fall");
     result.boundaryOpen = id(result, "boundary.open");
     result.boundaryClosed = id(result, "boundary.closed");
-    result.ordered = spec.ordered;
     result.branches.reserve(spec.branches.size());
     for (const auto& source : spec.branches) {
         BranchKey branch;
+        branch.name = source.name;
         branch.jins = id(result, "jins." + source.name + ".upper");
         branch.source_center = source.source_center_name.empty()
                                    ? result.centerRoot
@@ -109,6 +110,25 @@ Key key(const Spec& spec) {
         branch.target = source.target;
         branch.source = source.provenance;
         result.branches.push_back(std::move(branch));
+    }
+    result.routes.reserve(spec.routes.size());
+    for (const auto& source : spec.routes) {
+        RouteKey route;
+        route.route = id(result, "route." + source.name);
+        route.kind = source.kind;
+        route.variants = source.variants;
+        for (const auto& branch : source.branches) {
+            const auto found = std::ranges::find_if(
+                result.branches,
+                [&](const auto& value) { return value.name == branch; });
+            if (found == result.branches.end()) {
+                route.valid = false;
+                continue;
+            }
+            route.branches.push_back(
+                static_cast<std::size_t>(std::distance(result.branches.begin(), found)));
+        }
+        result.routes.push_back(std::move(route));
     }
     return result;
 }

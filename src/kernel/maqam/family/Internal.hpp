@@ -7,6 +7,7 @@
 namespace mq::kernel::maqam::family::detail {
 
 struct BranchKey {
+    std::string name;
     Identity jins;
     Identity source_center;
     Identity center;
@@ -21,6 +22,14 @@ struct BranchKey {
     Identity route;
     pitch::Expression target;
     std::string source;
+};
+
+struct RouteKey {
+    Identity route;
+    RouteKind kind{RouteKind::Branch};
+    std::vector<std::size_t> branches;
+    std::size_t variants{1};
+    bool valid{true};
 };
 
 struct Key {
@@ -74,7 +83,7 @@ struct Key {
     pitch::Expression ghammaz;
     pitch::Expression extension;
     std::vector<BranchKey> branches;
-    bool ordered{};
+    std::vector<RouteKey> routes;
 };
 
 [[nodiscard]] Identity id(const Key&, std::string name);

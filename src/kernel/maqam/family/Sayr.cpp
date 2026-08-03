@@ -104,26 +104,32 @@ std::expected<sayr::Plan, std::string> sayr(const Key& key) {
             {id(key, "obligation.expand")},
         },
     };
-    std::vector<ks::Route> routes{
-        {
-            id(key, "route.stay"),
-            {id(key, "obligation.settle")},
-        },
-    };
     for (const auto& branch : key.branches) {
         obligations.push_back(travel(key, branch));
         obligations.push_back(restore(key, branch));
     }
-    if (key.ordered) {
+    std::vector<ks::Route> routes;
+    for (const auto& route : key.routes) {
+        if (route.kind == RouteKind::Stay) {
+            routes.push_back({
+                route.route,
+                {id(key, "obligation.settle")},
+            });
+            continue;
+        }
         std::set<Identity> terminals;
-        for (const auto& branch : key.branches) {
-            terminals.insert(branch.restore);
+        for (const auto index : route.branches) {
+            if (index >= key.branches.size()) {
+                return std::unexpected(
+                    "sayr route references an unknown branch: " +
+                    route.route.str());
+            }
+            terminals.insert(key.branches[index].restore);
         }
-        routes.push_back({id(key, "route.ordered"), std::move(terminals)});
-    } else {
-        for (const auto& branch : key.branches) {
-            routes.push_back({branch.route, {branch.restore}});
-        }
+        routes.push_back({route.route, std::move(terminals)});
+    }
+    if (routes.empty()) {
+        return std::unexpected("sayr has no declared routes");
     }
     auto result = ks::Plan::make(
         id(key, "sayr.canonical"),

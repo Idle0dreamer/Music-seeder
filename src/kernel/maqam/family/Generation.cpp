@@ -184,49 +184,64 @@ Stage orderedContinuation(
     const Key& key,
     const Identity& candidate,
     const BranchKey& branch,
+    bool beginPhrase,
+    const std::optional<Identity>& previousDescent,
     bool varied = false) {
-    const auto p = phrase(key, candidate, "return");
     const auto descent = occurrence(
         key,
         candidate,
         "ordered-descent." + branch.jins.name);
-    return makeStage(key, candidate, "ordered." + branch.jins.name, {
-        operation::Begin{sort::PhraseId{p}, phrase::Function{key.phraseResponse}},
-        operation::Enter{sort::JinsId{branch.jins}},
-        operation::Tonicize{
-            sort::JinsId{branch.jins},
-            tonicization::Level::Internal,
-        },
-        operation::gesture::Begin{descent, key.gestureDescent},
-        operation::Place{
-            sort::EventId{event(key, candidate, "ordered." + branch.jins.name)},
-            sort::RoleId{branch.ghammaz},
-            branch.direction,
-            sort::RegionId{key.regionUpper},
-            std::nullopt,
-        },
-        operation::Modulate{
-            sort::PathId{branch.path},
-            sort::CenterId{branch.center},
-            tonicization::Level::Internal,
-        },
-        operation::Emit{
-            sort::CellId{key.cellDevelop},
-            sort::FormulaId{
-                varied ? key.formulaDevelop : key.formulaDevelopVariation},
-        },
-        operation::sayr::Fulfill{sort::ObligationId{branch.travel}},
+    std::vector<operation::Any> actions;
+    if (beginPhrase) {
+        actions.push_back(operation::Begin{
+            sort::PhraseId{phrase(key, candidate, "return")},
+            phrase::Function{key.phraseResponse}});
+    }
+    if (previousDescent) {
+        actions.push_back(operation::gesture::End{*previousDescent});
+    }
+    actions.push_back(operation::Enter{sort::JinsId{branch.jins}});
+    actions.push_back(operation::Tonicize{
+        sort::JinsId{branch.jins},
+        tonicization::Level::Internal,
     });
+    actions.push_back(operation::gesture::Begin{descent, key.gestureDescent});
+    actions.push_back(operation::Place{
+        sort::EventId{event(key, candidate, "ordered." + branch.jins.name)},
+        sort::RoleId{branch.ghammaz},
+        branch.direction,
+        sort::RegionId{key.regionUpper},
+        std::nullopt,
+    });
+    actions.push_back(operation::Modulate{
+        sort::PathId{branch.path},
+        sort::CenterId{branch.center},
+        tonicization::Level::Internal,
+    });
+    actions.push_back(operation::Emit{
+        sort::CellId{key.cellDevelop},
+        sort::FormulaId{
+            varied ? key.formulaDevelop : key.formulaDevelopVariation},
+    });
+    actions.push_back(operation::sayr::Fulfill{
+        sort::ObligationId{branch.travel}});
+    return makeStage(
+        key,
+        candidate,
+        "ordered." + branch.jins.name,
+        std::move(actions));
 }
 
 Stage orderedRestore(
     const Key& key,
-    const Identity& candidate) {
+    const Identity& candidate,
+    const RouteKey& route) {
     const auto p = phrase(key, candidate, "return");
     const auto descent = occurrence(
         key,
         candidate,
-        "ordered-descent." + key.branches.back().jins.name);
+        "ordered-descent." +
+            key.branches[route.branches.back()].jins.name);
     const auto resolution = occurrence(key, candidate, "ordered-resolution");
     std::vector<operation::Any> actions{
         operation::gesture::End{descent},
@@ -252,9 +267,9 @@ Stage orderedRestore(
         operation::End{sort::PhraseId{p}, phrase::Boundary::Closed},
         operation::Return{sort::CenterId{key.centerRoot}},
     };
-    for (const auto& branch : key.branches) {
+    for (const auto index : route.branches) {
         actions.push_back(operation::sayr::Fulfill{
-            sort::ObligationId{branch.restore}});
+            sort::ObligationId{key.branches[index].restore}});
     }
     return makeStage(key, candidate, "ordered.restore", std::move(actions));
 }
@@ -300,17 +315,77 @@ grammar::Term candidateTerm(
         std::move(body));
 }
 
-std::vector<Stage> journey(
+std::vector<Stage> routeStages(
     const Key& key,
     const Identity& candidate,
-    const BranchKey& branch) {
-    return {
+    const RouteKey& route,
+    std::size_t variant) {
+    if (route.kind == RouteKind::Stay) {
+        const auto stayPhrase = phrase(key, candidate, "establish");
+        return {makeStage(key, candidate, "stay", {
+            operation::Anchor{sort::CenterId{key.centerRoot}},
+            operation::Enter{sort::JinsId{key.jinsRoot}},
+            operation::Begin{
+                sort::PhraseId{stayPhrase},
+                phrase::Function{key.phraseQuestion}},
+            operation::Place{
+                sort::EventId{event(key, candidate, "tonic")},
+                sort::RoleId{key.roleTonic},
+                motion::Direction::Start,
+                sort::RegionId{key.regionRoot},
+                std::nullopt,
+            },
+            operation::Emit{
+                sort::CellId{key.cellEstablish},
+                sort::FormulaId{key.formulaEstablish}},
+            operation::Cadence{
+                sort::FamilyId{key.cadenceLocal},
+                Rational(1),
+                Rational(1)},
+            operation::End{
+                sort::PhraseId{stayPhrase},
+                phrase::Boundary::Closed},
+            operation::sayr::Fulfill{
+                sort::ObligationId{id(key, "obligation.establish")}},
+            operation::sayr::Fulfill{
+                sort::ObligationId{id(key, "obligation.settle")}},
+        })};
+    }
+    if (route.branches.empty()) {
+        return {};
+    }
+    const bool varied = variant % 2 == 1;
+    std::vector<Stage> stages{
         establishment(key, candidate),
-        development(key, candidate),
-        climax(key, candidate, branch),
-        branchDescent(key, candidate, branch),
-        restore(key, candidate, branch),
+        development(key, candidate, varied),
     };
+    if (route.kind == RouteKind::Branch || route.branches.size() == 1) {
+        const auto& branch = key.branches[route.branches.front()];
+        stages.push_back(climax(key, candidate, branch));
+        stages.push_back(branchDescent(key, candidate, branch));
+        stages.push_back(restore(key, candidate, branch));
+        return stages;
+    }
+    stages.push_back(
+        climax(key, candidate, key.branches[route.branches.front()]));
+    for (std::size_t position = 1; position < route.branches.size(); ++position) {
+        stages.push_back(orderedContinuation(
+            key,
+            candidate,
+            key.branches[route.branches[position]],
+            position == 1,
+            position == 1
+                ? std::nullopt
+                : std::optional<Identity>{occurrence(
+                      key,
+                      candidate,
+                      "ordered-descent." +
+                          key.branches[route.branches[position - 1]]
+                              .jins.name)},
+            varied));
+    }
+    stages.push_back(orderedRestore(key, candidate, route));
+    return stages;
 }
 
 pitch::field::project::Plan projection(const Key& key) {
@@ -460,77 +535,44 @@ pitch::field::Schema schema(const Key& key) {
 } // namespace
 
 std::expected<Generation, std::string> generation(const Key& key) {
-    if (key.ordered) {
-        if (key.branches.size() != 2) {
+    if (key.routes.empty()) {
+        return std::unexpected("family package declares no generation routes");
+    }
+    std::vector<grammar::Branch> branches;
+    for (const auto& route : key.routes) {
+        if (!route.valid) {
             return std::unexpected(
-                "ordered family package requires exactly two stations");
+                "generation route references an unknown branch: " +
+                route.route.str());
         }
-        std::vector<grammar::Branch> alternatives;
-        for (const bool varied : {false, true}) {
-            const auto candidate = id(
-                key,
-                varied ? "candidate.ordered.variation"
-                       : "candidate.ordered.canonical");
-            const auto stages = std::vector<Stage>{
-                establishment(key, candidate),
-                development(key, candidate, varied),
-                climax(key, candidate, key.branches.front()),
-                orderedContinuation(
-                    key, candidate, key.branches.back(), varied),
-                orderedRestore(key, candidate),
-            };
-            alternatives.push_back({
-                id(key, varied ? "branch.ordered.variation"
-                               : "branch.ordered.canonical"),
+        if (route.kind != RouteKind::Stay && route.branches.empty()) {
+            return std::unexpected(
+                "generation route declares no branch stations: " +
+                route.route.str());
+        }
+        if (route.variants == 0) {
+            return std::unexpected(
+                "generation route declares zero variants: " +
+                route.route.str());
+        }
+        for (std::size_t variant = 0; variant < route.variants; ++variant) {
+            const auto suffix = route.variants == 1
+                                     ? route.route.name
+                                     : route.route.name + ".variant." +
+                                           std::to_string(variant);
+            const auto candidate = id(key, "candidate." + suffix);
+            const auto stages = routeStages(key, candidate, route, variant);
+            if (stages.empty()) {
+                return std::unexpected(
+                    "generation route produced no stages: " +
+                    route.route.str());
+            }
+            branches.push_back({
+                id(key, "branch." + suffix),
                 {},
                 candidateTerm(key, stages, candidate),
             });
         }
-        auto production = grammar::Term::alt(
-            id(key, "production.ordered"),
-            std::move(alternatives));
-        if (!production) {
-            return std::unexpected(production.error());
-        }
-        return Generation{
-            key.choice,
-            std::move(*production),
-            projection(key),
-            schema(key),
-        };
-    }
-    const auto stay = id(key, "candidate.stay");
-    const auto stayPhrase = phrase(key, stay, "establish");
-    const auto stayStages = std::vector<Stage>{makeStage(key, stay, "stay", {
-        operation::Anchor{sort::CenterId{key.centerRoot}},
-        operation::Enter{sort::JinsId{key.jinsRoot}},
-        operation::Begin{sort::PhraseId{stayPhrase}, phrase::Function{key.phraseQuestion}},
-        operation::Place{
-            sort::EventId{event(key, stay, "tonic")},
-            sort::RoleId{key.roleTonic},
-            motion::Direction::Start,
-            sort::RegionId{key.regionRoot},
-            std::nullopt,
-        },
-        operation::Emit{
-            sort::CellId{key.cellEstablish},
-            sort::FormulaId{key.formulaEstablish},
-        },
-        operation::Cadence{sort::FamilyId{key.cadenceLocal}, Rational(1), Rational(1)},
-        operation::End{sort::PhraseId{stayPhrase}, phrase::Boundary::Closed},
-        operation::sayr::Fulfill{sort::ObligationId{id(key, "obligation.establish")}},
-        operation::sayr::Fulfill{sort::ObligationId{id(key, "obligation.settle")}},
-    })};
-    std::vector<grammar::Branch> branches{
-        {id(key, "branch.stay"), {}, candidateTerm(key, stayStages, stay)},
-    };
-    for (const auto& branch : key.branches) {
-        const auto candidate = id(key, "candidate." + branch.jins.name);
-        branches.push_back({
-            branch.route,
-            {},
-            candidateTerm(key, journey(key, candidate, branch), candidate),
-        });
     }
     auto production = grammar::Term::alt(id(key, "production"), std::move(branches));
     if (!production) {

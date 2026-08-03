@@ -44,6 +44,19 @@ struct BranchSpec {
           direction(branch_direction) {}
 };
 
+enum class RouteKind {
+    Stay,
+    Branch,
+    Sequence,
+};
+
+struct RouteSpec {
+    std::string name;
+    RouteKind kind{RouteKind::Branch};
+    std::vector<std::string> branches;
+    std::size_t variants{1};
+};
+
 struct Spec {
     std::string package;
     std::string family;
@@ -53,7 +66,7 @@ struct Spec {
     std::string provenance;
     std::vector<BranchSpec> branches;
     std::vector<std::string> root_roles;
-    bool ordered{};
+    std::vector<RouteSpec> routes;
 };
 
 [[nodiscard]] std::expected<Scaffold, std::string> make(const Spec&);
