@@ -49,7 +49,7 @@ void test::bayati_case() {
     require(stay != result->legal.end(), "Bayati stay route is missing");
     const auto journeys = std::ranges::count_if(
         result->legal,
-        [](const auto& item) { return item.plan.events.size() == 5; });
+        [](const auto& item) { return item.plan.events.size() == 6; });
     require(journeys == 3, "Bayati upper-jins routes are incomplete");
     require(
         std::ranges::all_of(
@@ -80,7 +80,7 @@ void test::bayati_case() {
                            item.plan.events.front().release &&
                            !item.plan.pauses.empty();
                 }
-                return item.plan.events.size() == 5 &&
+                return item.plan.events.size() == 6 &&
                        item.plan.events[0].onset == Rational(0) &&
                        item.plan.events[0].duration == timing.start.duration &&
                        item.plan.events[1].duration == timing.rise.duration &&
@@ -90,7 +90,7 @@ void test::bayati_case() {
                        !item.plan.pauses.empty() &&
                        item.plan.events[1].articulation ==
                            timing.rise.articulation &&
-                       item.plan.events[3].articulation ==
+                           item.plan.events[4].articulation ==
                            timing.fall.articulation;
             }),
         "external timing profile was not consumed by Bayati plans");
@@ -134,7 +134,7 @@ void test::bayati_case() {
                 const auto first = owners.at(sort::EventId{
                     item.plan.events[1].target.event.identity});
                 const auto second = owners.at(sort::EventId{
-                    item.plan.events[3].target.event.identity});
+                    item.plan.events[4].target.event.identity});
                 return first.cell.identity == developCell &&
                        second.cell.identity == developCell &&
                        first.formula &&
@@ -143,8 +143,8 @@ void test::bayati_case() {
                        second.formula->identity == developFormula &&
                        !first.variation && second.variation &&
                        second.variation->identity == variedFormula &&
-                       item.plan.events[3].ornament &&
-                       item.plan.events[3].ornament->kind ==
+                       item.plan.events[4].ornament &&
+                       item.plan.events[4].ornament->kind ==
                            performance::OrnamentKind::Oscillation;
             }),
         "Bayati did not preserve a repeated cell with an explicit variation");

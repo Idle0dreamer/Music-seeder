@@ -66,7 +66,7 @@ void test::nahawand_case() {
                            item.plan.events.front().release &&
                            !item.plan.pauses.empty();
                 }
-                return item.plan.events.size() == 5 &&
+                return item.plan.events.size() == 6 &&
                        item.plan.events[0].onset == Rational(0) &&
                        item.plan.events[0].duration == timing.start.duration &&
                        item.plan.events[1].duration == timing.rise.duration &&
