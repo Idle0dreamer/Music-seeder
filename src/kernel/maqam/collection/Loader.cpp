@@ -414,10 +414,13 @@ std::expected<Record, std::string> finish(
             if (stage.name.empty() || stage.candidate_prefixes.empty() ||
                 stage.provenance.empty() || stage.minimum == 0 ||
                 stage.minimum > stage.maximum ||
+                !std::ranges::any_of(
+                    pending.performanceSpans,
+                    [&](const auto& span) { return span.first == stage.name; }) ||
                 !performanceNames.insert(stage.name).second) {
                 return std::unexpected(
-                    "performance stage is incomplete or duplicated for " +
-                    pending.name);
+                    "performance stage is incomplete, lacks a phrase span, "
+                    "or is duplicated for " + pending.name);
             }
             if (std::ranges::any_of(
                     stage.candidate_prefixes,
