@@ -149,6 +149,10 @@ struct Pending {
     std::string performanceStart;
     std::vector<std::string> performanceTerminals;
     std::vector<family::PerformanceStageSpec> performanceStages;
+    std::vector<std::pair<std::string, std::vector<std::string>>>
+        performanceRequiredFacts;
+    std::vector<std::pair<std::string, std::vector<std::string>>>
+        performanceProvidedFacts;
     std::size_t beginLine{};
     std::size_t ghammazLine{};
     std::size_t extensionLine{};
@@ -443,6 +447,39 @@ std::expected<Record, std::string> finish(
                 }
             }
         }
+        const auto attachFacts = [&](const auto& declarations,
+                                     auto member,
+                                     const char* label)
+            -> std::expected<void, std::string> {
+            std::set<std::string> attached;
+            for (const auto& [stageName, facts] : declarations) {
+                if (!performanceNames.contains(stageName) ||
+                    !attached.insert(stageName).second || facts.empty() ||
+                    std::ranges::any_of(facts, [](const auto& fact) {
+                        return fact.empty();
+                    })) {
+                    return std::unexpected(
+                        std::string(label) +
+                        " references an unknown, duplicated, or empty stage "
+                        "fact declaration for " + pending.name);
+                }
+                const auto found = std::ranges::find_if(
+                    pending.performanceStages,
+                    [&](const auto& stage) { return stage.name == stageName; });
+                (*found).*member = facts;
+            }
+            return {};
+        };
+        const auto required = attachFacts(
+            pending.performanceRequiredFacts,
+            &family::PerformanceStageSpec::required_facts,
+            "performance-requires");
+        if (!required) return std::unexpected(required.error());
+        const auto provided = attachFacts(
+            pending.performanceProvidedFacts,
+            &family::PerformanceStageSpec::provided_facts,
+            "performance-provides");
+        if (!provided) return std::unexpected(provided.error());
     }
     if (pending.implementation == "complete") {
         for (const auto& authority : pending.authorities) {
@@ -876,7 +913,29 @@ std::expected<Set, std::string> load(
                 static_cast<std::size_t>(*minimum),
                 static_cast<std::size_t>(*maximum),
                 fields[5],
+                {},
+                {},
             });
+        } else if (key == "performance-requires" ||
+                   key == "performance-provides") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 2 || fields[0].empty() ||
+                fields[1].empty()) {
+                return std::unexpected(
+                    key + " requires stage|comma-separated-facts at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto facts = list(fields[1]);
+            if (std::ranges::any_of(
+                    facts, [](const auto& fact) { return fact.empty(); })) {
+                return std::unexpected(
+                    key + " contains an empty fact at line " +
+                    std::to_string(lineNumber));
+            }
+            auto& declarations = key == "performance-requires"
+                                     ? pending.performanceRequiredFacts
+                                     : pending.performanceProvidedFacts;
+            declarations.push_back({fields[0], facts});
         } else if (key == "route") {
             const auto fields = split(value, '|');
             if (fields.size() != 2 || fields[0].empty()) {

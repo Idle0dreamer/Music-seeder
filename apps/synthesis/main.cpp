@@ -66,6 +66,14 @@ int main(int argc, char** argv) {
         << "model: santur coupled-course physical model\n"
         << "phrases: " << generated->phrase_candidates.size() << '\n'
         << "distinct_phrase_candidates: " << distinct_candidates.size() << '\n'
+        << "phrase_stages: ";
+    for (std::size_t index = 0;
+         index < generated->phrase_stages.size(); ++index) {
+        if (index != 0) std::cout << ',';
+        std::cout << generated->phrase_stages[index];
+    }
+    std::cout
+        << '\n'
         << "phrase_candidates: ";
     for (std::size_t index = 0;
          index < generated->phrase_candidates.size(); ++index) {

@@ -82,6 +82,12 @@ struct PerformanceStageSpec {
     std::size_t minimum{1};
     std::size_t maximum{1};
     std::string provenance;
+    // These are collection-owned phrase-level pre/post conditions.  They
+    // describe musical memory, not implementation stages: the generator
+    // derives the facts from the completed kernel state and refuses a
+    // transition whose discourse facts do not line up.
+    std::vector<std::string> required_facts;
+    std::vector<std::string> provided_facts;
 };
 
 struct PerformanceSpec {

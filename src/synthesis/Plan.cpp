@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <set>
 #include <span>
 #include <sstream>
 
@@ -32,7 +33,71 @@ bool matches_prefix(
         });
 }
 
-std::expected<GeneratedPlan, std::string> make_phrase(
+using Facts = std::set<std::string>;
+
+void add_identity_fact(Facts& facts, const ::mq::kernel::Identity& identity) {
+    if (!identity.name.empty()) {
+        facts.insert(identity.name);
+    }
+}
+
+Facts state_facts(const ::mq::kernel::state::Snapshot& state) {
+    Facts facts;
+    for (const auto& center : state.center.stack) {
+        add_identity_fact(facts, center.identity);
+    }
+    if (state.jins.active) {
+        add_identity_fact(facts, state.jins.active->identity);
+    }
+    for (const auto& path : state.path.completed) {
+        add_identity_fact(facts, path.identity);
+    }
+    for (const auto& completion : state.sayr.history) {
+        add_identity_fact(facts, completion.obligation.identity);
+    }
+    for (const auto& span : state.phrase.completed) {
+        add_identity_fact(facts, span.function.identity);
+        for (const auto& cadence : span.cadences) {
+            add_identity_fact(facts, cadence.family);
+            add_identity_fact(facts, cadence.event);
+        }
+    }
+    for (const auto& [cell, count] : state.cell.occurrences) {
+        if (count > 0) add_identity_fact(facts, cell.identity);
+    }
+    for (const auto& [motif, occurrences] : state.motif.occurrences) {
+        if (occurrences.empty()) continue;
+        add_identity_fact(facts, motif.identity);
+        for (const auto& occurrence : occurrences) {
+            if (occurrence.formula) {
+                add_identity_fact(facts, occurrence.formula->identity);
+            }
+            if (occurrence.variation) {
+                add_identity_fact(facts, occurrence.variation->identity);
+            }
+            if (occurrence.transformation) {
+                add_identity_fact(facts, occurrence.transformation->identity);
+            }
+        }
+    }
+    return facts;
+}
+
+bool has_facts(
+    const Facts& available,
+    std::span<const std::string> required) {
+    return std::ranges::all_of(
+        required,
+        [&](const auto& fact) { return available.contains(fact); });
+}
+
+struct Phrase {
+    GeneratedPlan generated;
+    ::mq::kernel::state::Snapshot state;
+    Facts facts;
+};
+
+std::expected<Phrase, std::string> make_phrase(
     std::string_view maqam,
     std::uint64_t seed,
     const ::mq::kernel::performance::Timing& timing,
@@ -50,7 +115,7 @@ std::expected<GeneratedPlan, std::string> make_phrase(
         .grammar = {},
     };
     const ::mq::kernel::generate::Engine engine(*scaffold->profile, context);
-    std::optional<GeneratedPlan> selected_plan;
+    std::optional<Phrase> selected_phrase;
     constexpr std::uint64_t retry_stride = 0x9e3779b97f4a7c15ULL;
     for (std::size_t attempt = 0; attempt < 32; ++attempt) {
         const auto generated = engine.run(
@@ -67,8 +132,7 @@ std::expected<GeneratedPlan, std::string> make_phrase(
         std::vector<const ::mq::kernel::generate::Outcome*> compatible;
         for (const auto& outcome : generated->legal) {
             if (matches_prefix(outcome.candidate, candidate_prefixes) &&
-                (!avoid || generated->legal.size() == 1 ||
-                 outcome.candidate != *avoid)) {
+                (!avoid || outcome.candidate != *avoid)) {
                 compatible.push_back(&outcome);
             }
         }
@@ -76,14 +140,19 @@ std::expected<GeneratedPlan, std::string> make_phrase(
             continue;
         }
         const auto* selected = compatible[mix(seed, attempt) % compatible.size()];
-        selected_plan = GeneratedPlan{
-            selected->candidate,
-            selected->plan,
-            {selected->candidate},
+        selected_phrase = Phrase{
+            GeneratedPlan{
+                selected->candidate,
+                selected->plan,
+                {selected->candidate},
+                {},
+            },
+            selected->state,
+            state_facts(selected->state),
         };
         break;
     }
-    if (!selected_plan) {
+    if (!selected_phrase) {
         return std::unexpected(
             "could not select a non-repeating legal phrase for " +
             std::string(maqam));
@@ -92,7 +161,7 @@ std::expected<GeneratedPlan, std::string> make_phrase(
     // Every outcome here is already a complete, legal candidate. The active
     // collection performance state filters the legal set; the seed only
     // selects within that set.
-    return std::move(*selected_plan);
+    return std::move(*selected_phrase);
 }
 
 } // namespace
@@ -148,12 +217,18 @@ std::expected<GeneratedPlan, std::string> make_plan(
     std::size_t transitionOrdinal{};
     std::optional<GeneratedPlan> result;
     std::optional<::mq::kernel::Identity> previous;
+    Facts memory;
     const auto terminal = [&](const auto* stage) {
         return std::ranges::find(
                    performance.terminals,
                    stage->name) != performance.terminals.end();
     };
     while (emitted < repetitions || !terminal(current)) {
+        if (!has_facts(memory, current->required_facts)) {
+            return std::unexpected(
+                "performance stage entry facts are not satisfied for " +
+                current->name + " in " + std::string(maqam));
+        }
         const auto requested = repetitions > emitted
                                    ? repetitions - emitted
                                    : std::size_t{1};
@@ -174,17 +249,28 @@ std::expected<GeneratedPlan, std::string> make_plan(
             if (!phrase) {
                 return std::unexpected(phrase.error());
             }
+            if (!has_facts(memory, current->required_facts) ||
+                !has_facts(phrase->facts, current->provided_facts)) {
+                return std::unexpected(
+                    "performance stage postconditions are not satisfied for " +
+                    current->name + " in " + std::string(maqam));
+            }
             if (!result) {
                 result = GeneratedPlan{
-                    phrase->candidate,
-                    phrase->plan,
-                    {phrase->candidate},
+                    phrase->generated.candidate,
+                    phrase->generated.plan,
+                    {phrase->generated.candidate},
+                    {current->name},
                 };
             } else {
-                result->phrase_candidates.push_back(phrase->candidate);
-                append_plan(result->plan, phrase->plan);
+                result->phrase_candidates.push_back(phrase->generated.candidate);
+                result->phrase_stages.push_back(current->name);
+                append_plan(result->plan, phrase->generated.plan);
             }
-            previous = phrase->candidate;
+            memory.insert(phrase->facts.begin(), phrase->facts.end());
+            memory.insert(
+                current->provided_facts.begin(), current->provided_facts.end());
+            previous = phrase->generated.candidate;
             ++emitted;
         }
         ++transitionOrdinal;
@@ -196,14 +282,21 @@ std::expected<GeneratedPlan, std::string> make_plan(
                 "performance graph reached a terminal before the requested "
                 "duration for " + std::string(maqam));
         }
-        const auto nextIndex = mix(seed, transitionOrdinal) %
-                               current->next.size();
-        current = find_stage(current->next[nextIndex]);
-        if (current == nullptr) {
+        std::vector<const ::mq::kernel::maqam::family::PerformanceStageSpec*>
+            eligible;
+        for (const auto& next : current->next) {
+            const auto* candidate = find_stage(next);
+            if (candidate != nullptr &&
+                has_facts(memory, candidate->required_facts)) {
+                eligible.push_back(candidate);
+            }
+        }
+        if (eligible.empty()) {
             return std::unexpected(
-                "performance graph transition disappeared for " +
+                "performance graph has no fact-compatible transition for " +
                 std::string(maqam));
         }
+        current = eligible[mix(seed, transitionOrdinal) % eligible.size()];
     }
     if (!result) {
         return std::unexpected(

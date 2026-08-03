@@ -17,6 +17,7 @@ struct GeneratedPlan {
     ::mq::kernel::Identity candidate;
     ::mq::kernel::performance::Plan plan;
     std::vector<::mq::kernel::Identity> phrase_candidates;
+    std::vector<std::string> phrase_stages;
 };
 
 [[nodiscard]] std::expected<GeneratedPlan, std::string> make_plan(
