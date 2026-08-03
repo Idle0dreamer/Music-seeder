@@ -82,5 +82,6 @@ int main(int argc, char** argv) {
         << "peak: " << rendered->peak << '\n'
         << "tonic_hz: " << rendered->conversion_tonic_hz << '\n'
         << "wav: " << options->output << '\n';
+    std::cout << mq::synthesis::describe_plan(generated->plan);
     return 0;
 }

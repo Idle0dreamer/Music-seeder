@@ -7,6 +7,7 @@
 #include "mq/kernel/sort/MotifId.hpp"
 
 #include <optional>
+#include <utility>
 
 namespace mq::kernel::performance {
 
@@ -21,6 +22,20 @@ struct Target {
     std::optional<sort::FormulaId> formula;
     std::optional<sort::FormulaId> variation;
     std::optional<sort::MotifId> motif;
+
+    Target(
+        Event target_event,
+        pitch::Expression target_center,
+        std::optional<sort::CellId> target_cell = std::nullopt,
+        std::optional<sort::FormulaId> target_formula = std::nullopt,
+        std::optional<sort::FormulaId> target_variation = std::nullopt,
+        std::optional<sort::MotifId> target_motif = std::nullopt)
+        : event(std::move(target_event)),
+          center(std::move(target_center)),
+          cell(std::move(target_cell)),
+          formula(std::move(target_formula)),
+          variation(std::move(target_variation)),
+          motif(std::move(target_motif)) {}
 
     bool operator==(const Target&) const = default;
 };

@@ -29,4 +29,7 @@ void append_plan(
     ::mq::kernel::performance::Plan& destination,
     const ::mq::kernel::performance::Plan& continuation);
 
+[[nodiscard]] std::string describe_plan(
+    const ::mq::kernel::performance::Plan& plan);
+
 } // namespace mq::synthesis

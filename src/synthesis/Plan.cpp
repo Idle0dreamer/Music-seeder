@@ -4,6 +4,7 @@
 #include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
+#include <sstream>
 #include <optional>
 
 namespace mq::synthesis {
@@ -119,6 +120,44 @@ std::expected<GeneratedPlan, std::string> make_plan(
         append_plan(result.plan, continuation->plan);
     }
     return result;
+}
+
+std::string describe_plan(
+    const ::mq::kernel::performance::Plan& plan) {
+    std::ostringstream output;
+    output << "structure:\n";
+    for (std::size_t index = 0; index < plan.events.size(); ++index) {
+        const auto& event = plan.events[index];
+        const auto identity = [](const auto& value) {
+            return value ? value->identity.str() : std::string("none");
+        };
+        output << "  event[" << index << "]"
+               << " onset=" << event.onset.str()
+               << " duration=" << event.duration.str()
+               << " structural=" << event.target.event.identity.str()
+               << " cell=" << identity(event.target.cell)
+               << " formula=" << identity(event.target.formula)
+               << " variation=" << identity(event.target.variation)
+               << " motif=" << identity(event.target.motif)
+               << " direction="
+               << ::mq::kernel::motion::name(event.target.event.direction)
+               << " articulation="
+               << static_cast<int>(event.articulation)
+               << " release="
+               << (event.release ? event.release->duration.str() : "none")
+               << " ornament="
+               << (event.ornament ? event.ornament->family.str() : "none")
+               << '\n';
+    }
+    for (std::size_t index = 0; index < plan.pauses.size(); ++index) {
+        const auto& pause = plan.pauses[index];
+        output << "  pause[" << index << "]"
+               << " onset=" << pause.onset.str()
+               << " duration=" << pause.duration.str()
+               << " function=" << pause.function.str()
+               << " provenance=" << pause.provenance << '\n';
+    }
+    return output.str();
 }
 
 } // namespace mq::synthesis
