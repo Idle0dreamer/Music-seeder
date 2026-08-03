@@ -806,7 +806,8 @@ std::expected<Set, std::string> load(
                 fields[1],
                 fields[2] == "-" ? std::string{} : fields[2],
                 std::move(actions),
-                std::nullopt});
+                std::nullopt,
+                std::string{}});
         } else if (key == "step-repeat") {
             const auto fields = split(value, '|');
             if (fields.size() != 4 || fields[0].empty() ||
