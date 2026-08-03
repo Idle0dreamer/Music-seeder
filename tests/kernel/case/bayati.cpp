@@ -150,7 +150,9 @@ void test::bayati_case() {
                target.transformation_provenance.find(
                    "MaqamWorld:jins-rast") != std::string::npos &&
                motifs != item.state.motif.occurrences.end() &&
-               motifs->second.size() == 2 && motifs->second.front().formula &&
+               motifs->second.size() == 3 && motifs->second.front().formula &&
+               !motifs->second.front().variation &&
+               motifs->second[1].formula && !motifs->second[1].variation &&
                motifs->second.back().variation && first.formula &&
                first.formula->identity == developFormula && second.formula &&
                second.formula->identity == developFormula && first.motif &&
