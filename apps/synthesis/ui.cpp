@@ -251,16 +251,12 @@ public:
         maqam_ = new QComboBox(options);
         const auto catalog = mq::kernel::maqam::Catalog::declared();
         for (const auto& entry : catalog.entries()) {
-            if (!entry.specification && entry.kind != "legacy") {
+            if (!entry.specification || !entry.specification->performance) {
                 continue;
             }
             maqam_->addItem(
                 QString::fromStdString(entry.name),
                 QString::fromStdString(entry.name));
-        }
-        const auto rast = maqam_->findData("rast");
-        if (rast >= 0) {
-            maqam_->setCurrentIndex(rast);
         }
         form->addRow("Maqam", maqam_);
 
