@@ -11,8 +11,7 @@ namespace {
 std::expected<GeneratedPlan, std::string> make_phrase(
     std::string_view maqam,
     std::uint64_t seed,
-    const ::mq::kernel::performance::Timing& timing,
-    std::size_t continuation) {
+    const ::mq::kernel::performance::Timing& timing) {
     const auto catalog = ::mq::kernel::maqam::Catalog::declared();
     const auto scaffold = catalog.build_executable(maqam);
     if (!scaffold) {
@@ -46,17 +45,10 @@ std::expected<GeneratedPlan, std::string> make_phrase(
             "selected maqam outcome is missing: " + std::string(maqam));
     }
 
-    // Every outcome here is already a complete, legal candidate. The first
-    // phrase follows the engine's cost-aware selection. Continuations rotate
-    // through that legal set so a multi-route collection package can develop
-    // instead of replaying its first route forever.
-    const auto selected_index = static_cast<std::size_t>(
-        std::distance(generated->legal.begin(), selected));
-    const auto index = continuation == 0 || generated->legal.size() == 1
-                           ? selected_index
-                           : (selected_index + continuation) %
-                                 generated->legal.size();
-    const auto& outcome = generated->legal[index];
+    // Every outcome here is already a complete, legal candidate. Selection is
+    // made by the kernel for this phrase seed; the player never manufactures
+    // variation by cycling through route order.
+    const auto& outcome = *selected;
     return GeneratedPlan{outcome.candidate, outcome.plan, {outcome.candidate}};
 }
 
@@ -86,7 +78,7 @@ std::expected<GeneratedPlan, std::string> make_plan(
     if (repetitions == 0) {
         return std::unexpected("at least one performance phrase is required");
     }
-    const auto first = make_phrase(maqam, seed, timing, 0);
+    const auto first = make_phrase(maqam, seed, timing);
     if (!first) {
         return std::unexpected(first.error());
     }
@@ -99,8 +91,7 @@ std::expected<GeneratedPlan, std::string> make_plan(
         const auto continuation = make_phrase(
             maqam,
             seed + static_cast<std::uint64_t>(index) * 0x9e3779b97f4a7c15ULL,
-            timing,
-            index);
+            timing);
         if (!continuation) {
             return std::unexpected(continuation.error());
         }
