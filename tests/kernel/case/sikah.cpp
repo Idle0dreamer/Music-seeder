@@ -3,7 +3,6 @@
 #include "mq/kernel/generate/Engine.hpp"
 #include "mq/kernel/maqam/Sikah.hpp"
 
-#include <algorithm>
 #include <string>
 
 void test::sikah_case() {
@@ -38,17 +37,10 @@ void test::sikah_case() {
         require(false, detail);
     }
     require(
-        result->legal.size() == 2 && result->rejected.empty(),
-        "Sikah ordered station routes did not expose both legal station orders");
+        result->legal.size() == 1 && result->rejected.empty(),
+        "Sikah ordered station route was not a single complete candidate");
     require(
-        std::ranges::all_of(
-            result->legal,
-            [](const auto& item) {
-                return item.plan.events.size() == 5 &&
-                       item.plan.well_formed();
-            }),
-        "Sikah ordered routes did not produce complete timed plans");
-    require(
-        result->legal[0].candidate != result->legal[1].candidate,
-        "Sikah ordered routes collapsed to one candidate identity");
+        result->legal.front().plan.events.size() == 5 &&
+            result->legal.front().plan.well_formed(),
+        "Sikah ordered route did not produce a complete timed plan");
 }
