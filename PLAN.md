@@ -29,9 +29,9 @@ claim.
 Bayati phrase/motif/ornament coverage, the remaining maqāmāt packages, and
 instrument measurements remain open. “Provisional” is not an acceptable final
 status.
-The last exact head with a green remote Faust/synthesis workflow is
-`af231b6`; the current registry and Rast commits require a new exact-head
-remote run.
+The latest exact head with a green remote Faust/synthesis workflow is
+`dc9897247a1030eec72e698030e428763ec3f314`, validated by GitHub Actions run
+`30773498807`.
 
 ## Completion standard
 
@@ -98,9 +98,9 @@ Evidence required:
 - remote GCC 14 and sanitizer results;
 - Faust compiler generated-C++ probe from the pinned revisions.
 
-Current state: local kernel and CLI evidence exists, and the earlier exact
-Bayati Faust/synthesis workflow passed remotely; the current registry/Rast
-head still needs its own remote run.
+Current state: the exact `dc98972` head has passed the remote debug, optimized
+CLI, UBSan, Faust-generation, and native/Faust synthesis jobs. The machine-local
+checkout is not treated as binary validation.
 
 ### 1. Universal kernel contract
 

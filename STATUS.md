@@ -130,42 +130,20 @@ Implemented so far:
 
 Checkpoint validation state:
 
-- the current working tree passes `make kernel-test` with GCC debug flags,
-  all 51 test-function invocations, and 48 summary lines;
-- the current working tree passes `make kernel` with `-O2 -Werror`;
-- the current working tree passes `make kernel-sanitize` with UBSan and all 48
-  summary lines;
-- `./build/kernel 1` emits the five-event neutral travel candidate with exact
-  onsets `0`, `1`, `2`, `3`, and `4`; `./build/kernel 2` emits the one-event
-  neutral stay candidate;
-- `./build/kernel bayati 17` emits one selected five-event Bayati route from
-  four legal routes, with branch-conditioned exact pitch targets and exact
-  onsets `0`, `3/2`, `9/4`, `3`, and `7/2` for the selected journey;
-- `./build/kernel rast 23` emits one selected five-event Rast route from three
-  legal routes, with the same exact timing boundary and profile-owned targets;
-- `./build/kernel nahawand 29` emits one selected five-event Nahawand route
-  from three legal routes, with branch-specific Hijaz/Kurd targets and the
-  externally supplied timing profile;
-- `./build/kernel hijaz 31` emits one selected five-event Hijaz route from
-  three legal routes, with branch-specific Nahawand/Rast targets;
-- `./build/kernel kurd 37` emits a legal Kurd result from two routes, with the
-  Nahawand fourth-degree branch available;
-- `./build/kernel ajam 41` emits a selected Ajam route from three legal routes;
-- `./build/kernel nikriz 43` emits a legal Nikriz result from two routes;
-- `make synthesis` and the flag-based named synthesis player produce a
-  non-silent valid 48 kHz PCM WAV from the coupled-course model; the named
-  flag-based Sikah player also produces a valid 48 kHz PCM WAV. The player
-  accepts multi-phrase duration targets and loops the resulting WAV;
-- `.github/workflows/kernel.yml` compiles both pinned Faust-generated C++
-  sources and exercises both the independent and Faust runtime renderers
-  online; exact head `985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed in run
-  `30755938899` with `debug-release`, `undefined`, `faust-probe`, and
-  `synthesis-render` all successful;
-- that run uploaded artifact `music-seeder-bayati-wav` (artifact id
-  `8836021086`, 605301 bytes), containing the independent and Faust WAVs plus
-  the repeated Faust render;
+- GitHub Actions run `30773498807` validates exact head
+  `dc9897247a1030eec72e698030e428763ec3f314`; its debug law suite reports 49
+  passing law/case invocations, and its optimized CLI job exercises the
+  neutral fixture and named Sikah route remotely;
+- the same run passes the UBSan suite with 49 passing law/case invocations;
+- the remote synthesis job renders both native and Faust-generated coupled-
+  course models as non-silent RIFF WAVs: 1,585,230 frames, 33.0256 seconds,
+  peak `0.92`; the repeated Faust render is byte-identical;
+- the Faust job builds the pinned compiler, generates both physical-modeling
+  and coupled-course C++ sources, and compiles both generated probes;
+- run `30773498807` uploads artifact `music-seeder-sikah-wav` (artifact id
+  `8841427491`) containing the three remote WAV outputs;
 - `.github/workflows/kernel.yml` provides the free remote debug, release, CLI,
-  and undefined-behavior validation path on GitHub Actions;
+  Faust, synthesis, and undefined-behavior validation path on GitHub Actions;
 - AddressSanitizer remains a separate environmental check and is not counted
   as passed here.
 

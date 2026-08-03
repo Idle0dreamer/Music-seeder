@@ -25,6 +25,12 @@ grammar authority.
 
 ## Build and run
 
+Binary builds and executable validation run in the free GitHub Actions workflow
+`.github/workflows/kernel.yml`. The workflow installs the pinned toolchain,
+builds the kernel and synthesis targets, generates the Faust C++ sources, runs
+the remote CLI/tests, and uploads rendered WAV artifacts. The constrained
+development machine is not the binary-validation authority.
+
 ```sh
 make kernel
 ./build/kernel 2
