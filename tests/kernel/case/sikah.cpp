@@ -37,10 +37,18 @@ void test::sikah_case() {
         require(false, detail);
     }
     require(
-        result->legal.size() == 1 && result->rejected.empty(),
-        "Sikah ordered station route was not a single complete candidate");
+        result->legal.size() == 2 && result->rejected.empty(),
+        "Sikah ordered formula alternatives were not both legal candidates");
     require(
         result->legal.front().plan.events.size() == 5 &&
-            result->legal.front().plan.well_formed(),
-        "Sikah ordered route did not produce a complete timed plan");
+            result->legal.front().plan.well_formed() &&
+            result->legal.back().plan.events.size() == 5 &&
+            result->legal.back().plan.well_formed(),
+        "Sikah ordered formula alternatives did not produce complete plans");
+    require(
+        result->legal.front().plan.events[3].ornament &&
+            result->legal.back().plan.events[3].ornament &&
+            result->legal.front().plan.events[3].ornament->kind !=
+                result->legal.back().plan.events[3].ornament->kind,
+        "Sikah formula alternatives did not change performance realization");
 }

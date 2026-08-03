@@ -139,7 +139,10 @@ void test::bayati_case() {
                        second.cell.identity == developCell &&
                        first.variation && second.variation &&
                        first.variation->identity == developFormula &&
-                       second.variation->identity == variedFormula;
+                       second.variation->identity == variedFormula &&
+                       item.plan.events[3].ornament &&
+                       item.plan.events[3].ornament->kind ==
+                           performance::OrnamentKind::Oscillation;
             }),
         "Bayati did not preserve a repeated cell with an explicit variation");
 }

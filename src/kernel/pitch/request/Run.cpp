@@ -88,6 +88,10 @@ std::expected<Result, Error> run(
     const auto timing = limits.timing->resolve(
         (*current)->direction,
         timing_context);
+    const auto owner = state.cell.owners.find(
+        sort::EventId{(*current)->identity});
+    const bool formula_variation =
+        owner != state.cell.owners.end() && owner->second.variation.has_value();
 
     const auto previous = prefix.events.empty()
                               ? std::optional<pitch::Expression>{}
@@ -124,24 +128,35 @@ std::expected<Result, Error> run(
     if (previous &&
         ((*current)->direction == motion::Direction::Rise ||
          (*current)->direction == motion::Direction::Fall)) {
-        prefix.events.back().contour = performance::PitchContour{
-            {
-                {Rational(0), *previous - center->second},
-                {Rational(1), pitch::Expression{}},
-            },
-        };
-        prefix.events.back().ornament = performance::Ornament{
-            Identity{
-                "performance.ornament",
-                "directional-approach",
-                "1",
-            },
-            performance::OrnamentKind::Approach,
-            *previous - center->second,
-            Rational(1),
-            timing.ornament_timing,
-            "derived:structural-motion;profile-may-refine",
-        };
+        if (formula_variation) {
+            prefix.events.back().ornament = performance::Ornament{
+                owner->second.variation->identity,
+                performance::OrnamentKind::Oscillation,
+                (*previous - center->second) * timing.ornament_timing.duration,
+                Rational(1),
+                timing.ornament_timing,
+                "derived:collection-formula-variation;timing-profile",
+            };
+        } else {
+            prefix.events.back().contour = performance::PitchContour{
+                {
+                    {Rational(0), *previous - center->second},
+                    {Rational(1), pitch::Expression{}},
+                },
+            };
+            prefix.events.back().ornament = performance::Ornament{
+                Identity{
+                    "performance.ornament",
+                    "directional-approach",
+                    "1",
+                },
+                performance::OrnamentKind::Approach,
+                *previous - center->second,
+                Rational(1),
+                timing.ornament_timing,
+                "derived:structural-motion;profile-may-refine",
+            };
+        }
     }
     return Result{
         std::move(prefix),

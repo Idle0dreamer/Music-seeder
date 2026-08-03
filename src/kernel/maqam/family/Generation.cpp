@@ -56,7 +56,10 @@ Stage establishment(const Key& key, const Identity& candidate) {
     });
 }
 
-Stage development(const Key& key, const Identity& candidate) {
+Stage development(
+    const Key& key,
+    const Identity& candidate,
+    bool varied = false) {
     return makeStage(key, candidate, "development", {
         operation::Place{
             sort::EventId{event(key, candidate, "ghammaz")},
@@ -69,7 +72,8 @@ Stage development(const Key& key, const Identity& candidate) {
         operation::Dwell{sort::RoleId{key.roleGhammaz}, Rational(2)},
         operation::Emit{
             sort::CellId{key.cellDevelop},
-            sort::FormulaId{key.formulaDevelop},
+            sort::FormulaId{
+                varied ? key.formulaDevelopVariation : key.formulaDevelop},
         },
         operation::Cadence{
             sort::FamilyId{key.cadenceLocal},
@@ -179,7 +183,8 @@ Stage restore(
 Stage orderedContinuation(
     const Key& key,
     const Identity& candidate,
-    const BranchKey& branch) {
+    const BranchKey& branch,
+    bool varied = false) {
     const auto p = phrase(key, candidate, "return");
     const auto descent = occurrence(
         key,
@@ -207,7 +212,8 @@ Stage orderedContinuation(
         },
         operation::Emit{
             sort::CellId{key.cellDevelop},
-            sort::FormulaId{key.formulaDevelopVariation},
+            sort::FormulaId{
+                varied ? key.formulaDevelop : key.formulaDevelopVariation},
         },
         operation::sayr::Fulfill{sort::ObligationId{branch.travel}},
     });
@@ -459,20 +465,30 @@ std::expected<Generation, std::string> generation(const Key& key) {
             return std::unexpected(
                 "ordered family package requires exactly two stations");
         }
-        const auto candidate = id(key, "candidate.ordered");
-        const auto stages = std::vector<Stage>{
-            establishment(key, candidate),
-            development(key, candidate),
-            climax(key, candidate, key.branches.front()),
-            orderedContinuation(key, candidate, key.branches.back()),
-            orderedRestore(key, candidate),
-        };
+        std::vector<grammar::Branch> alternatives;
+        for (const bool varied : {false, true}) {
+            const auto candidate = id(
+                key,
+                varied ? "candidate.ordered.variation"
+                       : "candidate.ordered.canonical");
+            const auto stages = std::vector<Stage>{
+                establishment(key, candidate),
+                development(key, candidate, varied),
+                climax(key, candidate, key.branches.front()),
+                orderedContinuation(
+                    key, candidate, key.branches.back(), varied),
+                orderedRestore(key, candidate),
+            };
+            alternatives.push_back({
+                id(key, varied ? "branch.ordered.variation"
+                               : "branch.ordered.canonical"),
+                {},
+                candidateTerm(key, stages, candidate),
+            });
+        }
         auto production = grammar::Term::alt(
             id(key, "production.ordered"),
-            {
-            {id(key, "branch.ordered"), {}, candidateTerm(
-                key, stages, candidate)},
-            });
+            std::move(alternatives));
         if (!production) {
             return std::unexpected(production.error());
         }
