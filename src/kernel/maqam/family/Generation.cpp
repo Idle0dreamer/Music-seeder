@@ -1007,6 +1007,15 @@ pitch::field::Schema schema(const Key& key) {
         key.ghammaz,
         key.source + ";ghammaz");
     addAim(
+        {{key.keyRole, key.roleGhammaz},
+         {key.keyMotion, key.motionSame},
+         {key.keyRegion, key.regionUpper},
+         {key.keyGesture, key.gestureAscent}},
+        id(key, "pitch.rule.ghammaz-repeat"),
+        {{key.roleGhammaz, Rational(1)}, {key.roleTonic, Rational(-1)}},
+        key.ghammaz,
+        key.source + ";ghammaz-repeat");
+    addAim(
         {{key.keyRole, key.roleExtension},
          {key.keyMotion, key.motionRise},
          {key.keyRegion, key.regionUpper},
