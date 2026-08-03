@@ -988,11 +988,14 @@ pitch::field::Schema schema(const Key& key) {
             },
         });
     };
+    // Gesture identities delimit legal realizations, but they are not the
+    // generic pitch authority.  A collection may split one phrase into
+    // phase-specific complete gestures without changing the role/motion
+    // relation that determines its pitch target.
     addAim(
         {{key.keyRole, key.roleTonic},
          {key.keyMotion, key.motionStart},
-         {key.keyRegion, key.regionRoot},
-         {key.keyGesture, key.gestureAscent}},
+         {key.keyRegion, key.regionRoot}},
         id(key, "pitch.rule.tonic"),
         {{key.roleTonic, Rational(1)}},
         {},
@@ -1000,8 +1003,7 @@ pitch::field::Schema schema(const Key& key) {
     addAim(
         {{key.keyRole, key.roleGhammaz},
          {key.keyMotion, key.motionRise},
-         {key.keyRegion, key.regionUpper},
-         {key.keyGesture, key.gestureAscent}},
+         {key.keyRegion, key.regionUpper}},
         ghammaz,
         {{key.roleGhammaz, Rational(1)}, {key.roleTonic, Rational(-1)}},
         key.ghammaz,
@@ -1009,8 +1011,7 @@ pitch::field::Schema schema(const Key& key) {
     addAim(
         {{key.keyRole, key.roleGhammaz},
          {key.keyMotion, key.motionSame},
-         {key.keyRegion, key.regionUpper},
-         {key.keyGesture, key.gestureAscent}},
+         {key.keyRegion, key.regionUpper}},
         id(key, "pitch.rule.ghammaz-repeat"),
         {{key.roleGhammaz, Rational(1)}, {key.roleTonic, Rational(-1)}},
         key.ghammaz,
@@ -1020,7 +1021,6 @@ pitch::field::Schema schema(const Key& key) {
          {key.keyMotion, key.motionRise},
          {key.keyRegion, key.regionUpper},
          {key.keyBaggage, key.baggageExtension},
-         {key.keyGesture, key.gestureAscent},
          {key.keyCadence, key.cadenceLocal},
          {key.keyBoundary, key.boundaryClosed}},
         extension,
@@ -1032,8 +1032,7 @@ pitch::field::Schema schema(const Key& key) {
         {{key.keyJins, branch.jins},
              {key.keyRole, branch.descent},
              {key.keyMotion, branch.motion},
-             {key.keyRegion, key.regionUpper},
-             {key.keyGesture, key.gestureDescent}},
+             {key.keyRegion, key.regionUpper}},
             id(key, "pitch.rule.branch." + branch.jins.name),
             {{branch.descent, Rational(1)}, {key.roleTonic, Rational(-1)}},
             branch.target,
@@ -1043,7 +1042,6 @@ pitch::field::Schema schema(const Key& key) {
         {{key.keyRole, key.roleTonic},
          {key.keyMotion, key.motionFall},
          {key.keyRegion, key.regionRoot},
-         {key.keyGesture, key.gestureResolution},
          {key.keyCadence, key.cadenceReturn},
          {key.keyBoundary, key.boundaryClosed}},
         returnTonic,
