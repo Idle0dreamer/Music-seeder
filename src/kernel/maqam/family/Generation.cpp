@@ -86,6 +86,7 @@ struct ActionContext {
     const RouteKey& route;
     const BranchKey* branch{};
     std::optional<Identity> previousDescent;
+    std::string step;
     std::size_t repetition{};
 };
 
@@ -306,7 +307,7 @@ std::expected<Identity, std::string> formulaEvent(
             "formula event must use an event reference: " +
             std::string(token));
     }
-    suffix += ".note." + std::to_string(note);
+    suffix += ".step." + context.step + ".note." + std::to_string(note);
     suffix += repetitionSuffix(context.repetition);
     return event(context.key, context.candidate, std::move(suffix));
 }
@@ -821,6 +822,7 @@ std::expected<std::vector<RouteExpansion>, std::string> routeSteps(
                 route,
                 branch,
                 previousDescent,
+                step.name,
                 occurrenceNumber};
             std::vector<operation::Any> actions;
             for (const auto& specification : step.actions) {
