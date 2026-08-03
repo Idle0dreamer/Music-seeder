@@ -851,11 +851,12 @@ std::expected<Set, std::string> load(
             foundStep->maximum = static_cast<std::size_t>(*maximum);
         } else if (key == "step-next") {
             const auto fields = split(value, '|');
-            if (fields.size() != 3 || fields[0].empty() ||
-                fields[1].empty() || fields[2].empty()) {
+            if (fields.size() != 4 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty() || fields[3].empty()) {
                 return std::unexpected(
                     "step-next requires route|step|comma-separated-next-"
-                    "steps at line " + std::to_string(lineNumber));
+                    "steps|provenance at line " +
+                    std::to_string(lineNumber));
             }
             const auto foundRoute = std::ranges::find_if(
                 pending.routes,
@@ -890,6 +891,7 @@ std::expected<Set, std::string> load(
                 }
                 foundStep->next = next;
             }
+            foundStep->transition_provenance = fields[3];
         } else if (key == "route-variants") {
             if (pending.routes.empty()) {
                 return std::unexpected(

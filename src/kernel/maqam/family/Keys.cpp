@@ -264,7 +264,8 @@ Key key(const Spec& spec) {
                 step.name,
                 std::nullopt,
                 step.actions,
-                std::nullopt};
+                std::nullopt,
+                step.transition_provenance};
             translated.minimum = step.minimum;
             translated.maximum = step.maximum;
             if (step.next) {

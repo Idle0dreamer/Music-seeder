@@ -58,6 +58,7 @@ struct StepSpec {
     std::string branch;
     std::vector<ActionSpec> actions;
     std::optional<std::vector<std::string>> next;
+    std::string transition_provenance;
     std::size_t minimum{1};
     std::size_t maximum{1};
 };
