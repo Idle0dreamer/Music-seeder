@@ -138,6 +138,7 @@ struct Pending {
     std::vector<family::BaggageSpec> baggage;
     std::vector<family::ObligationSpec> obligations;
     std::vector<family::FormulaSpec> formulas;
+    std::vector<family::FormulaVariationSpec> formulaVariations;
     std::size_t beginLine{};
     std::size_t ghammazLine{};
     std::size_t extensionLine{};
@@ -306,6 +307,39 @@ std::expected<Record, std::string> finish(
         !checked) {
         return std::unexpected(checked.error());
     }
+    std::set<std::string> variationPairs;
+    for (const auto& variation : pending.formulaVariations) {
+        if (variation.base.empty() || variation.variation.empty() ||
+            variation.transformation.empty() || variation.provenance.empty()) {
+            return std::unexpected(
+                "formula variation requires base, variation, transformation, "
+                "and provenance for " + pending.name);
+        }
+        const auto pair = variation.base + "->" + variation.variation;
+        if (!variationPairs.insert(pair).second) {
+            return std::unexpected(
+                "duplicate formula variation " + pair + " for " +
+                pending.name);
+        }
+        const auto base = std::ranges::find_if(
+            pending.formulas,
+            [&](const auto& formula) { return formula.name == variation.base; });
+        const auto changed = std::ranges::find_if(
+            pending.formulas,
+            [&](const auto& formula) {
+                return formula.name == variation.variation;
+            });
+        if (base == pending.formulas.end() || changed == pending.formulas.end()) {
+            return std::unexpected(
+                "formula variation references an undeclared formula " + pair +
+                " for " + pending.name);
+        }
+        if (base->cell != changed->cell) {
+            return std::unexpected(
+                "formula variation changes cell authority " + pair +
+                " for " + pending.name);
+        }
+    }
     for (const auto& formula : pending.formulas) {
         if (formula.cell.empty() || formula.provenance.empty() ||
             formula.notes.empty()) {
@@ -358,6 +392,7 @@ std::expected<Record, std::string> finish(
         .baggage = std::move(pending.baggage),
         .obligations = std::move(pending.obligations),
         .formulas = std::move(pending.formulas),
+        .formula_variations = std::move(pending.formulaVariations),
         .routes = std::move(pending.routes),
     };
     return result;
@@ -662,6 +697,17 @@ std::expected<Set, std::string> load(
             }
             pending.formulas.push_back({
                 fields[0], fields[1], fields[2], std::move(notes)});
+        } else if (key == "formula-variation") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 4 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty() || fields[3].empty()) {
+                return std::unexpected(
+                    "formula-variation requires base|variation|"
+                    "transformation|provenance at line " +
+                    std::to_string(lineNumber));
+            }
+            pending.formulaVariations.push_back({
+                fields[0], fields[1], fields[2], fields[3]});
         } else if (key == "authority") {
             const auto fields = split(value, '|');
             if (fields.size() != 2 || fields[0].empty() || fields[1].empty()) {

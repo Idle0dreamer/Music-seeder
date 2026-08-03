@@ -163,6 +163,26 @@ Key key(const Spec& spec) {
             source.notes,
         });
     }
+    result.formula_variations.reserve(spec.formula_variations.size());
+    for (const auto& source : spec.formula_variations) {
+        const auto base = std::ranges::find_if(
+            result.formulas,
+            [&](const auto& formula) { return formula.name == source.base; });
+        const auto variation = std::ranges::find_if(
+            result.formulas,
+            [&](const auto& formula) {
+                return formula.name == source.variation;
+            });
+        if (base == result.formulas.end() || variation == result.formulas.end()) {
+            continue;
+        }
+        result.formula_variations.push_back({
+            base->identity,
+            variation->identity,
+            source.transformation,
+            source.provenance,
+        });
+    }
     result.branches.reserve(spec.branches.size());
     for (const auto& source : spec.branches) {
         BranchKey branch;

@@ -139,6 +139,13 @@ struct FormulaSpec {
     std::vector<FormulaNoteSpec> notes;
 };
 
+struct FormulaVariationSpec {
+    std::string base;
+    std::string variation;
+    std::string transformation;
+    std::string provenance;
+};
+
 struct Spec {
     std::string package;
     std::string family;
@@ -154,6 +161,7 @@ struct Spec {
     std::vector<BaggageSpec> baggage;
     std::vector<ObligationSpec> obligations;
     std::vector<FormulaSpec> formulas;
+    std::vector<FormulaVariationSpec> formula_variations;
     std::vector<RouteSpec> routes;
 };
 

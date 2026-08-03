@@ -51,6 +51,13 @@ struct FormulaKey {
     std::vector<FormulaNoteSpec> notes;
 };
 
+struct FormulaVariationKey {
+    Identity base;
+    Identity variation;
+    std::string transformation;
+    std::string provenance;
+};
+
 struct Key {
     std::string package;
     std::string family;
@@ -105,6 +112,7 @@ struct Key {
     std::vector<BaggageSpec> baggage;
     std::vector<ObligationSpec> obligations;
     std::vector<FormulaKey> formulas;
+    std::vector<FormulaVariationKey> formula_variations;
     pitch::Expression ghammaz;
     pitch::Expression extension;
     std::vector<BranchKey> branches;

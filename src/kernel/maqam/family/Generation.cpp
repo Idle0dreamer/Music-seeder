@@ -638,6 +638,17 @@ std::expected<std::vector<operation::Any>, std::string> expandAction(
                          "formula variation changes its cell authority: " +
                          selected->str());
                  }
+                 const auto licensed = std::ranges::find_if(
+                     c.key.formula_variations,
+                     [&](const auto& relation) {
+                         return relation.base == base->identity &&
+                                relation.variation == found->identity;
+                     });
+                 if (licensed == c.key.formula_variations.end()) {
+                     return std::unexpected(
+                         "formula variation is not licensed by the collection: " +
+                         selected->str());
+                 }
                  variation = *selected;
                  surface = &*found;
              }
