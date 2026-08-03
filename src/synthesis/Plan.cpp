@@ -56,6 +56,7 @@ Facts state_facts(const ::mq::kernel::state::Snapshot& state) {
         add_identity_fact(facts, completion.obligation.identity);
     }
     for (const auto& span : state.phrase.completed) {
+        add_identity_fact(facts, span.identity);
         add_identity_fact(facts, span.function.identity);
         for (const auto& cadence : span.cadences) {
             add_identity_fact(facts, cadence.family);
