@@ -80,37 +80,6 @@ std::expected<pitch::Expression, std::string> ratio(
     return pitch::Expression::ratio(*numerator, *denominator);
 }
 
-std::expected<family::RouteStageKind, std::string> stage_kind(
-    const std::string& value,
-    std::size_t line) {
-    if (value == "stay") {
-        return family::RouteStageKind::Stay;
-    }
-    if (value == "establish") {
-        return family::RouteStageKind::Establish;
-    }
-    if (value == "develop") {
-        return family::RouteStageKind::Develop;
-    }
-    if (value == "climax") {
-        return family::RouteStageKind::Climax;
-    }
-    if (value == "descent") {
-        return family::RouteStageKind::Descent;
-    }
-    if (value == "continuation") {
-        return family::RouteStageKind::Continuation;
-    }
-    if (value == "restore") {
-        return family::RouteStageKind::Restore;
-    }
-    if (value == "sequence-restore") {
-        return family::RouteStageKind::SequenceRestore;
-    }
-    return std::unexpected(
-        "invalid route stage at line " + std::to_string(line));
-}
-
 std::expected<motion::Direction, std::string> direction(
     const std::string& value,
     std::size_t line) {
@@ -207,9 +176,9 @@ std::expected<Record, std::string> finish(
             " has no declared routes");
     }
     for (const auto& route : pending.routes) {
-        if (route.stages.empty()) {
+        if (route.steps.empty()) {
             return std::unexpected(
-                "route " + route.name + " has no declared stages");
+                "route " + route.name + " has no declared steps");
         }
     }
     result.specification = family::Spec{
@@ -357,12 +326,12 @@ std::expected<Set, std::string> load(
                 }
             }
             pending.routes.push_back(std::move(route));
-        } else if (key == "stage") {
+        } else if (key == "step") {
             const auto fields = split(value, '|');
-            if (fields.size() != 3 || fields[0].empty() ||
-                fields[1].empty() || fields[2].empty()) {
+            if (fields.size() != 4 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty() || fields[3].empty()) {
                 return std::unexpected(
-                    "stage requires route|kind|branch-or-root at line " +
+                    "step requires route|name|branch-or-root|actions at line " +
                     std::to_string(lineNumber));
             }
             const auto found = std::ranges::find_if(
@@ -370,16 +339,32 @@ std::expected<Set, std::string> load(
                 [&](const auto& route) { return route.name == fields[0]; });
             if (found == pending.routes.end()) {
                 return std::unexpected(
-                    "stage references unknown route at line " +
+                    "step references unknown route at line " +
                     std::to_string(lineNumber));
             }
-            const auto kind = stage_kind(fields[1], lineNumber);
-            if (!kind) {
-                return std::unexpected(kind.error());
+            const auto actionFields = split(fields[3], ';');
+            if (actionFields.empty()) {
+                return std::unexpected(
+                    "step must declare at least one action at line " +
+                    std::to_string(lineNumber));
             }
-            found->stages.push_back({
-                *kind,
-                fields[2] == "-" ? std::string{} : fields[2]});
+            std::vector<family::ActionSpec> actions;
+            for (const auto& action : actionFields) {
+                const auto separator = action.find(':');
+                if (separator == std::string::npos || separator == 0 ||
+                    separator + 1 >= action.size()) {
+                    return std::unexpected(
+                        "step action requires operation:arguments at line " +
+                        std::to_string(lineNumber));
+                }
+                actions.push_back({
+                    trim(action.substr(0, separator)),
+                    split(action.substr(separator + 1), ',')});
+            }
+            found->steps.push_back({
+                fields[1],
+                fields[2] == "-" ? std::string{} : fields[2],
+                std::move(actions)});
         } else if (key == "route-variants") {
             if (pending.routes.empty()) {
                 return std::unexpected(
@@ -396,7 +381,7 @@ std::expected<Set, std::string> load(
             pending.routes.back().variants = static_cast<std::size_t>(*parsed);
         } else if (key == "ordered") {
             return std::unexpected(
-                "ordered is obsolete; declare route and stage records at line " +
+                "ordered is obsolete; declare route and step records at line " +
                 std::to_string(lineNumber));
         } else if (key == "branch") {
             const auto fields = split(value, '|');

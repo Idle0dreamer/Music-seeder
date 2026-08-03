@@ -4,6 +4,7 @@
 #include "mq/kernel/motion/Direction.hpp"
 
 #include <expected>
+#include <cstddef>
 #include <string>
 #include <utility>
 #include <vector>
@@ -44,27 +45,22 @@ struct BranchSpec {
           direction(branch_direction) {}
 };
 
-enum class RouteStageKind {
-    Stay,
-    Establish,
-    Develop,
-    Climax,
-    Descent,
-    Continuation,
-    Restore,
-    SequenceRestore,
+struct ActionSpec {
+    std::string operation;
+    std::vector<std::string> arguments;
 };
 
-struct RouteStageSpec {
-    RouteStageKind kind{RouteStageKind::Establish};
+struct StepSpec {
+    std::string name;
     std::string branch;
+    std::vector<ActionSpec> actions;
 };
 
 struct RouteSpec {
     std::string name;
     std::vector<std::string> branches;
     std::size_t variants{1};
-    std::vector<RouteStageSpec> stages;
+    std::vector<StepSpec> steps;
 };
 
 struct Spec {

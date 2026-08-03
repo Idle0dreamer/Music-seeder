@@ -28,11 +28,12 @@ struct BranchKey {
 struct RouteKey {
     Identity route;
     std::vector<std::size_t> branches;
-    struct Stage {
-        RouteStageKind kind{RouteStageKind::Establish};
+    struct Step {
+        std::string name;
         std::optional<std::size_t> branch;
+        std::vector<ActionSpec> actions;
     };
-    std::vector<Stage> stages;
+    std::vector<Step> steps;
     std::size_t variants{1};
     bool valid{true};
 };

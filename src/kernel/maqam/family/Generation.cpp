@@ -4,6 +4,11 @@
 #include "mq/kernel/operation/Operation.hpp"
 
 #include <algorithm>
+#include <charconv>
+#include <cstdint>
+#include <functional>
+#include <map>
+#include <string_view>
 
 namespace mq::kernel::maqam::family::detail {
 namespace {
@@ -32,254 +37,6 @@ Stage makeStage(
     std::string suffix,
     std::vector<operation::Any> actions) {
     return {stage(key, candidate, std::move(suffix)), std::move(actions)};
-}
-
-Stage establishment(const Key& key, const Identity& candidate) {
-    const auto p = phrase(key, candidate, "establish");
-    const auto g = occurrence(key, candidate, "ascent");
-    return makeStage(key, candidate, "establish", {
-        operation::Anchor{sort::CenterId{key.centerRoot}},
-        operation::Enter{sort::JinsId{key.jinsRoot}},
-        operation::Begin{sort::PhraseId{p}, phrase::Function{key.phraseQuestion}},
-        operation::gesture::Begin{g, key.gestureAscent},
-        operation::Place{
-            sort::EventId{event(key, candidate, "tonic")},
-            sort::RoleId{key.roleTonic},
-            motion::Direction::Start,
-            sort::RegionId{key.regionRoot},
-            std::nullopt,
-        },
-        operation::Emit{
-            sort::CellId{key.cellEstablish},
-            sort::FormulaId{key.formulaEstablish},
-        },
-    });
-}
-
-Stage development(
-    const Key& key,
-    const Identity& candidate,
-    bool varied = false) {
-    return makeStage(key, candidate, "development", {
-        operation::Place{
-            sort::EventId{event(key, candidate, "ghammaz")},
-            sort::RoleId{key.roleGhammaz},
-            motion::Direction::Rise,
-            sort::RegionId{key.regionUpper},
-            std::nullopt,
-        },
-        operation::Emphasize{sort::RoleId{key.roleGhammaz}, Rational(3)},
-        operation::Dwell{sort::RoleId{key.roleGhammaz}, Rational(2)},
-        operation::Emit{
-            sort::CellId{key.cellDevelop},
-            sort::FormulaId{key.formulaDevelop},
-            varied
-                ? std::optional<sort::FormulaId>{
-                      sort::FormulaId{key.formulaDevelopVariation}}
-                : std::nullopt,
-        },
-        operation::Cadence{
-            sort::FamilyId{key.cadenceLocal},
-            Rational(1),
-            Rational(1, 2),
-        },
-    });
-}
-
-Stage climax(
-    const Key& key,
-    const Identity& candidate,
-    const BranchKey& branch) {
-    const auto p = phrase(key, candidate, "establish");
-    return makeStage(key, candidate, "climax", {
-        operation::Place{
-            sort::EventId{event(key, candidate, "extension")},
-            sort::RoleId{key.roleExtension},
-            motion::Direction::Rise,
-            sort::RegionId{key.regionUpper},
-            sort::BaggageId{key.baggageExtension},
-        },
-        operation::Emit{
-            sort::CellId{key.cellClimax},
-            sort::FormulaId{key.formulaClimax},
-        },
-        operation::gesture::End{occurrence(key, candidate, "ascent")},
-        operation::Cadence{
-            sort::FamilyId{key.cadenceLocal},
-            Rational(1),
-            Rational(3, 4),
-        },
-        operation::End{sort::PhraseId{p}, phrase::Boundary::Closed},
-        operation::sayr::Fulfill{sort::ObligationId{id(key, "obligation.establish")}},
-        operation::sayr::Fulfill{sort::ObligationId{id(key, "obligation.expand")}},
-        operation::sayr::Fulfill{sort::ObligationId{id(key, "obligation.climax")}},
-        operation::Tonicize{
-            sort::JinsId{branch.jins},
-            tonicization::Level::Internal,
-        },
-        operation::Modulate{
-            sort::PathId{branch.path},
-            sort::CenterId{branch.center},
-            tonicization::Level::Internal,
-        },
-        operation::sayr::Fulfill{sort::ObligationId{branch.travel}},
-    });
-}
-
-Stage branchDescent(
-    const Key& key,
-    const Identity& candidate,
-    const BranchKey& branch) {
-    const auto p = phrase(key, candidate, "return");
-    const auto descent = occurrence(key, candidate, "descent");
-    return makeStage(key, candidate, "branch-descent", {
-        operation::Begin{sort::PhraseId{p}, phrase::Function{key.phraseResponse}},
-        operation::gesture::Begin{descent, key.gestureDescent},
-            operation::Place{
-                sort::EventId{event(key, candidate, "branch")},
-                sort::RoleId{branch.descent},
-            branch.direction,
-            sort::RegionId{key.regionUpper},
-            std::nullopt,
-        },
-        operation::Emit{
-            sort::CellId{key.cellDevelop},
-            sort::FormulaId{key.formulaDevelop},
-            std::optional<sort::FormulaId>{
-                sort::FormulaId{key.formulaDevelopVariation}},
-        },
-    });
-}
-
-Stage restore(
-    const Key& key,
-    const Identity& candidate,
-    const BranchKey& branch) {
-    const auto p = phrase(key, candidate, "return");
-    const auto descent = occurrence(key, candidate, "descent");
-    const auto resolution = occurrence(key, candidate, "resolution");
-    return makeStage(key, candidate, "restore", {
-        operation::gesture::End{descent},
-        operation::Enter{sort::JinsId{key.jinsRoot}},
-        operation::gesture::Begin{resolution, key.gestureResolution},
-        operation::Place{
-            sort::EventId{event(key, candidate, "tonic-return")},
-            sort::RoleId{key.roleTonic},
-            motion::Direction::Fall,
-            sort::RegionId{key.regionRoot},
-            std::nullopt,
-        },
-        operation::Emit{
-            sort::CellId{key.cellReturn},
-            sort::FormulaId{key.formulaReturn},
-        },
-        operation::gesture::End{resolution},
-        operation::Cadence{
-            sort::FamilyId{key.cadenceReturn},
-            Rational(1),
-            Rational(1),
-        },
-        operation::End{sort::PhraseId{p}, phrase::Boundary::Closed},
-        operation::Return{sort::CenterId{key.centerRoot}},
-        operation::sayr::Fulfill{sort::ObligationId{branch.restore}},
-    });
-}
-
-Stage orderedContinuation(
-    const Key& key,
-    const Identity& candidate,
-    const BranchKey& branch,
-    bool beginPhrase,
-    const std::optional<Identity>& previousDescent,
-    bool varied = false) {
-    const auto descent = occurrence(
-        key,
-        candidate,
-        "ordered-descent." + branch.jins.name);
-    std::vector<operation::Any> actions;
-    if (beginPhrase) {
-        actions.push_back(operation::Begin{
-            sort::PhraseId{phrase(key, candidate, "return")},
-            phrase::Function{key.phraseResponse}});
-    }
-    if (previousDescent) {
-        actions.push_back(operation::gesture::End{*previousDescent});
-    }
-    actions.push_back(operation::Enter{sort::JinsId{branch.jins}});
-    actions.push_back(operation::Tonicize{
-        sort::JinsId{branch.jins},
-        tonicization::Level::Internal,
-    });
-    actions.push_back(operation::gesture::Begin{descent, key.gestureDescent});
-    actions.push_back(operation::Place{
-        sort::EventId{event(key, candidate, "ordered." + branch.jins.name)},
-        sort::RoleId{branch.ghammaz},
-        branch.direction,
-        sort::RegionId{key.regionUpper},
-        std::nullopt,
-    });
-    actions.push_back(operation::Modulate{
-        sort::PathId{branch.path},
-        sort::CenterId{branch.center},
-        tonicization::Level::Internal,
-    });
-    actions.push_back(operation::Emit{
-        sort::CellId{key.cellDevelop},
-        sort::FormulaId{key.formulaDevelop},
-        varied
-            ? std::optional<sort::FormulaId>{
-                  sort::FormulaId{key.formulaDevelopVariation}}
-            : std::nullopt,
-    });
-    actions.push_back(operation::sayr::Fulfill{
-        sort::ObligationId{branch.travel}});
-    return makeStage(
-        key,
-        candidate,
-        "ordered." + branch.jins.name,
-        std::move(actions));
-}
-
-Stage orderedRestore(
-    const Key& key,
-    const Identity& candidate,
-    const RouteKey& route) {
-    const auto p = phrase(key, candidate, "return");
-    const auto descent = occurrence(
-        key,
-        candidate,
-        "ordered-descent." +
-            key.branches[route.branches.back()].jins.name);
-    const auto resolution = occurrence(key, candidate, "ordered-resolution");
-    std::vector<operation::Any> actions{
-        operation::gesture::End{descent},
-        operation::Enter{sort::JinsId{key.jinsRoot}},
-        operation::gesture::Begin{resolution, key.gestureResolution},
-        operation::Place{
-            sort::EventId{event(key, candidate, "ordered-tonic-return")},
-            sort::RoleId{key.roleTonic},
-            motion::Direction::Fall,
-            sort::RegionId{key.regionRoot},
-            std::nullopt,
-        },
-        operation::Emit{
-            sort::CellId{key.cellReturn},
-            sort::FormulaId{key.formulaReturn},
-        },
-        operation::gesture::End{resolution},
-        operation::Cadence{
-            sort::FamilyId{key.cadenceReturn},
-            Rational(1),
-            Rational(1),
-        },
-        operation::End{sort::PhraseId{p}, phrase::Boundary::Closed},
-        operation::Return{sort::CenterId{key.centerRoot}},
-    };
-    for (const auto index : route.branches) {
-        actions.push_back(operation::sayr::Fulfill{
-            sort::ObligationId{key.branches[index].restore}});
-    }
-    return makeStage(key, candidate, "ordered.restore", std::move(actions));
 }
 
 grammar::Term actions(
@@ -323,115 +80,549 @@ grammar::Term candidateTerm(
         std::move(body));
 }
 
-Stage stayStage(const Key& key, const Identity& candidate) {
-    const auto stayPhrase = phrase(key, candidate, "establish");
-    return makeStage(key, candidate, "stay", {
-        operation::Anchor{sort::CenterId{key.centerRoot}},
-        operation::Enter{sort::JinsId{key.jinsRoot}},
-        operation::Begin{
-            sort::PhraseId{stayPhrase},
-            phrase::Function{key.phraseQuestion}},
-        operation::Place{
-            sort::EventId{event(key, candidate, "tonic")},
-            sort::RoleId{key.roleTonic},
-            motion::Direction::Start,
-            sort::RegionId{key.regionRoot},
-            std::nullopt,
-        },
-        operation::Emit{
-            sort::CellId{key.cellEstablish},
-            sort::FormulaId{key.formulaEstablish}},
-        operation::Cadence{
-            sort::FamilyId{key.cadenceLocal},
-            Rational(1),
-            Rational(1)},
-        operation::End{
-            sort::PhraseId{stayPhrase},
-            phrase::Boundary::Closed},
-        operation::sayr::Fulfill{
-            sort::ObligationId{id(key, "obligation.establish")}},
-        operation::sayr::Fulfill{
-            sort::ObligationId{id(key, "obligation.settle")}},
-    });
+struct ActionContext {
+    const Key& key;
+    const Identity& candidate;
+    const BranchKey* branch{};
+    std::optional<Identity> previousDescent;
+    std::size_t variant{};
+};
+
+std::expected<Rational, std::string> rational(std::string_view value) {
+    const auto separator = value.find('/');
+    const auto numeratorText = value.substr(
+        0,
+        separator == std::string_view::npos ? value.size() : separator);
+    const auto denominatorText = separator == std::string_view::npos
+                                     ? std::string_view{"1"}
+                                     : value.substr(separator + 1);
+    std::int64_t numerator{};
+    std::int64_t denominator{};
+    const auto parsedNumerator = std::from_chars(
+        numeratorText.data(),
+        numeratorText.data() + numeratorText.size(),
+        numerator);
+    const auto parsedDenominator = std::from_chars(
+        denominatorText.data(),
+        denominatorText.data() + denominatorText.size(),
+        denominator);
+    if (parsedNumerator.ec != std::errc{} ||
+        parsedNumerator.ptr != numeratorText.data() + numeratorText.size() ||
+        parsedDenominator.ec != std::errc{} ||
+        parsedDenominator.ptr !=
+            denominatorText.data() + denominatorText.size() ||
+        denominator <= 0) {
+        return std::unexpected("invalid rational action argument: " +
+                               std::string(value));
+    }
+    return Rational(numerator, denominator);
 }
 
-std::expected<std::vector<Stage>, std::string> routeStages(
+std::expected<void, std::string> arity(
+    const ActionSpec& action,
+    std::size_t minimum,
+    std::size_t maximum) {
+    if (action.arguments.size() < minimum ||
+        action.arguments.size() > maximum) {
+        return std::unexpected(
+            "invalid argument count for collection operation " +
+            action.operation);
+    }
+    return {};
+}
+
+std::expected<Identity, std::string> reference(
+    const ActionContext& context,
+    std::string_view token) {
+    const std::map<std::string, Identity> fixed{
+        {"center.root", context.key.centerRoot},
+        {"center.upper", context.key.centerUpper},
+        {"jins.root", context.key.jinsRoot},
+        {"role.tonic", context.key.roleTonic},
+        {"role.ghammaz", context.key.roleGhammaz},
+        {"role.upper", context.key.roleUpper},
+        {"role.extension", context.key.roleExtension},
+        {"region.root", context.key.regionRoot},
+        {"region.upper", context.key.regionUpper},
+        {"gesture.establish", context.key.gestureEstablish},
+        {"gesture.ascent", context.key.gestureAscent},
+        {"gesture.descent", context.key.gestureDescent},
+        {"gesture.resolution", context.key.gestureResolution},
+        {"phrase.question", context.key.phraseQuestion},
+        {"phrase.response", context.key.phraseResponse},
+        {"cell.establish", context.key.cellEstablish},
+        {"cell.develop", context.key.cellDevelop},
+        {"cell.climax", context.key.cellClimax},
+        {"cell.return", context.key.cellReturn},
+        {"formula.establish", context.key.formulaEstablish},
+        {"formula.develop", context.key.formulaDevelop},
+        {"formula.develop-variation", context.key.formulaDevelopVariation},
+        {"formula.climax", context.key.formulaClimax},
+        {"formula.return", context.key.formulaReturn},
+        {"cadence.local", context.key.cadenceLocal},
+        {"cadence.return", context.key.cadenceReturn},
+        {"baggage.extension", context.key.baggageExtension},
+        {"obligation.establish", id(context.key, "obligation.establish")},
+        {"obligation.settle", id(context.key, "obligation.settle")},
+        {"obligation.expand", id(context.key, "obligation.expand")},
+        {"obligation.climax", id(context.key, "obligation.climax")},
+    };
+    if (const auto found = fixed.find(std::string(token));
+        found != fixed.end()) {
+        return found->second;
+    }
+    if (token == "previous-descent" || token == "current-descent") {
+        if (!context.previousDescent) {
+            return std::unexpected(
+                "collection operation requires an active descent occurrence");
+        }
+        return *context.previousDescent;
+    }
+    if (token == "branch.jins" || token == "branch.center" ||
+        token == "branch.tonic" || token == "branch.ghammaz" ||
+        token == "branch.descent" || token == "branch.path" ||
+        token == "branch.travel" || token == "branch.restore") {
+        if (context.branch == nullptr) {
+            return std::unexpected(
+                "collection operation requires a branch reference");
+        }
+        const std::map<std::string, Identity> branch{
+            {"branch.jins", context.branch->jins},
+            {"branch.center", context.branch->center},
+            {"branch.tonic", context.branch->tonic},
+            {"branch.ghammaz", context.branch->ghammaz},
+            {"branch.descent", context.branch->descent},
+            {"branch.path", context.branch->path},
+            {"branch.travel", context.branch->travel},
+            {"branch.restore", context.branch->restore},
+        };
+        return branch.at(std::string(token));
+    }
+    if (token == "event.branch") {
+        if (context.branch == nullptr) {
+            return std::unexpected(
+                "event.branch requires a branch reference");
+        }
+        return event(
+            context.key,
+            context.candidate,
+            "branch." + context.branch->jins.name);
+    }
+    if (token.starts_with("event.")) {
+        return event(
+            context.key,
+            context.candidate,
+            std::string(token.substr(6)));
+    }
+    if (token == "occurrence.branch-descent") {
+        if (context.branch == nullptr) {
+            return std::unexpected(
+                "occurrence.branch-descent requires a branch reference");
+        }
+        return occurrence(
+            context.key,
+            context.candidate,
+            "sequence-descent." + context.branch->jins.name);
+    }
+    if (token.starts_with("occurrence.")) {
+        return occurrence(
+            context.key,
+            context.candidate,
+            std::string(token.substr(11)));
+    }
+    if (token == "phrase.establish" || token == "phrase.return") {
+        return phrase(
+            context.key,
+            context.candidate,
+            std::string(token.substr(7)));
+    }
+    return std::unexpected(
+        "unknown collection reference: " + std::string(token));
+}
+
+std::expected<motion::Direction, std::string> direction(
+    const ActionContext& context,
+    std::string_view token) {
+    if (token == "branch.direction") {
+        if (context.branch == nullptr) {
+            return std::unexpected(
+                "branch.direction requires a branch reference");
+        }
+        return context.branch->direction;
+    }
+    const std::map<std::string, motion::Direction> values{
+        {"start", motion::Direction::Start},
+        {"same", motion::Direction::Same},
+        {"rise", motion::Direction::Rise},
+        {"fall", motion::Direction::Fall},
+    };
+    const auto found = values.find(std::string(token));
+    if (found == values.end()) {
+        return std::unexpected(
+            "unknown collection direction: " + std::string(token));
+    }
+    return found->second;
+}
+
+std::expected<tonicization::Level, std::string> level(
+    std::string_view token) {
+    const std::map<std::string, tonicization::Level> values{
+        {"color", tonicization::Level::Color},
+        {"internal", tonicization::Level::Internal},
+        {"maqam", tonicization::Level::Maqam},
+    };
+    const auto found = values.find(std::string(token));
+    if (found == values.end()) {
+        return std::unexpected(
+            "unknown collection tonicization level: " + std::string(token));
+    }
+    return found->second;
+}
+
+std::expected<phrase::Boundary, std::string> boundary(
+    std::string_view token) {
+    if (token == "open") {
+        return phrase::Boundary::Open;
+    }
+    if (token == "closed") {
+        return phrase::Boundary::Closed;
+    }
+    return std::unexpected(
+        "unknown collection phrase boundary: " + std::string(token));
+}
+
+std::expected<Identity, std::string> function(
+    const Key& key,
+    std::string_view token) {
+    if (token == "question") {
+        return key.phraseQuestion;
+    }
+    if (token == "response") {
+        return key.phraseResponse;
+    }
+    return std::unexpected(
+        "unknown collection phrase function: " + std::string(token));
+}
+
+using ActionBuilder = std::function<std::expected<operation::Any, std::string>(
+    const ActionContext&,
+    const ActionSpec&)>;
+
+std::expected<operation::Any, std::string> makeAction(
+    const ActionContext& context,
+    const ActionSpec& action) {
+    const std::map<std::string, ActionBuilder> builders{
+        {"anchor", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 1, 1); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto value = reference(c, a.arguments[0]);
+             if (!value) {
+                 return std::unexpected(value.error());
+             }
+             return operation::Any{operation::Anchor{sort::CenterId{*value}}};
+         }},
+        {"enter", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 1, 1); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto value = reference(c, a.arguments[0]);
+             if (!value) {
+                 return std::unexpected(value.error());
+             }
+             return operation::Any{operation::Enter{sort::JinsId{*value}}};
+         }},
+        {"begin", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 2, 2); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto p = reference(c, a.arguments[0]);
+             const auto f = function(c.key, a.arguments[1]);
+             if (!p) {
+                 return std::unexpected(p.error());
+             }
+             if (!f) {
+                 return std::unexpected(f.error());
+             }
+             return operation::Any{operation::Begin{
+                 sort::PhraseId{*p},
+                 phrase::Function{*f}}};
+         }},
+        {"end", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 2, 2); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto p = reference(c, a.arguments[0]);
+             const auto b = boundary(a.arguments[1]);
+             if (!p) {
+                 return std::unexpected(p.error());
+             }
+             if (!b) {
+                 return std::unexpected(b.error());
+             }
+             return operation::Any{operation::End{
+                 sort::PhraseId{*p},
+                 *b}};
+         }},
+        {"gesture.begin", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 2, 2); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto occurrenceValue = reference(c, a.arguments[0]);
+             const auto familyValue = reference(c, a.arguments[1]);
+             if (!occurrenceValue) {
+                 return std::unexpected(occurrenceValue.error());
+             }
+             if (!familyValue) {
+                 return std::unexpected(familyValue.error());
+             }
+             return operation::Any{operation::gesture::Begin{
+                 *occurrenceValue,
+                 *familyValue}};
+         }},
+        {"gesture.end", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 1, 1); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto value = reference(c, a.arguments[0]);
+             if (!value) {
+                 return std::unexpected(value.error());
+             }
+             return operation::Any{operation::gesture::End{*value}};
+         }},
+        {"place", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 5, 5); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto e = reference(c, a.arguments[0]);
+             const auto r = reference(c, a.arguments[1]);
+             const auto d = direction(c, a.arguments[2]);
+             const auto regionValue = reference(c, a.arguments[3]);
+             if (!e) {
+                 return std::unexpected(e.error());
+             }
+             if (!r) {
+                 return std::unexpected(r.error());
+             }
+             if (!d) {
+                 return std::unexpected(d.error());
+             }
+             if (!regionValue) {
+                 return std::unexpected(regionValue.error());
+             }
+             std::optional<sort::BaggageId> baggageValue;
+             if (a.arguments[4] != "-") {
+                 const auto baggage = reference(c, a.arguments[4]);
+                 if (!baggage) {
+                     return std::unexpected(baggage.error());
+                 }
+                 baggageValue = sort::BaggageId{*baggage};
+             }
+             return operation::Any{operation::Place{
+                 sort::EventId{*e},
+                 sort::RoleId{*r},
+                 *d,
+                 sort::RegionId{*regionValue},
+                 baggageValue}};
+         }},
+        {"emit", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 2, 3); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto cellValue = reference(c, a.arguments[0]);
+             const auto formulaValue = reference(c, a.arguments[1]);
+             if (!cellValue) {
+                 return std::unexpected(cellValue.error());
+             }
+             if (!formulaValue) {
+                 return std::unexpected(formulaValue.error());
+             }
+             std::optional<sort::FormulaId> variation;
+             if (a.arguments.size() == 3 && c.variant > 0) {
+                 const auto variationValue = reference(c, a.arguments[2]);
+                 if (!variationValue) {
+                     return std::unexpected(variationValue.error());
+                 }
+                 variation = sort::FormulaId{*variationValue};
+             }
+             return operation::Any{operation::Emit{
+                 sort::CellId{*cellValue},
+                 sort::FormulaId{*formulaValue},
+                 variation}};
+         }},
+        {"emphasize", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 2, 2); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto roleValue = reference(c, a.arguments[0]);
+             const auto amount = rational(a.arguments[1]);
+             if (!roleValue) {
+                 return std::unexpected(roleValue.error());
+             }
+             if (!amount) {
+                 return std::unexpected(amount.error());
+             }
+             return operation::Any{operation::Emphasize{
+                 sort::RoleId{*roleValue}, *amount}};
+         }},
+        {"dwell", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 2, 2); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto roleValue = reference(c, a.arguments[0]);
+             const auto amount = rational(a.arguments[1]);
+             if (!roleValue) {
+                 return std::unexpected(roleValue.error());
+             }
+             if (!amount) {
+                 return std::unexpected(amount.error());
+             }
+             return operation::Any{operation::Dwell{
+                 sort::RoleId{*roleValue}, *amount}};
+         }},
+        {"cadence", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 3, 3); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto familyValue = reference(c, a.arguments[0]);
+             const auto evidence = rational(a.arguments[1]);
+             const auto strength = rational(a.arguments[2]);
+             if (!familyValue) {
+                 return std::unexpected(familyValue.error());
+             }
+             if (!evidence) {
+                 return std::unexpected(evidence.error());
+             }
+             if (!strength) {
+                 return std::unexpected(strength.error());
+             }
+             return operation::Any{operation::Cadence{
+                 sort::FamilyId{*familyValue}, *evidence, *strength}};
+         }},
+        {"tonicize", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 2, 2); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto jinsValue = reference(c, a.arguments[0]);
+             const auto levelValue = level(a.arguments[1]);
+             if (!jinsValue) {
+                 return std::unexpected(jinsValue.error());
+             }
+             if (!levelValue) {
+                 return std::unexpected(levelValue.error());
+             }
+             return operation::Any{operation::Tonicize{
+                 sort::JinsId{*jinsValue}, *levelValue}};
+         }},
+        {"modulate", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 3, 3); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto pathValue = reference(c, a.arguments[0]);
+             const auto centerValue = reference(c, a.arguments[1]);
+             const auto levelValue = level(a.arguments[2]);
+             if (!pathValue) {
+                 return std::unexpected(pathValue.error());
+             }
+             if (!centerValue) {
+                 return std::unexpected(centerValue.error());
+             }
+             if (!levelValue) {
+                 return std::unexpected(levelValue.error());
+             }
+             return operation::Any{operation::Modulate{
+                 sort::PathId{*pathValue},
+                 sort::CenterId{*centerValue},
+                 *levelValue}};
+         }},
+        {"return", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 1, 1); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto centerValue = reference(c, a.arguments[0]);
+             if (!centerValue) {
+                 return std::unexpected(centerValue.error());
+             }
+             return operation::Any{operation::Return{
+                 sort::CenterId{*centerValue}}};
+         }},
+        {"sayr.fulfill", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
+             if (const auto checked = arity(a, 1, 1); !checked) {
+                 return std::unexpected(checked.error());
+             }
+             const auto obligationValue = reference(c, a.arguments[0]);
+             if (!obligationValue) {
+                 return std::unexpected(obligationValue.error());
+             }
+             return operation::Any{operation::sayr::Fulfill{
+                 sort::ObligationId{*obligationValue}}};
+         }},
+    };
+    const auto found = builders.find(action.operation);
+    if (found == builders.end()) {
+        return std::unexpected(
+            "unknown collection operation: " + action.operation);
+    }
+    return found->second(context, action);
+}
+
+std::expected<std::vector<Stage>, std::string> routeSteps(
     const Key& key,
     const Identity& candidate,
     const RouteKey& route,
     std::size_t variant) {
-    const bool varied = variant % 2 == 1;
     std::vector<Stage> stages;
-    bool responseStarted = false;
     std::optional<Identity> previousDescent;
-    for (const auto& stage : route.stages) {
+    for (const auto& step : route.steps) {
         const auto branch = [&]() -> const BranchKey* {
-            if (!stage.branch || *stage.branch >= key.branches.size()) {
+            if (!step.branch || *step.branch >= key.branches.size()) {
                 return nullptr;
             }
-            return &key.branches[*stage.branch];
+            return &key.branches[*step.branch];
         }();
-        switch (stage.kind) {
-        case RouteStageKind::Stay:
-            stages.push_back(stayStage(key, candidate));
-            break;
-        case RouteStageKind::Establish:
-            stages.push_back(establishment(key, candidate));
-            break;
-        case RouteStageKind::Develop:
-            stages.push_back(development(key, candidate, varied));
-            break;
-        case RouteStageKind::Climax:
-            if (branch == nullptr) {
-                return std::unexpected(
-                    "climax stage has no declared branch in " +
-                    route.route.str());
+        ActionContext context{key, candidate, branch, previousDescent, variant};
+        std::vector<operation::Any> actions;
+        for (const auto& specification : step.actions) {
+            if (specification.operation == "sayr.fulfill.route") {
+                if (specification.arguments.size() != 1 ||
+                    specification.arguments.front() != "restore") {
+                    return std::unexpected(
+                        step.name + ": invalid route fulfillment action");
+                }
+                for (const auto index : route.branches) {
+                    actions.push_back(operation::sayr::Fulfill{
+                        sort::ObligationId{key.branches[index].restore}});
+                }
+                continue;
             }
-            stages.push_back(climax(key, candidate, *branch));
-            break;
-        case RouteStageKind::Descent:
-            if (branch == nullptr) {
+            const auto action = makeAction(context, specification);
+            if (!action) {
                 return std::unexpected(
-                    "descent stage has no declared branch in " +
-                    route.route.str());
+                    step.name + ": " + action.error());
             }
-            stages.push_back(branchDescent(key, candidate, *branch));
-            break;
-        case RouteStageKind::Continuation:
-            if (branch == nullptr) {
-                return std::unexpected(
-                    "continuation stage has no declared branch in " +
-                    route.route.str());
-            }
-            stages.push_back(orderedContinuation(
-                key,
-                candidate,
-                *branch,
-                !responseStarted,
-                previousDescent,
-                varied));
-            responseStarted = true;
+            actions.push_back(*action);
+        }
+        if (actions.empty()) {
+            return std::unexpected(
+                "collection step has no operations: " + step.name);
+        }
+        stages.push_back(makeStage(
+            key,
+            candidate,
+            route.route.name + "." + step.name,
+            std::move(actions)));
+        const auto descended = std::ranges::find_if(
+            step.actions,
+            [](const auto& action) {
+                return action.operation == "gesture.begin" &&
+                       !action.arguments.empty() &&
+                       action.arguments.front() == "occurrence.branch-descent";
+            });
+        if (descended != step.actions.end() && branch != nullptr) {
             previousDescent = occurrence(
                 key,
                 candidate,
-                "ordered-descent." + branch->jins.name);
-            break;
-        case RouteStageKind::Restore:
-            if (branch == nullptr) {
-                return std::unexpected(
-                    "restore stage has no declared branch in " +
-                    route.route.str());
-            }
-            stages.push_back(restore(key, candidate, *branch));
-            break;
-        case RouteStageKind::SequenceRestore:
-            if (route.branches.empty()) {
-                return std::unexpected(
-                    "sequence restore has no declared branches in " +
-                    route.route.str());
-            }
-            stages.push_back(orderedRestore(key, candidate, route));
-            break;
+                "sequence-descent." + branch->jins.name);
         }
     }
     return stages;
@@ -605,7 +796,7 @@ std::expected<Generation, std::string> generation(const Key& key) {
                                      : route.route.name + ".variant." +
                                            std::to_string(variant);
             const auto candidate = id(key, "candidate." + suffix);
-            const auto stages = routeStages(key, candidate, route, variant);
+            const auto stages = routeSteps(key, candidate, route, variant);
             if (!stages) {
                 return std::unexpected(stages.error());
             }

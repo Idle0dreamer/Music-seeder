@@ -127,12 +127,15 @@ Key key(const Spec& spec) {
             route.branches.push_back(
                 static_cast<std::size_t>(std::distance(result.branches.begin(), found)));
         }
-        for (const auto& stage : source.stages) {
-            RouteKey::Stage translated{stage.kind, std::nullopt};
-            if (!stage.branch.empty()) {
+        for (const auto& step : source.steps) {
+            RouteKey::Step translated{
+                step.name,
+                std::nullopt,
+                step.actions};
+            if (!step.branch.empty()) {
                 const auto found = std::ranges::find_if(
                     result.branches,
-                    [&](const auto& value) { return value.name == stage.branch; });
+                    [&](const auto& value) { return value.name == step.branch; });
                 if (found == result.branches.end()) {
                     route.valid = false;
                 } else {
@@ -140,7 +143,7 @@ Key key(const Spec& spec) {
                         std::distance(result.branches.begin(), found));
                 }
             }
-            route.stages.push_back(std::move(translated));
+            route.steps.push_back(std::move(translated));
         }
         result.routes.push_back(std::move(route));
     }
