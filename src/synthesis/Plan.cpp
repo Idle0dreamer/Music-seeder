@@ -204,12 +204,42 @@ struct Phrase {
     Facts facts;
 };
 
+struct PhraseChoice {
+    const ::mq::kernel::generate::Outcome* outcome{};
+    ::mq::kernel::performance::Plan plan;
+    Facts facts;
+};
+
+std::string phrase_fingerprint(
+    const ::mq::kernel::performance::Plan& plan,
+    std::string_view selector) {
+    std::ostringstream result;
+    result << selector << '|';
+    for (const auto& event : plan.events) {
+        result << event.target.event.identity.str() << '|';
+        if (event.target.cell) result << event.target.cell->str();
+        result << '|';
+        if (event.target.formula) result << event.target.formula->str();
+        result << '|';
+        if (event.target.variation) result << event.target.variation->str();
+        result << '|';
+        if (event.target.transformation) {
+            result << event.target.transformation->str();
+        }
+        result << ';';
+    }
+    for (const auto& pause : plan.pauses) {
+        result << "pause:" << pause.function.str() << ';';
+    }
+    return result.str();
+}
+
 std::expected<Phrase, std::string> make_phrase(
     std::string_view maqam,
     std::uint64_t seed,
     const ::mq::kernel::performance::Timing& timing,
     std::span<const std::string> candidate_prefixes,
-    const std::optional<::mq::kernel::Identity>& avoid,
+    const std::optional<std::string>& avoid,
     const std::optional<std::string>& phrase_span) {
     const auto catalog = ::mq::kernel::maqam::Catalog::declared();
     const auto scaffold = catalog.build_executable(maqam);
@@ -237,38 +267,49 @@ std::expected<Phrase, std::string> make_phrase(
         if (!generated) {
             return std::unexpected(generated.error().message);
         }
-        std::vector<const ::mq::kernel::generate::Outcome*> compatible;
+        std::vector<PhraseChoice> compatible;
         for (const auto& outcome : generated->legal) {
-            if (matches_prefix(outcome.candidate, candidate_prefixes) &&
-                (!avoid || outcome.candidate != *avoid)) {
-                compatible.push_back(&outcome);
+            if (!matches_prefix(outcome.candidate, candidate_prefixes)) {
+                continue;
             }
+            auto selectedPlan = outcome.plan;
+            auto facts = state_facts(outcome.state);
+            if (phrase_span) {
+                const auto span = select_phrase_span(
+                    outcome.state, outcome.plan, *phrase_span);
+                if (!span) {
+                    continue;
+                }
+                selectedPlan = std::move(span->first);
+                facts = std::move(span->second);
+            }
+            const auto fingerprint = phrase_fingerprint(
+                selectedPlan,
+                phrase_span ? *phrase_span : "full");
+            if (avoid && fingerprint == *avoid) {
+                continue;
+            }
+            compatible.push_back({
+                &outcome,
+                std::move(selectedPlan),
+                std::move(facts),
+            });
         }
         if (compatible.empty()) {
             continue;
         }
-        const auto* selected = compatible[mix(seed, attempt) % compatible.size()];
-        auto selectedPlan = selected->plan;
-        auto facts = state_facts(selected->state);
-        if (phrase_span) {
-            const auto span = select_phrase_span(
-                selected->state, selected->plan, *phrase_span);
-            if (!span) {
-                continue;
-            }
-            selectedPlan = std::move(span->first);
-            facts = std::move(span->second);
-        }
+        auto selected = std::move(
+            compatible[mix(seed, attempt) % compatible.size()]);
         selected_phrase = Phrase{
             GeneratedPlan{
-                selected->candidate,
-                std::move(selectedPlan),
-                {selected->candidate},
+                selected.outcome->candidate,
+                std::move(selected.plan),
+                {selected.outcome->candidate},
                 {},
                 {phrase_span ? *phrase_span : "full"},
             },
-            selected->state,
-            std::move(facts),
+            selected.outcome->state,
+            std::move(selected.facts),
         };
         break;
     }
@@ -336,7 +377,7 @@ std::expected<GeneratedPlan, std::string> make_plan(
     std::size_t emitted{};
     std::size_t transitionOrdinal{};
     std::optional<GeneratedPlan> result;
-    std::optional<::mq::kernel::Identity> previous;
+    std::optional<std::string> previous;
     Facts memory;
     const auto terminal = [&](const auto* stage) {
         return std::ranges::find(
@@ -394,7 +435,9 @@ std::expected<GeneratedPlan, std::string> make_plan(
             memory.insert(phrase->facts.begin(), phrase->facts.end());
             memory.insert(
                 current->provided_facts.begin(), current->provided_facts.end());
-            previous = phrase->generated.candidate;
+            previous = phrase_fingerprint(
+                phrase->generated.plan,
+                current->phrase_span ? *current->phrase_span : "full");
             ++emitted;
         }
         ++transitionOrdinal;
