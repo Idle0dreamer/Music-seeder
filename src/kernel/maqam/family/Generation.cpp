@@ -311,6 +311,34 @@ using ActionBuilder = std::function<std::expected<operation::Any, std::string>(
 std::expected<operation::Any, std::string> makeAction(
     const ActionContext& context,
     const ActionSpec& action) {
+    const ActionBuilder emit =
+        [](const ActionContext& c,
+           const ActionSpec& a) -> std::expected<operation::Any, std::string> {
+        if (const auto checked = arity(a, 2, 3); !checked) {
+            return std::unexpected(checked.error());
+        }
+        const auto cellValue = reference(c, a.arguments[0]);
+        const auto formulaValue = reference(c, a.arguments[1]);
+        if (!cellValue) {
+            return std::unexpected(cellValue.error());
+        }
+        if (!formulaValue) {
+            return std::unexpected(formulaValue.error());
+        }
+        std::optional<sort::FormulaId> variation;
+        if (a.arguments.size() == 3 &&
+            (c.variant > 0 || a.operation == "emit.variation")) {
+            const auto variationValue = reference(c, a.arguments[2]);
+            if (!variationValue) {
+                return std::unexpected(variationValue.error());
+            }
+            variation = sort::FormulaId{*variationValue};
+        }
+        return operation::Any{operation::Emit{
+            sort::CellId{*cellValue},
+            sort::FormulaId{*formulaValue},
+            variation}};
+    };
     const std::map<std::string, ActionBuilder> builders{
         {"anchor", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
              if (const auto checked = arity(a, 1, 1); !checked) {
@@ -425,31 +453,8 @@ std::expected<operation::Any, std::string> makeAction(
                  sort::RegionId{*regionValue},
                  baggageValue}};
          }},
-        {"emit", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
-             if (const auto checked = arity(a, 2, 3); !checked) {
-                 return std::unexpected(checked.error());
-             }
-             const auto cellValue = reference(c, a.arguments[0]);
-             const auto formulaValue = reference(c, a.arguments[1]);
-             if (!cellValue) {
-                 return std::unexpected(cellValue.error());
-             }
-             if (!formulaValue) {
-                 return std::unexpected(formulaValue.error());
-             }
-             std::optional<sort::FormulaId> variation;
-             if (a.arguments.size() == 3 && c.variant > 0) {
-                 const auto variationValue = reference(c, a.arguments[2]);
-                 if (!variationValue) {
-                     return std::unexpected(variationValue.error());
-                 }
-                 variation = sort::FormulaId{*variationValue};
-             }
-             return operation::Any{operation::Emit{
-                 sort::CellId{*cellValue},
-                 sort::FormulaId{*formulaValue},
-                 variation}};
-         }},
+        {"emit", emit},
+        {"emit.variation", emit},
         {"emphasize", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
              if (const auto checked = arity(a, 2, 2); !checked) {
                  return std::unexpected(checked.error());
