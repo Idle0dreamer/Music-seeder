@@ -237,6 +237,18 @@ std::optional<sort::MotifId> formulaMotif(
     return sort::MotifId{found->motif};
 }
 
+const FormulaVariationKey* formulaVariation(
+    const Key& key,
+    const Identity& base,
+    const Identity& variation) {
+    const auto found = std::ranges::find_if(
+        key.formula_variations,
+        [&](const auto& relation) {
+            return relation.base == base && relation.variation == variation;
+        });
+    return found == key.formula_variations.end() ? nullptr : &*found;
+}
+
 std::expected<motion::Direction, std::string> direction(
     const ActionContext& context,
     std::string_view token) {
@@ -367,11 +379,20 @@ std::expected<operation::Any, std::string> makeAction(
         if (!variationValue) {
             return std::unexpected(variationValue.error());
         }
+        const auto relation = formulaVariation(
+            c.key, *formulaValue, *variationValue);
+        if (!relation) {
+            return std::unexpected(
+                "formula variation is not licensed by the collection: " +
+                variationValue->str());
+        }
         return operation::Any{operation::Emit{
             sort::CellId{*cellValue},
             sort::FormulaId{*formulaValue},
             sort::FormulaId{*variationValue},
-            formulaMotif(c.key, *formulaValue)}};
+            formulaMotif(c.key, *formulaValue),
+            relation->transformation,
+            relation->provenance}};
     };
     const std::map<std::string, ActionBuilder> builders{
         {"anchor", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
@@ -633,6 +654,7 @@ std::expected<std::vector<operation::Any>, std::string> expandAction(
                      source->str());
              }
              std::optional<Identity> variation;
+             const FormulaVariationKey* transformation = nullptr;
              const FormulaKey* surface = &*base;
              if (a.arguments.size() == 2) {
                  const auto selected = reference(c, a.arguments[1]);
@@ -664,6 +686,7 @@ std::expected<std::vector<operation::Any>, std::string> expandAction(
                          selected->str());
                  }
                  variation = *selected;
+                 transformation = &*licensed;
                  surface = &*found;
              }
 
@@ -705,7 +728,12 @@ std::expected<std::vector<operation::Any>, std::string> expandAction(
                     variation ? std::optional<sort::FormulaId>{
                                      sort::FormulaId{*variation}}
                                : std::nullopt,
-                    sort::MotifId{base->motif}});
+                    sort::MotifId{base->motif},
+                    transformation
+                        ? std::optional<sort::TransformationId>{
+                              transformation->transformation}
+                        : std::nullopt,
+                    transformation ? transformation->provenance : ""});
              }
              return result;
          }},

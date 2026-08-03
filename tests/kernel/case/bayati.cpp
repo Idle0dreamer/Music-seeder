@@ -125,6 +125,8 @@ void test::bayati_case() {
         "maqam.bayati", "formula.develop-variation", "1"};
     const sort::MotifId developMotif{
         Identity{"maqam.bayati", "motif.develop", "1"}};
+    const Identity transformation{
+        "maqam.bayati", "transformation.upper-jins-descent", "1"};
     require(
         std::ranges::all_of(
             result->legal,
@@ -148,6 +150,10 @@ void test::bayati_case() {
                        target.motif &&
                        target.motif->identity ==
                            Identity{"maqam.bayati", "motif.develop", "1"} &&
+                       target.transformation &&
+                       target.transformation->identity == transformation &&
+                       target.transformation_provenance.find(
+                           "MaqamWorld:jins-rast") != std::string::npos &&
                        motifs != item.state.motif.occurrences.end() &&
                        motifs->second.size() == 2 &&
                        motifs->second.front().formula &&
@@ -161,6 +167,10 @@ void test::bayati_case() {
                            Identity{"maqam.bayati", "motif.develop", "1"} &&
                        first.motif == second.motif &&
                        !first.variation && second.variation &&
+                       !first.transformation &&
+                       second.transformation &&
+                       second.transformation->identity == transformation &&
+                       !second.transformation_provenance.empty() &&
                        second.variation->identity == variedFormula &&
                        item.plan.events[4].ornament &&
                        item.plan.events[4].ornament->kind ==

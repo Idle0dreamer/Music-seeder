@@ -3,9 +3,11 @@
 #include "mq/kernel/sort/EventId.hpp"
 #include "mq/kernel/sort/FormulaId.hpp"
 #include "mq/kernel/sort/MotifId.hpp"
+#include "mq/kernel/sort/TransformationId.hpp"
 
 #include <map>
 #include <optional>
+#include <string>
 #include <vector>
 
 namespace mq::kernel::state {
@@ -14,6 +16,8 @@ struct MotifOccurrence {
     sort::EventId event;
     std::optional<sort::FormulaId> formula;
     std::optional<sort::FormulaId> variation;
+    std::optional<sort::TransformationId> transformation;
+    std::string transformation_provenance;
 
     bool operator==(const MotifOccurrence&) const = default;
 };

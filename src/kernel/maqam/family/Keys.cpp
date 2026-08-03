@@ -184,7 +184,8 @@ Key key(const Spec& spec) {
         result.formula_variations.push_back({
             base->identity,
             variation->identity,
-            source.transformation,
+            sort::TransformationId{
+                id(result, "transformation." + source.transformation)},
             source.provenance,
         });
     }

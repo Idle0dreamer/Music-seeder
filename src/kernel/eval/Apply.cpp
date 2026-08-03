@@ -104,6 +104,16 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                             "a variation requires a declared base formula",
                         });
                     }
+                    if (!value.transformation ||
+                        value.transformation_provenance.empty()) {
+                        return std::unexpected(Violation{
+                            index,
+                            label,
+                            "cell.variation",
+                            "a variation requires a licensed transformation "
+                            "and its provenance",
+                        });
+                    }
                     const auto has_base = std::ranges::any_of(
                         state.cell.owners,
                         [&](const auto& entry) {
@@ -127,13 +137,17 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                         value.cell,
                         value.formula,
                         value.variation,
-                        value.motif});
+                        value.motif,
+                        value.transformation,
+                        value.transformation_provenance});
                 if (value.motif) {
                     state.motif.occurrences[*value.motif].push_back(
                         state::MotifOccurrence{
                             event,
                             value.formula,
-                            value.variation});
+                            value.variation,
+                            value.transformation,
+                            value.transformation_provenance});
                 }
                 const auto previous = state.cell.occurrences[value.cell]++;
                 state.evidence.amount[evidence::Kind::Cell] += Rational(1);

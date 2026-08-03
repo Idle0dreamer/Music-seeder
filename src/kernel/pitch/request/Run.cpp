@@ -120,6 +120,12 @@ std::expected<Result, Error> run(
             owner == state.cell.owners.end()
                 ? std::nullopt
                 : owner->second.motif,
+            owner == state.cell.owners.end()
+                ? std::nullopt
+                : owner->second.transformation,
+            owner == state.cell.owners.end()
+                ? std::string{}
+                : owner->second.transformation_provenance,
         },
         timing.duration,
         timing.intensity,

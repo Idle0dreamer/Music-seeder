@@ -13,6 +13,7 @@
 
 #include <optional>
 #include <variant>
+#include <string>
 #include <utility>
 #include "mq/kernel/sort/BaggageId.hpp"
 #include "mq/kernel/sort/CellId.hpp"
@@ -26,6 +27,7 @@
 #include "mq/kernel/sort/RegionId.hpp"
 #include "mq/kernel/sort/RoleId.hpp"
 #include "mq/kernel/sort/MotifId.hpp"
+#include "mq/kernel/sort/TransformationId.hpp"
 
 namespace mq::kernel::operation {
 
@@ -52,16 +54,24 @@ struct Emit {
     std::optional<sort::FormulaId> formula;
     std::optional<sort::FormulaId> variation;
     std::optional<sort::MotifId> motif;
+    std::optional<sort::TransformationId> transformation;
+    std::string transformation_provenance;
 
     Emit(
         sort::CellId emitted_cell,
         std::optional<sort::FormulaId> emitted_formula,
         std::optional<sort::FormulaId> emitted_variation = std::nullopt,
-        std::optional<sort::MotifId> emitted_motif = std::nullopt)
+        std::optional<sort::MotifId> emitted_motif = std::nullopt,
+        std::optional<sort::TransformationId> emitted_transformation =
+            std::nullopt,
+        std::string emitted_transformation_provenance = {})
         : cell(std::move(emitted_cell)),
           formula(std::move(emitted_formula)),
           variation(std::move(emitted_variation)),
-          motif(std::move(emitted_motif)) {}
+          motif(std::move(emitted_motif)),
+          transformation(std::move(emitted_transformation)),
+          transformation_provenance(
+              std::move(emitted_transformation_provenance)) {}
 };
 
 struct Cadence {

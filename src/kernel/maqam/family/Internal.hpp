@@ -56,7 +56,7 @@ struct FormulaKey {
 struct FormulaVariationKey {
     Identity base;
     Identity variation;
-    std::string transformation;
+    sort::TransformationId transformation;
     std::string provenance;
 };
 

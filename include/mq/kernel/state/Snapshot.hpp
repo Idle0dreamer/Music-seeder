@@ -15,6 +15,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <string>
 #include <vector>
 #include "mq/kernel/sort/CellId.hpp"
 #include "mq/kernel/sort/CenterId.hpp"
@@ -25,6 +26,7 @@
 #include "mq/kernel/sort/ObligationId.hpp"
 #include "mq/kernel/sort/ProductionId.hpp"
 #include "mq/kernel/sort/MotifId.hpp"
+#include "mq/kernel/sort/TransformationId.hpp"
 
 namespace mq::kernel::state {
 
@@ -58,6 +60,8 @@ struct Cell {
         std::optional<sort::FormulaId> formula;
         std::optional<sort::FormulaId> variation;
         std::optional<sort::MotifId> motif;
+        std::optional<sort::TransformationId> transformation;
+        std::string transformation_provenance;
 
         bool operator==(const Owner&) const = default;
     };

@@ -139,6 +139,11 @@ std::string describe_plan(
                << " formula=" << identity(event.target.formula)
                << " variation=" << identity(event.target.variation)
                << " motif=" << identity(event.target.motif)
+               << " transformation=" << identity(event.target.transformation)
+               << " transformation_provenance="
+               << (event.target.transformation_provenance.empty()
+                       ? "none"
+                       : event.target.transformation_provenance)
                << " direction="
                << ::mq::kernel::motion::name(event.target.event.direction)
                << " articulation="
