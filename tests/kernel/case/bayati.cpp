@@ -137,8 +137,11 @@ void test::bayati_case() {
                     item.plan.events[3].target.event.identity});
                 return first.cell.identity == developCell &&
                        second.cell.identity == developCell &&
-                       first.variation && second.variation &&
-                       first.variation->identity == developFormula &&
+                       first.formula &&
+                       first.formula->identity == developFormula &&
+                       second.formula &&
+                       second.formula->identity == developFormula &&
+                       !first.variation && second.variation &&
                        second.variation->identity == variedFormula &&
                        item.plan.events[3].ornament &&
                        item.plan.events[3].ornament->kind ==

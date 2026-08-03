@@ -13,6 +13,7 @@
 
 #include <optional>
 #include <variant>
+#include <utility>
 #include "mq/kernel/sort/BaggageId.hpp"
 #include "mq/kernel/sort/CellId.hpp"
 #include "mq/kernel/sort/CenterId.hpp"
@@ -47,7 +48,16 @@ struct Dwell {
 
 struct Emit {
     sort::CellId cell;
+    std::optional<sort::FormulaId> formula;
     std::optional<sort::FormulaId> variation;
+
+    Emit(
+        sort::CellId emitted_cell,
+        std::optional<sort::FormulaId> emitted_formula,
+        std::optional<sort::FormulaId> emitted_variation = std::nullopt)
+        : cell(std::move(emitted_cell)),
+          formula(std::move(emitted_formula)),
+          variation(std::move(emitted_variation)) {}
 };
 
 struct Cadence {

@@ -53,6 +53,7 @@ struct Evidence {
 struct Cell {
     struct Owner {
         sort::CellId cell;
+        std::optional<sort::FormulaId> formula;
         std::optional<sort::FormulaId> variation;
 
         bool operator==(const Owner&) const = default;

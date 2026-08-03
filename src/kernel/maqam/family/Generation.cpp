@@ -72,8 +72,11 @@ Stage development(
         operation::Dwell{sort::RoleId{key.roleGhammaz}, Rational(2)},
         operation::Emit{
             sort::CellId{key.cellDevelop},
-            sort::FormulaId{
-                varied ? key.formulaDevelopVariation : key.formulaDevelop},
+            sort::FormulaId{key.formulaDevelop},
+            varied
+                ? std::optional<sort::FormulaId>{
+                      sort::FormulaId{key.formulaDevelopVariation}}
+                : std::nullopt,
         },
         operation::Cadence{
             sort::FamilyId{key.cadenceLocal},
@@ -141,7 +144,9 @@ Stage branchDescent(
         },
         operation::Emit{
             sort::CellId{key.cellDevelop},
-            sort::FormulaId{key.formulaDevelopVariation},
+            sort::FormulaId{key.formulaDevelop},
+            std::optional<sort::FormulaId>{
+                sort::FormulaId{key.formulaDevelopVariation}},
         },
     });
 }
@@ -220,8 +225,11 @@ Stage orderedContinuation(
     });
     actions.push_back(operation::Emit{
         sort::CellId{key.cellDevelop},
-        sort::FormulaId{
-            varied ? key.formulaDevelop : key.formulaDevelopVariation},
+        sort::FormulaId{key.formulaDevelop},
+        varied
+            ? std::optional<sort::FormulaId>{
+                  sort::FormulaId{key.formulaDevelopVariation}}
+            : std::nullopt,
     });
     actions.push_back(operation::sayr::Fulfill{
         sort::ObligationId{branch.travel}});

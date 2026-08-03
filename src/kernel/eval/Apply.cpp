@@ -73,6 +73,14 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                         "structural event already belongs to a cell",
                     });
                 }
+                if (value.formula && !profile_.allows(
+                        "allow.variation", value.formula->identity)) {
+                    return std::unexpected(denied(
+                        index,
+                        label,
+                        "allow.variation",
+                        value.formula->str()));
+                }
                 if (value.variation &&
                     !profile_.allows(
                         "allow.variation", value.variation->identity)) {
@@ -84,7 +92,10 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                 }
                 state.cell.owners.emplace(
                     event,
-                    state::Cell::Owner{value.cell, value.variation});
+                    state::Cell::Owner{
+                        value.cell,
+                        value.formula,
+                        value.variation});
                 const auto previous = state.cell.occurrences[value.cell]++;
                 state.evidence.amount[evidence::Kind::Cell] += Rational(1);
                 if (previous > 0) {
