@@ -33,6 +33,7 @@ struct RouteKey {
         std::string name;
         std::optional<std::size_t> branch;
         std::vector<ActionSpec> actions;
+        std::optional<std::vector<std::size_t>> next;
         std::size_t minimum{1};
         std::size_t maximum{1};
     };

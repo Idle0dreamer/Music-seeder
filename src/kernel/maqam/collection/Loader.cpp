@@ -225,11 +225,27 @@ std::expected<Record, std::string> finish(
             return std::unexpected(
                 "route " + route.name + " has no declared steps");
         }
+        std::set<std::string> stepNames;
+        for (const auto& step : route.steps) {
+            if (!stepNames.insert(step.name).second) {
+                return std::unexpected(
+                    "route " + route.name + " repeats step " + step.name);
+            }
+        }
         for (const auto& step : route.steps) {
             if (step.minimum > step.maximum) {
                 return std::unexpected(
                     "route " + route.name + " step " + step.name +
                     " declares an invalid repetition range");
+            }
+            if (step.next) {
+                for (const auto& next : *step.next) {
+                    if (!stepNames.contains(next)) {
+                        return std::unexpected(
+                            "route " + route.name + " step " + step.name +
+                            " references unknown next step " + next);
+                    }
+                }
             }
             for (const auto& action : step.actions) {
                 if (action.variant && *action.variant >= route.variants) {
@@ -786,6 +802,47 @@ std::expected<Set, std::string> load(
             }
             foundStep->minimum = static_cast<std::size_t>(*minimum);
             foundStep->maximum = static_cast<std::size_t>(*maximum);
+        } else if (key == "step-next") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 3 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty()) {
+                return std::unexpected(
+                    "step-next requires route|step|comma-separated-next-"
+                    "steps at line " + std::to_string(lineNumber));
+            }
+            const auto foundRoute = std::ranges::find_if(
+                pending.routes,
+                [&](const auto& route) { return route.name == fields[0]; });
+            if (foundRoute == pending.routes.end()) {
+                return std::unexpected(
+                    "step-next references unknown route at line " +
+                    std::to_string(lineNumber));
+            }
+            const auto foundStep = std::ranges::find_if(
+                foundRoute->steps,
+                [&](const auto& step) { return step.name == fields[1]; });
+            if (foundStep == foundRoute->steps.end()) {
+                return std::unexpected(
+                    "step-next references unknown step at line " +
+                    std::to_string(lineNumber));
+            }
+            if (foundStep->next) {
+                return std::unexpected(
+                    "step-next repeats a step declaration at line " +
+                    std::to_string(lineNumber));
+            }
+            if (fields[2] == "-") {
+                foundStep->next = std::vector<std::string>{};
+            } else {
+                const auto next = split(fields[2], ',');
+                if (next.empty() || std::ranges::any_of(
+                        next, [](const auto& name) { return name.empty(); })) {
+                    return std::unexpected(
+                        "step-next contains an empty next step at line " +
+                        std::to_string(lineNumber));
+                }
+                foundStep->next = next;
+            }
         } else if (key == "route-variants") {
             if (pending.routes.empty()) {
                 return std::unexpected(

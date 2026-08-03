@@ -243,9 +243,24 @@ Key key(const Spec& spec) {
             RouteKey::Step translated{
                 step.name,
                 std::nullopt,
-                step.actions};
+                step.actions,
+                std::nullopt};
             translated.minimum = step.minimum;
             translated.maximum = step.maximum;
+            if (step.next) {
+                translated.next = std::vector<std::size_t>{};
+                for (const auto& next : *step.next) {
+                    const auto found = std::ranges::find_if(
+                        source.steps,
+                        [&](const auto& value) { return value.name == next; });
+                    if (found == source.steps.end()) {
+                        route.valid = false;
+                    } else {
+                        translated.next->push_back(static_cast<std::size_t>(
+                            std::distance(source.steps.begin(), found)));
+                    }
+                }
+            }
             if (!step.branch.empty()) {
                 const auto found = std::ranges::find_if(
                     result.branches,

@@ -33,7 +33,7 @@ void test::ajam_case() {
         }
         require(false, detail);
     }
-    if (result->legal.size() != 3 || !result->rejected.empty()) {
+    if (result->legal.size() != 4 || !result->rejected.empty()) {
         std::string detail =
             "Ajam routes did not all complete: legal=" +
             std::to_string(result->legal.size());
@@ -47,4 +47,9 @@ void test::ajam_case() {
         return item.plan.well_formed() && !item.state.phrase.active &&
                !item.state.gesture.active;
     }), "Ajam produced an incomplete plan");
+    require(
+        std::ranges::count_if(
+            result->legal,
+            [](const auto& item) { return item.plan.events.size() == 7; }) == 1,
+        "Ajam did not enumerate the declared development variation route");
 }

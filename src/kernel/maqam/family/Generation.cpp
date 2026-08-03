@@ -208,7 +208,13 @@ std::expected<Identity, std::string> reference(
             std::string(token.substr(11)) +
                 repetitionSuffix(context.repetition));
     }
-    if (token == "phrase.establish" || token == "phrase.return") {
+    if (token.starts_with("phrase.")) {
+        const auto found = context.key.authorities.find(std::string(token));
+        if (found == context.key.authorities.end()) {
+            return std::unexpected(
+                "unknown collection phrase reference: " +
+                std::string(token));
+        }
         return phrase(
             context.key,
             context.candidate,
@@ -803,13 +809,36 @@ std::expected<std::vector<RouteExpansion>, std::string> routeSteps(
                     "sequence-descent." + branch->jins.name +
                         repetitionSuffix(repetition));
             }
-            const auto expanded = visit(
-                stepIndex + 1,
-                std::move(nextStages),
-                std::move(nextDescent),
-                std::move(nextSuffix));
-            if (!expanded) {
-                return expanded;
+            std::vector<std::size_t> nextSteps;
+            if (step.next) {
+                nextSteps = *step.next;
+            } else if (stepIndex + 1 < route.steps.size()) {
+                nextSteps.push_back(stepIndex + 1);
+            }
+            if (nextSteps.empty()) {
+                result.push_back({
+                    std::move(nextSuffix), std::move(nextStages)});
+                continue;
+            }
+            for (const auto nextStep : nextSteps) {
+                if (nextStep <= stepIndex || nextStep >= route.steps.size()) {
+                    return std::unexpected(
+                        "collection route transition must move forward: " +
+                        step.name);
+                }
+                auto branchSuffix = nextSuffix;
+                if (nextSteps.size() > 1) {
+                    branchSuffix += ".next." + step.name + "." +
+                                    route.steps[nextStep].name;
+                }
+                const auto expanded = visit(
+                    nextStep,
+                    nextStages,
+                    nextDescent,
+                    std::move(branchSuffix));
+                if (!expanded) {
+                    return expanded;
+                }
             }
         }
         return {};
