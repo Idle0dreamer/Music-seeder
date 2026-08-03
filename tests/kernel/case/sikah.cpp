@@ -46,9 +46,18 @@ void test::sikah_case() {
             result->legal.back().plan.well_formed(),
         "Sikah ordered formula alternatives did not produce complete plans");
     require(
-        result->legal.front().plan.events[3].ornament &&
-            result->legal.back().plan.events[3].ornament &&
-            result->legal.front().plan.events[3].ornament->kind !=
-                result->legal.back().plan.events[3].ornament->kind,
-        "Sikah formula alternatives did not change performance realization");
+        [&] {
+            const auto& left = result->legal.front();
+            const auto& right = result->legal.back();
+            const auto left_owner = left.state.cell.owners.at(
+                sort::EventId{left.plan.events[3].target.event.identity});
+            const auto right_owner = right.state.cell.owners.at(
+                sort::EventId{right.plan.events[3].target.event.identity});
+            return left_owner.variation != right_owner.variation &&
+                   left.plan.events[3].ornament &&
+                   right.plan.events[3].ornament &&
+                   left.plan.events[3].ornament->kind !=
+                       right.plan.events[3].ornament->kind;
+        }(),
+        "Sikah formula alternatives did not change stored formula and performance realization");
 }
