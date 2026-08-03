@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <iterator>
 #include <optional>
 #include <set>
@@ -210,6 +211,56 @@ struct PhraseChoice {
     Facts facts;
 };
 
+using PerformanceStage =
+    ::mq::kernel::maqam::family::PerformanceStageSpec;
+using PerformancePath = std::vector<const PerformanceStage*>;
+
+std::vector<PerformancePath> enumerate_performance_paths(
+    const ::mq::kernel::maqam::family::PerformanceSpec& performance,
+    std::size_t requested) {
+    const auto find_stage = [&](std::string_view name)
+        -> const PerformanceStage* {
+        const auto found = std::ranges::find(
+            performance.stages, name, &PerformanceStage::name);
+        return found == performance.stages.end() ? nullptr : &*found;
+    };
+    const auto terminal = [&](const PerformanceStage* stage) {
+        return std::ranges::find(
+                   performance.terminals, stage->name) !=
+               performance.terminals.end();
+    };
+
+    std::size_t extension{};
+    for (const auto& stage : performance.stages) {
+        extension += stage.maximum;
+    }
+    const auto maximum_depth = requested + extension;
+    std::vector<PerformancePath> paths;
+    PerformancePath path;
+    std::function<void(const PerformanceStage*)> visit =
+        [&](const PerformanceStage* current) {
+            if (current == nullptr) return;
+            const auto base_size = path.size();
+            for (std::size_t count = current->minimum;; ++count) {
+                path.insert(path.end(), count, current);
+                const bool complete = path.size() >= requested &&
+                                      terminal(current);
+                if (complete) {
+                    paths.push_back(path);
+                } else if (path.size() < maximum_depth) {
+                    for (const auto& next : current->next) {
+                        visit(find_stage(next));
+                    }
+                }
+                path.resize(base_size);
+                if (count == current->maximum) break;
+            }
+        };
+
+    visit(find_stage(performance.start));
+    return paths;
+}
+
 std::string phrase_fingerprint(
     const ::mq::kernel::performance::Plan& plan,
     std::string_view selector) {
@@ -360,117 +411,82 @@ std::expected<GeneratedPlan, std::string> make_plan(
             std::string(maqam));
     }
     const auto& performance = *entry->specification->performance;
-    const auto find_stage = [&](std::string_view name)
-        -> const ::mq::kernel::maqam::family::PerformanceStageSpec* {
-        const auto found = std::ranges::find(
-            performance.stages,
-            name,
-            &::mq::kernel::maqam::family::PerformanceStageSpec::name);
-        return found == performance.stages.end() ? nullptr : &*found;
-    };
-    const auto* current = find_stage(performance.start);
-    if (current == nullptr) {
+    const auto paths = enumerate_performance_paths(performance, repetitions);
+    if (paths.empty()) {
         return std::unexpected(
-            "performance graph start stage disappeared for " +
+            "collection performance has no complete legal discourse path for " +
             std::string(maqam));
     }
-    std::size_t emitted{};
-    std::size_t transitionOrdinal{};
-    std::optional<GeneratedPlan> result;
-    std::optional<std::string> previous;
-    Facts memory;
-    const auto terminal = [&](const auto* stage) {
-        return std::ranges::find(
-                   performance.terminals,
-                   stage->name) != performance.terminals.end();
-    };
-    while (emitted < repetitions || !terminal(current)) {
-        if (!has_facts(memory, current->required_facts)) {
-            return std::unexpected(
-                "performance stage entry facts are not satisfied for " +
-                current->name + " in " + std::string(maqam));
-        }
-        const auto requested = repetitions > emitted
-                                   ? repetitions - emitted
-                                   : std::size_t{1};
-        const auto count = std::min(
-            current->minimum +
-                static_cast<std::size_t>(mix(seed, transitionOrdinal) %
-                                          (current->maximum -
-                                           current->minimum + 1)),
-            requested);
-        for (std::size_t occurrence{}; occurrence < count; ++occurrence) {
+
+    // A seed selects a complete collection path. It never selects a stage
+    // transition while an incomplete performance is being assembled.
+    const auto first_path = static_cast<std::size_t>(
+        mix(seed, 0) % paths.size());
+    std::string last_error = "no path was realized";
+    for (std::size_t path_offset{}; path_offset < paths.size(); ++path_offset) {
+        const auto& path = paths[(first_path + path_offset) % paths.size()];
+        std::optional<GeneratedPlan> result;
+        std::optional<std::string> previous;
+        Facts memory;
+        bool valid = true;
+        for (std::size_t emitted{}; emitted < path.size(); ++emitted) {
+            const auto* stage = path[emitted];
+            if (!has_facts(memory, stage->required_facts)) {
+                last_error =
+                    "performance stage entry facts are not satisfied for " +
+                    stage->name + " in " + std::string(maqam);
+                valid = false;
+                break;
+            }
             const auto phrase = make_phrase(
                 maqam,
                 seed + static_cast<std::uint64_t>(emitted) *
                            0x9e3779b97f4a7c15ULL,
                 timing,
-                current->candidate_prefixes,
+                stage->candidate_prefixes,
                 previous,
-                current->phrase_span);
+                stage->phrase_span);
             if (!phrase) {
-                return std::unexpected(phrase.error());
+                last_error = phrase.error();
+                valid = false;
+                break;
             }
-            if (!has_facts(memory, current->required_facts) ||
-                !has_facts(phrase->facts, current->provided_facts)) {
-                return std::unexpected(
+            if (!has_facts(phrase->facts, stage->provided_facts)) {
+                last_error =
                     "performance stage postconditions are not satisfied for " +
-                    current->name + " in " + std::string(maqam));
+                    stage->name + " in " + std::string(maqam);
+                valid = false;
+                break;
             }
             if (!result) {
                 result = GeneratedPlan{
                     phrase->generated.candidate,
                     phrase->generated.plan,
                     {phrase->generated.candidate},
-                    {current->name},
-                    {current->phrase_span ? *current->phrase_span : "full"},
+                    {stage->name},
+                    {stage->phrase_span ? *stage->phrase_span : "full"},
                 };
             } else {
                 result->phrase_candidates.push_back(phrase->generated.candidate);
-                result->phrase_stages.push_back(current->name);
+                result->phrase_stages.push_back(stage->name);
                 result->phrase_spans.push_back(
-                    current->phrase_span ? *current->phrase_span : "full");
+                    stage->phrase_span ? *stage->phrase_span : "full");
                 append_plan(result->plan, phrase->generated.plan);
             }
             memory.insert(phrase->facts.begin(), phrase->facts.end());
             memory.insert(
-                current->provided_facts.begin(), current->provided_facts.end());
+                stage->provided_facts.begin(), stage->provided_facts.end());
             previous = phrase_fingerprint(
                 phrase->generated.plan,
-                current->phrase_span ? *current->phrase_span : "full");
-            ++emitted;
+                stage->phrase_span ? *stage->phrase_span : "full");
         }
-        ++transitionOrdinal;
-        if (emitted >= repetitions && terminal(current)) {
-            break;
+        if (valid && result) {
+            return std::move(*result);
         }
-        if (current->next.empty()) {
-            return std::unexpected(
-                "performance graph reached a terminal before the requested "
-                "duration for " + std::string(maqam));
-        }
-        std::vector<const ::mq::kernel::maqam::family::PerformanceStageSpec*>
-            eligible;
-        for (const auto& next : current->next) {
-            const auto* candidate = find_stage(next);
-            if (candidate != nullptr &&
-                has_facts(memory, candidate->required_facts)) {
-                eligible.push_back(candidate);
-            }
-        }
-        if (eligible.empty()) {
-            return std::unexpected(
-                "performance graph has no fact-compatible transition for " +
-                std::string(maqam));
-        }
-        current = eligible[mix(seed, transitionOrdinal) % eligible.size()];
     }
-    if (!result) {
-        return std::unexpected(
-            "performance graph emitted no complete phrase for " +
-            std::string(maqam));
-    }
-    return std::move(*result);
+    return std::unexpected(
+        "collection performance paths could not be realized for " +
+        std::string(maqam) + ": " + last_error);
 }
 
 std::expected<GeneratedPlan, std::string> make_plan_for_duration(
