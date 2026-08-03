@@ -11,7 +11,6 @@ jobs:
       - name: Check out pinned sources
         uses: actions/checkout@v4
         with:
-          submodules: recursive
           fetch-depth: 1
       - name: Install GCC 14
         run: |
@@ -43,7 +42,6 @@ jobs:
       - name: Check out pinned sources
         uses: actions/checkout@v4
         with:
-          submodules: recursive
           fetch-depth: 1
       - name: Install GCC 14
         run: |
@@ -122,8 +120,11 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
         with:
-          submodules: recursive
           fetch-depth: 1
+      - name: Check out required Faust sources
+        run: |
+          git submodule update --init --filter=blob:none --jobs=1 \
+            third_party/audio/faust third_party/audio/faustlibraries
       - name: Install GCC 14
         run: |
           sudo apt-get update
