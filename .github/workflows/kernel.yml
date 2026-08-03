@@ -162,9 +162,9 @@ jobs:
             > /tmp/music-seeder-bayati-report.txt
           test -s /tmp/music-seeder-bayati.wav
           grep -a -q RIFF /tmp/music-seeder-bayati.wav
-          grep -Eq 'phrase_stages: (main,branch,return,){2,}' \
+          grep -Eq 'phrase_stages: (main,development,branch,return,){2,}' \
             /tmp/music-seeder-bayati-report.txt
-          grep -Eq 'phrase_spans: (phrase.establish,phrase.return,phrase.establish,){2,}' \
+          grep -Eq 'phrase_spans: (phrase.establish,phrase.develop,phrase.return,phrase.establish,){2,}' \
             /tmp/music-seeder-bayati-report.txt
           awk '$1 == "seconds:" && ($2 + 0) < 30 { exit 1 }' \
             /tmp/music-seeder-bayati-report.txt
@@ -176,9 +176,9 @@ jobs:
             > /tmp/music-seeder-bayati-faust-report.txt
           test -s /tmp/music-seeder-bayati-faust.wav
           grep -a -q RIFF /tmp/music-seeder-bayati-faust.wav
-          grep -Eq 'phrase_stages: (main,branch,return,){2,}' \
+          grep -Eq 'phrase_stages: (main,development,branch,return,){2,}' \
             /tmp/music-seeder-bayati-faust-report.txt
-          grep -Eq 'phrase_spans: (phrase.establish,phrase.return,phrase.establish,){2,}' \
+          grep -Eq 'phrase_spans: (phrase.establish,phrase.develop,phrase.return,phrase.establish,){2,}' \
             /tmp/music-seeder-bayati-faust-report.txt
           awk '$1 == "seconds:" && ($2 + 0) < 30 { exit 1 }' \
             /tmp/music-seeder-bayati-faust-report.txt
@@ -195,7 +195,11 @@ jobs:
             grep -a -q RIFF "/tmp/music-seeder-${maqam}.wav"
             grep -Eq 'phrase_stages: .*main' \
               "/tmp/music-seeder-${maqam}-report.txt"
+            grep -Eq 'phrase_stages: .*development' \
+              "/tmp/music-seeder-${maqam}-report.txt"
             grep -Eq 'phrase_spans: .*phrase.establish' \
+              "/tmp/music-seeder-${maqam}-report.txt"
+            grep -Eq 'phrase_spans: .*phrase.develop' \
               "/tmp/music-seeder-${maqam}-report.txt"
             awk '$1 == "seconds:" && ($2 + 0) < 10 { exit 1 }' \
               "/tmp/music-seeder-${maqam}-report.txt"
@@ -207,7 +211,11 @@ jobs:
             grep -a -q RIFF "/tmp/music-seeder-${maqam}-faust.wav"
             grep -Eq 'phrase_stages: .*main' \
               "/tmp/music-seeder-${maqam}-faust-report.txt"
+            grep -Eq 'phrase_stages: .*development' \
+              "/tmp/music-seeder-${maqam}-faust-report.txt"
             grep -Eq 'phrase_spans: .*phrase.establish' \
+              "/tmp/music-seeder-${maqam}-faust-report.txt"
+            grep -Eq 'phrase_spans: .*phrase.develop' \
               "/tmp/music-seeder-${maqam}-faust-report.txt"
             awk '$1 == "seconds:" && ($2 + 0) < 10 { exit 1 }' \
               "/tmp/music-seeder-${maqam}-faust-report.txt"

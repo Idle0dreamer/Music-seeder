@@ -29,9 +29,9 @@ void test::bayati_case() {
         {},
         limits);
     require(result.has_value(), result ? "" : result.error().message);
-    if (result->legal.size() != 4 || !result->rejected.empty()) {
+    if (result->legal.size() != 7 || !result->rejected.empty()) {
         std::string message =
-            "all four provisional Bayati routes must be legal; legal=" +
+            "all Bayati route and developmental-repeat alternatives must be legal; legal=" +
             std::to_string(result->legal.size()) +
             " rejected=" + std::to_string(result->rejected.size());
         for (const auto& rejected : result->rejected) {
@@ -50,8 +50,11 @@ void test::bayati_case() {
     require(stay != result->legal.end(), "Bayati stay route is missing");
     const auto journeys = std::ranges::count_if(
         result->legal,
-        [](const auto& item) { return item.plan.events.size() == 6; });
-    require(journeys == 3, "Bayati upper-jins routes are incomplete");
+        [](const auto& item) {
+            return item.plan.events.size() == 8 ||
+                   item.plan.events.size() == 10;
+        });
+    require(journeys == 6, "Bayati upper-jins route productions are incomplete");
     require(
         std::ranges::all_of(
             result->legal,
@@ -81,7 +84,8 @@ void test::bayati_case() {
                            item.plan.events.front().release &&
                            !item.plan.pauses.empty();
                 }
-                return item.plan.events.size() == 6 &&
+                return (item.plan.events.size() == 8 ||
+                        item.plan.events.size() == 10) &&
                        item.plan.events[0].onset == Rational(0) &&
                        item.plan.events[0].duration == timing.start.duration &&
                        item.plan.events[1].duration == timing.rise.duration &&
@@ -91,8 +95,14 @@ void test::bayati_case() {
                        !item.plan.pauses.empty() &&
                        item.plan.events[1].articulation ==
                            timing.rise.articulation &&
-                           item.plan.events[4].articulation ==
-                           timing.fall.articulation;
+                       std::ranges::any_of(
+                           item.plan.events,
+                           [&](const auto& event) {
+                               return event.target.event.direction ==
+                                          motion::Direction::Fall &&
+                                      event.articulation ==
+                                          timing.fall.articulation;
+                           });
             }),
         "external timing profile was not consumed by Bayati plans");
     const Identity question{
@@ -109,12 +119,15 @@ void test::bayati_case() {
                                question;
                 }
                 const auto& spans = item.state.phrase.completed;
-                return spans.size() == 2 &&
+                return spans.size() == 3 &&
                        spans.front().function.identity == question &&
+                       spans[1].function.identity == response &&
                        spans.back().function.identity == response &&
-                       !spans.front().cadences.empty() &&
+                       spans.front().boundary == phrase::Boundary::Open &&
+                       spans[1].boundary == phrase::Boundary::Closed &&
+                       spans[1].cadences.size() > 0 &&
                        !spans.back().cadences.empty() &&
-                       spans.front().cadences.back().strength == Rational(3, 4) &&
+                       spans[1].cadences.back().strength == Rational(3, 4) &&
                        spans.back().cadences.back().strength == Rational(1);
             }),
         "Bayati routes did not retain provisional question-response boundaries");
@@ -134,14 +147,32 @@ void test::bayati_case() {
         }
         const auto& owners = item.state.cell.owners;
         const auto motifs = item.state.motif.occurrences.find(developMotif);
+        const auto firstEvent = std::ranges::find_if(
+            item.plan.events,
+            [&](const auto& event) {
+                return event.target.formula &&
+                       event.target.formula->identity == developFormula &&
+                       !event.target.variation;
+            });
+        const auto variedEvent = std::ranges::find_if(
+            item.plan.events,
+            [&](const auto& event) {
+                return event.target.variation &&
+                       event.target.variation->identity == variedFormula;
+            });
+        if (firstEvent == item.plan.events.end() ||
+            variedEvent == item.plan.events.end() ||
+            motifs == item.state.motif.occurrences.end()) {
+            return false;
+        }
         const auto first = owners.at(sort::EventId{
-            item.plan.events[1].target.event.identity});
-        const auto second = owners.at(sort::EventId{
-            item.plan.events[4].target.event.identity});
-        const auto& firstTarget = item.plan.events[1].target;
-        const auto& variedTarget = item.plan.events[4].target;
+            firstEvent->target.event.identity});
+        const auto varied = owners.at(sort::EventId{
+            variedEvent->target.event.identity});
+        const auto& firstTarget = firstEvent->target;
+        const auto& variedTarget = variedEvent->target;
         return first.cell.identity == developCell &&
-               second.cell.identity == developCell &&
+               varied.cell.identity == developCell &&
                firstTarget.cell && firstTarget.cell->identity == developCell &&
                firstTarget.formula &&
                firstTarget.formula->identity == developFormula &&
@@ -156,24 +187,32 @@ void test::bayati_case() {
                variedTarget.transformation->identity == transformation &&
                variedTarget.transformation_provenance.find(
                    "MaqamWorld:jins-rast") != std::string::npos &&
-               motifs != item.state.motif.occurrences.end() &&
-               motifs->second.size() == 3 && motifs->second.front().formula &&
-               !motifs->second.front().variation &&
-               motifs->second[1].formula && !motifs->second[1].variation &&
-               motifs->second.back().variation && first.formula &&
-               first.formula->identity == developFormula && second.formula &&
-               second.formula->identity == developFormula && first.motif &&
-               second.motif &&
+               motifs->second.size() >= 3 &&
+               std::ranges::any_of(
+                   motifs->second,
+                   [](const auto& occurrence) {
+                       return occurrence.formula &&
+                              !occurrence.variation;
+                   }) &&
+               std::ranges::any_of(
+                   motifs->second,
+                   [](const auto& occurrence) {
+                       return occurrence.variation.has_value();
+                   }) &&
+               first.formula &&
+               first.formula->identity == developFormula &&
+               varied.formula && first.motif && varied.motif &&
                first.motif->identity ==
                    Identity{"maqam.bayati", "motif.develop", "1"} &&
-               first.motif == second.motif && !first.variation &&
-               second.variation && !first.transformation &&
-               second.transformation &&
-               second.transformation->identity == transformation &&
-               !second.transformation_provenance.empty() &&
-               second.variation->identity == variedFormula &&
-               item.plan.events[4].ornament &&
-               item.plan.events[4].ornament->kind ==
+               varied.motif->identity ==
+                   Identity{"maqam.bayati", "motif.develop", "1"} &&
+               !first.variation && varied.variation &&
+               varied.transformation &&
+               varied.transformation->identity == transformation &&
+               !varied.transformation_provenance.empty() &&
+               varied.variation->identity == variedFormula &&
+               variedEvent->ornament &&
+               variedEvent->ornament->kind ==
                    performance::OrnamentKind::Oscillation;
     };
     for (const auto& item : result->legal) {
