@@ -64,7 +64,9 @@ std::expected<std::optional<order::Proof>, Error> prove(
     if (proof->relation != expected(event.direction)) {
         return std::unexpected(failure(
             Error::Code::Direction,
-            "calculated target contradicts intended " +
+            "calculated target for " + event.identity.str() +
+                " after " + prefix.events.back().target.event.identity.str() +
+                " contradicts intended " +
                 std::string(motion::name(event.direction))));
     }
     return std::optional<order::Proof>{std::move(*proof)};
