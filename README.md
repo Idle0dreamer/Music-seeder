@@ -28,26 +28,39 @@ grammar authority.
 Binary builds and executable validation run in the free GitHub Actions workflow
 `.github/workflows/kernel.yml`. The workflow installs the pinned toolchain,
 builds the kernel and synthesis targets, generates the Faust C++ sources, runs
-the remote CLI/tests, and uploads rendered WAV artifacts. The constrained
-development machine is not the binary-validation authority.
+the remote CLI/tests, and uploads the executables and rendered WAV artifacts.
+The constrained development machine does not compile these targets. Download
+the artifacts from the green run, then run the downloaded binaries locally;
+`output/remote-binaries-current` is the local runtime alias used by the desktop
+shortcut.
 
 ```sh
+# On GitHub Actions, the workflow runs these recipes:
 make kernel
-./build/kernel 2
 make kernel-test
+
+# After downloading the matching green-run artifacts:
+./output/remote-binaries-current/kernel/kernel 2
+./output/remote-binaries-current/kernel/kernel-tests
+./output/remote-binaries-current/player/synthesis-render \
+  --maqam sikah --seed 53 --output output/sikah.wav
+./output/remote-binaries-current/player/synthesis-ui
 ```
 
 The optional unsigned seed drives the neutral executable generation fixture.
 The Ajam, Bayati, Hijaz, Kurd, Nahawand, Nikriz, and Rast routes are available
-as `./build/kernel ajam [seed]`, `./build/kernel bayati [seed]`,
-`./build/kernel hijaz [seed]`, `./build/kernel kurd [seed]`,
-`./build/kernel nahawand [seed]`, `./build/kernel nikriz [seed]`, and
-`./build/kernel rast [seed]`. They print complete candidates and exact timed
+as `./output/remote-binaries-current/kernel/kernel ajam [seed]`,
+`./output/remote-binaries-current/kernel/kernel bayati [seed]`,
+`./output/remote-binaries-current/kernel/kernel hijaz [seed]`,
+`./output/remote-binaries-current/kernel/kernel kurd [seed]`,
+`./output/remote-binaries-current/kernel/kernel nahawand [seed]`,
+`./output/remote-binaries-current/kernel/kernel nikriz [seed]`, and
+`./output/remote-binaries-current/kernel/kernel rast [seed]`. They print complete candidates and exact timed
 structural targets; the kernel is not itself an audio renderer.
 
-`make test` is an alias for the kernel law suite. Binary builds and executable
-validation for the shared repository are run by GitHub Actions; the constrained
-development machine is not the validation authority.
+`make test` is an alias for the kernel law suite. It is a remote CI recipe in
+this constrained checkout; local execution uses the downloaded artifact
+instead.
 
 ## Source map
 

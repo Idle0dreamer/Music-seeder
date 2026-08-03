@@ -149,15 +149,17 @@ Verified for the preceding 34-suite descriptor checkpoint:
 - thirty-four debug law suites;
 - undefined-behavior sanitizer;
 
-The constrained checkout is not used for binary validation. GitHub Actions run
-`30773498807` validates exact head
-`dc9897247a1030eec72e698030e428763ec3f314` across debug, optimized CLI, Faust,
-synthesis, and undefined-behavior jobs. The remote debug and UBSan jobs each
+The constrained checkout does not compile these targets. GitHub Actions run
+`30774537059` validates exact head
+`b2f6908e8c7d1c0585e016739f0a4f1e7f83b295` across debug, optimized CLI, Faust,
+synthesis, desktop UI, and undefined-behavior jobs. The remote debug and UBSan jobs each
 report 49 passing law/case invocations. The synthesis job renders deterministic
 native and Faust-generated Sikah WAVs for 33.0256 seconds, and the Faust job
 generates and compiles both pinned probe sources.
 `.github/workflows/kernel.yml` is the clean remote validation path and installs
-GCC 14 before running these checks.
+GCC 14 before running these checks. Its executable artifacts are downloaded for
+local runtime checks; the local machine remains a runtime host, not a build
+authority.
 
 GCC AddressSanitizer starts LeakSanitizer in this container and then fails
 because the traced environment denies its `/proc/<pid>/task` inspection. This

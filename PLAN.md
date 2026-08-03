@@ -29,9 +29,10 @@ claim.
 Bayati phrase/motif/ornament coverage, the remaining maqāmāt packages, and
 instrument measurements remain open. “Provisional” is not an acceptable final
 status.
-The latest exact head with a green remote Faust/synthesis workflow is
-`dc9897247a1030eec72e698030e428763ec3f314`, validated by GitHub Actions run
-`30773498807`.
+The latest exact head with a green remote Faust/synthesis/UI workflow is
+`b2f6908e8c7d1c0585e016739f0a4f1e7f83b295`, validated by GitHub Actions run
+`30774537059`. Its executable artifacts were downloaded and run locally;
+local compilation remains intentionally disallowed on the constrained host.
 
 ## Completion standard
 

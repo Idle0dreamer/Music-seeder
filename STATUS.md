@@ -130,8 +130,8 @@ Implemented so far:
 
 Checkpoint validation state:
 
-- GitHub Actions run `30773498807` validates exact head
-  `dc9897247a1030eec72e698030e428763ec3f314`; its debug law suite reports 49
+- GitHub Actions run `30774537059` validates exact head
+  `b2f6908e8c7d1c0585e016739f0a4f1e7f83b295`; its debug law suite reports 49
   passing law/case invocations, and its optimized CLI job exercises the
   neutral fixture and named Sikah route remotely;
 - the same run passes the UBSan suite with 49 passing law/case invocations;
@@ -140,8 +140,16 @@ Checkpoint validation state:
   peak `0.92`; the repeated Faust render is byte-identical;
 - the Faust job builds the pinned compiler, generates both physical-modeling
   and coupled-course C++ sources, and compiles both generated probes;
-- run `30773498807` uploads artifact `music-seeder-sikah-wav` (artifact id
-  `8841427491`) containing the three remote WAV outputs;
+- run `30774537059` uploads `music-seeder-kernel-binaries` (`8841668945`),
+  `music-seeder-sanitizer-binary` (`8841656343`),
+  `music-seeder-faust-compiler` (`8841643712`),
+  `music-seeder-player-binaries` (`8841794875`), and
+  `music-seeder-sikah-wav` (`8841794404`);
+- those remote binaries were downloaded to
+  `output/remote-binaries-b2f6908` and executed locally without compiling:
+  the kernel and UBSan suites each produced 49 passes, both renderers produced
+  valid 48 kHz WAVs, the local Faust render matched the remote Faust artifact
+  byte-for-byte, and the Qt player remained running on the local display;
 - `.github/workflows/kernel.yml` provides the free remote debug, release, CLI,
   Faust, synthesis, and undefined-behavior validation path on GitHub Actions;
 - AddressSanitizer remains a separate environmental check and is not counted
