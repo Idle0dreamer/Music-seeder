@@ -588,6 +588,18 @@ std::expected<std::vector<Stage>, std::string> routeSteps(
         ActionContext context{key, candidate, branch, previousDescent, variant};
         std::vector<operation::Any> actions;
         for (const auto& specification : step.actions) {
+            if (specification.operation == "gesture.end.if-active") {
+                if (specification.arguments.size() != 1 ||
+                    specification.arguments.front() != "previous-descent") {
+                    return std::unexpected(
+                        step.name + ": invalid conditional gesture close");
+                }
+                if (context.previousDescent) {
+                    actions.push_back(operation::gesture::End{
+                        *context.previousDescent});
+                }
+                continue;
+            }
             if (specification.operation == "sayr.fulfill.route") {
                 if (specification.arguments.size() != 1 ||
                     specification.arguments.front() != "restore") {
