@@ -60,7 +60,7 @@ std::expected<std::int64_t, std::string> integer(
     return result;
 }
 
-std::expected<pitch::Expression, std::string> ratio(
+std::expected<Rational, std::string> rational(
     const std::string& value,
     const std::string& field,
     std::size_t line) {
@@ -83,7 +83,19 @@ std::expected<pitch::Expression, std::string> ratio(
             "ratio denominator must be positive for " + field +
             " at line " + std::to_string(line));
     }
-    return pitch::Expression::ratio(*numerator, *denominator);
+    return Rational(*numerator, *denominator);
+}
+
+std::expected<pitch::Expression, std::string> ratio(
+    const std::string& value,
+    const std::string& field,
+    std::size_t line) {
+    const auto parsed = rational(value, field, line);
+    if (!parsed) {
+        return std::unexpected(parsed.error());
+    }
+    return pitch::Expression::ratio(
+        parsed->numerator(), parsed->denominator());
 }
 
 std::expected<motion::Direction, std::string> direction(
@@ -614,9 +626,9 @@ std::expected<Set, std::string> load(
                         "baggage,emphasis,dwell at line " +
                         std::to_string(lineNumber));
                 }
-                const auto emphasis = ratio(
+                const auto emphasis = rational(
                     note[5], "formula emphasis", lineNumber);
-                const auto dwell = ratio(
+                const auto dwell = rational(
                     note[6], "formula dwell", lineNumber);
                 if (!emphasis) return std::unexpected(emphasis.error());
                 if (!dwell) return std::unexpected(dwell.error());
