@@ -761,6 +761,7 @@ authority=region|root,upper
 authority=gesture|establish,ascent,descent,resolution
 authority=phrase|establish,return,question,response
 authority=cell|establish,develop,climax,return
+authority=motif|establish,develop,climax,return
 authority=formula|establish,develop,develop-variation,climax,return
 authority=cadence|local,return
 authority=baggage|extension
