@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mq/kernel/maqam/Package.hpp"
+#include "mq/kernel/Rational.hpp"
 #include "mq/kernel/motion/Direction.hpp"
 
 #include <expected>
@@ -120,6 +121,23 @@ struct ObligationSpec {
     std::vector<NeedSpec> needs;
 };
 
+struct FormulaNoteSpec {
+    std::string event;
+    std::string role;
+    std::string direction;
+    std::string region;
+    std::optional<std::string> baggage;
+    Rational emphasis{};
+    Rational dwell{};
+};
+
+struct FormulaSpec {
+    std::string name;
+    std::string cell;
+    std::string provenance;
+    std::vector<FormulaNoteSpec> notes;
+};
+
 struct Spec {
     std::string package;
     std::string family;
@@ -134,6 +152,7 @@ struct Spec {
     std::vector<GestureSpec> gestures;
     std::vector<BaggageSpec> baggage;
     std::vector<ObligationSpec> obligations;
+    std::vector<FormulaSpec> formulas;
     std::vector<RouteSpec> routes;
 };
 

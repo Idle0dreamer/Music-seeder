@@ -145,6 +145,24 @@ Key key(const Spec& spec) {
             "obligation." + obligation.name,
             id(result, "obligation." + obligation.name));
     }
+    result.formulas.reserve(spec.formulas.size());
+    for (const auto& source : spec.formulas) {
+        result.formulas.push_back({
+            source.name,
+            declared(
+                result,
+                "formula",
+                source.name,
+                id(result, "formula." + source.name)),
+            declared(
+                result,
+                "cell",
+                source.cell,
+                id(result, "cell." + source.cell)),
+            source.provenance,
+            source.notes,
+        });
+    }
     result.branches.reserve(spec.branches.size());
     for (const auto& source : spec.branches) {
         BranchKey branch;

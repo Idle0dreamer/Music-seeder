@@ -42,6 +42,14 @@ struct RouteKey {
     bool valid{true};
 };
 
+struct FormulaKey {
+    std::string name;
+    Identity identity;
+    Identity cell;
+    std::string provenance;
+    std::vector<FormulaNoteSpec> notes;
+};
+
 struct Key {
     std::string package;
     std::string family;
@@ -95,6 +103,7 @@ struct Key {
     std::vector<GestureSpec> gestures;
     std::vector<BaggageSpec> baggage;
     std::vector<ObligationSpec> obligations;
+    std::vector<FormulaKey> formulas;
     pitch::Expression ghammaz;
     pitch::Expression extension;
     std::vector<BranchKey> branches;

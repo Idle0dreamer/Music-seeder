@@ -125,6 +125,7 @@ struct Pending {
     std::vector<family::GestureSpec> gestures;
     std::vector<family::BaggageSpec> baggage;
     std::vector<family::ObligationSpec> obligations;
+    std::vector<family::FormulaSpec> formulas;
     std::size_t beginLine{};
     std::size_t ghammazLine{};
     std::size_t extensionLine{};
@@ -270,6 +271,30 @@ std::expected<Record, std::string> finish(
         !checked) {
         return std::unexpected(checked.error());
     }
+    if (const auto checked = validate_unique(
+            pending.formulas,
+            [](const auto& value) { return value.name; },
+            "formula");
+        !checked) {
+        return std::unexpected(checked.error());
+    }
+    for (const auto& formula : pending.formulas) {
+        if (formula.cell.empty() || formula.provenance.empty() ||
+            formula.notes.empty()) {
+            return std::unexpected(
+                "formula declarations require cell, provenance, and notes "
+                "for " + pending.name);
+        }
+        for (const auto& note : formula.notes) {
+            if (note.event.empty() || note.role.empty() ||
+                note.direction.empty() || note.region.empty() ||
+                note.emphasis < Rational(0) || note.dwell < Rational(0)) {
+                return std::unexpected(
+                    "formula note is incomplete or has negative evidence "
+                    "for " + formula.name + " in " + pending.name);
+            }
+        }
+    }
     result.specification = family::Spec{
         .package = std::move(pending.packageName),
         .family = std::move(pending.packageFamily),
@@ -284,6 +309,7 @@ std::expected<Record, std::string> finish(
         .gestures = std::move(pending.gestures),
         .baggage = std::move(pending.baggage),
         .obligations = std::move(pending.obligations),
+        .formulas = std::move(pending.formulas),
         .routes = std::move(pending.routes),
     };
     return result;
@@ -549,6 +575,45 @@ std::expected<Set, std::string> load(
             }
             pending.obligations.push_back({
                 fields[0], list(fields[1]), std::move(needs)});
+        } else if (key == "formula") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 4 || fields[0].empty() ||
+                fields[1].empty() || fields[2].empty() ||
+                fields[3] == "-") {
+                return std::unexpected(
+                    "formula requires name|cell|provenance|note-list at line " +
+                    std::to_string(lineNumber));
+            }
+            std::vector<family::FormulaNoteSpec> notes;
+            for (const auto& rawNote : split(fields[3], ';')) {
+                const auto note = split(rawNote, ',');
+                if (note.size() != 7 || note[0].empty() || note[1].empty() ||
+                    note[2].empty() || note[3].empty() || note[4].empty()) {
+                    return std::unexpected(
+                        "formula note requires event,role,direction,region,"
+                        "baggage,emphasis,dwell at line " +
+                        std::to_string(lineNumber));
+                }
+                const auto emphasis = ratio(
+                    note[5], "formula emphasis", lineNumber);
+                const auto dwell = ratio(
+                    note[6], "formula dwell", lineNumber);
+                if (!emphasis) return std::unexpected(emphasis.error());
+                if (!dwell) return std::unexpected(dwell.error());
+                notes.push_back({
+                    note[0],
+                    note[1],
+                    note[2],
+                    note[3],
+                    note[4] == "-"
+                        ? std::nullopt
+                        : std::optional<std::string>{note[4]},
+                    *emphasis,
+                    *dwell,
+                });
+            }
+            pending.formulas.push_back({
+                fields[0], fields[1], fields[2], std::move(notes)});
         } else if (key == "authority") {
             const auto fields = split(value, '|');
             if (fields.size() != 2 || fields[0].empty() || fields[1].empty()) {

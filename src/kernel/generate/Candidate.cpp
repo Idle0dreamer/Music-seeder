@@ -1,6 +1,7 @@
 #include "Internal.hpp"
 
 #include <algorithm>
+#include <array>
 #include <set>
 
 namespace mq::kernel::generate::detail {
@@ -56,33 +57,58 @@ std::expected<Outcome, Diagnostic> evaluate(
     performance::Plan plan;
     for (const auto& stage : candidate.stages) {
         const auto before = state.melody.history.size();
-        const auto next = eval::Evaluator(
-            profile,
-            context).run(state, stage.actions);
-        if (!next) {
-            return std::unexpected(failed(candidate, stage, next.error()));
+        const auto request_current = [&]() -> std::expected<void, Diagnostic> {
+            if (plan.events.size() == state.melody.history.size()) {
+                return {};
+            }
+            if (plan.events.size() + 1 != state.melody.history.size()) {
+                return std::unexpected(Diagnostic{
+                    candidate.identity,
+                    stage.identity,
+                    "multiple structural events were left without pitch "
+                    "requests",
+                    std::nullopt,
+                    std::nullopt,
+                });
+            }
+            auto target = pitch::request::run(
+                state,
+                projection,
+                schema,
+                std::move(plan),
+                limits.pitch);
+            if (!target) {
+                return std::unexpected(
+                    failed(candidate, stage, target.error()));
+            }
+            plan = std::move(target->plan);
+            return {};
+        };
+        for (const auto& action : stage.actions) {
+            if (std::holds_alternative<operation::Place>(action)) {
+                const auto requested = request_current();
+                if (!requested) return std::unexpected(requested.error());
+            }
+            const std::array<operation::Any, 1> program{action};
+            const auto next = eval::Evaluator(
+                profile,
+                context).run(state, program);
+            if (!next) {
+                return std::unexpected(failed(candidate, stage, next.error()));
+            }
+            state = std::move(*next);
         }
-        if (next->melody.history.size() != before + 1) {
+        const auto requested = request_current();
+        if (!requested) return std::unexpected(requested.error());
+        if (state.melody.history.size() == before) {
             return std::unexpected(Diagnostic{
                 candidate.identity,
                 stage.identity,
-                "stage did not commit exactly one structural event",
+                "stage did not commit a structural event",
                 std::nullopt,
                 std::nullopt,
             });
         }
-        state = std::move(*next);
-        auto target = pitch::request::run(
-            state,
-            projection,
-            schema,
-            std::move(plan),
-            limits.pitch);
-        if (!target) {
-            return std::unexpected(
-                failed(candidate, stage, target.error()));
-        }
-        plan = std::move(target->plan);
     }
     if (state.phrase.active) {
         return std::unexpected(Diagnostic{

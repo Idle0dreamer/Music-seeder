@@ -258,6 +258,29 @@ std::expected<tonicization::Level, std::string> level(
     return found->second;
 }
 
+std::expected<Identity, std::string> formulaEvent(
+    const ActionContext& context,
+    std::string_view token,
+    std::size_t note) {
+    std::string suffix;
+    if (token == "event.branch") {
+        if (context.branch == nullptr) {
+            return std::unexpected(
+                "formula event.branch requires a branch reference");
+        }
+        suffix = "branch." + context.branch->jins.name;
+    } else if (token.starts_with("event.")) {
+        suffix = std::string(token.substr(6));
+    } else {
+        return std::unexpected(
+            "formula event must use an event reference: " +
+            std::string(token));
+    }
+    suffix += ".note." + std::to_string(note);
+    suffix += repetitionSuffix(context.repetition);
+    return event(context.key, context.candidate, std::move(suffix));
+}
+
 std::expected<phrase::Boundary, std::string> boundary(
     std::string_view token) {
     if (token == "open") {
@@ -570,6 +593,90 @@ std::expected<std::vector<operation::Any>, std::string> expandAction(
     const ActionContext& context,
     const ActionSpec& specification) {
     const std::map<std::string, ActionExpansion> expansions{
+        {"formula", [](const ActionContext& c,
+                        const ActionSpec& a)
+             -> std::expected<std::vector<operation::Any>, std::string> {
+             if (a.arguments.size() < 1 || a.arguments.size() > 2) {
+                 return std::unexpected(
+                     "formula requires a source and optional variation");
+             }
+             const auto source = reference(c, a.arguments[0]);
+             if (!source) return std::unexpected(source.error());
+             const auto base = std::ranges::find_if(
+                 c.key.formulas,
+                 [&](const auto& formula) {
+                     return formula.identity == *source;
+                 });
+             if (base == c.key.formulas.end()) {
+                 return std::unexpected(
+                     "formula authority has no declared surface: " +
+                     source->str());
+             }
+             std::optional<Identity> variation;
+             const FormulaKey* surface = &*base;
+             if (a.arguments.size() == 2) {
+                 const auto selected = reference(c, a.arguments[1]);
+                 if (!selected) return std::unexpected(selected.error());
+                 const auto found = std::ranges::find_if(
+                     c.key.formulas,
+                     [&](const auto& formula) {
+                         return formula.identity == *selected;
+                     });
+                 if (found == c.key.formulas.end()) {
+                     return std::unexpected(
+                         "formula variation has no declared surface: " +
+                         selected->str());
+                 }
+                 if (found->cell != base->cell) {
+                     return std::unexpected(
+                         "formula variation changes its cell authority: " +
+                         selected->str());
+                 }
+                 variation = *selected;
+                 surface = &*found;
+             }
+
+             std::vector<operation::Any> result;
+             for (std::size_t note = 0; note < surface->notes.size(); ++note) {
+                 const auto& specification = surface->notes[note];
+                 const auto eventValue = formulaEvent(
+                     c, specification.event, note);
+                 const auto roleValue = reference(c, specification.role);
+                 const auto motionValue = direction(c, specification.direction);
+                 const auto regionValue = reference(c, specification.region);
+                 if (!eventValue) return std::unexpected(eventValue.error());
+                 if (!roleValue) return std::unexpected(roleValue.error());
+                 if (!motionValue) return std::unexpected(motionValue.error());
+                 if (!regionValue) return std::unexpected(regionValue.error());
+                 std::optional<sort::BaggageId> baggageValue;
+                 if (specification.baggage) {
+                     const auto baggage = reference(c, *specification.baggage);
+                     if (!baggage) return std::unexpected(baggage.error());
+                     baggageValue = sort::BaggageId{*baggage};
+                 }
+                 result.push_back(operation::Place{
+                     sort::EventId{*eventValue},
+                     sort::RoleId{*roleValue},
+                     *motionValue,
+                     sort::RegionId{*regionValue},
+                     baggageValue});
+                 if (specification.emphasis > Rational(0)) {
+                     result.push_back(operation::Emphasize{
+                         sort::RoleId{*roleValue}, specification.emphasis});
+                 }
+                 if (specification.dwell > Rational(0)) {
+                     result.push_back(operation::Dwell{
+                         sort::RoleId{*roleValue}, specification.dwell});
+                 }
+                 result.push_back(operation::Emit{
+                     sort::CellId{base->cell},
+                     sort::FormulaId{base->identity},
+                     variation ? std::optional<sort::FormulaId>{
+                                     sort::FormulaId{*variation}}
+                               : std::nullopt});
+             }
+             return result;
+         }},
         {"gesture.end.if-active", [](const ActionContext& c,
                                      const ActionSpec& a)
              -> std::expected<std::vector<operation::Any>, std::string> {
