@@ -87,9 +87,24 @@ Facts state_facts(const ::mq::kernel::state::Snapshot& state) {
 bool has_facts(
     const Facts& available,
     std::span<const std::string> required) {
+    const auto matches = [&](const std::string& fact,
+                             const std::string& requiredFact) {
+        if (fact == requiredFact) {
+            return true;
+        }
+        const auto suffix = "." + requiredFact;
+        return fact.size() > suffix.size() &&
+               fact.ends_with(suffix);
+    };
     return std::ranges::all_of(
         required,
-        [&](const auto& fact) { return available.contains(fact); });
+        [&](const auto& requiredFact) {
+            return std::ranges::any_of(
+                available,
+                [&](const auto& fact) {
+                    return matches(fact, requiredFact);
+                });
+        });
 }
 
 struct Phrase {
