@@ -10,6 +10,23 @@ void test::maqam_catalog() {
     require(
         collection.has_value(),
         collection.error_or("maqam collection failed to load"));
+    for (const auto& record : collection->records) {
+        if (!record.specification) {
+            continue;
+        }
+        for (const auto& route : record.specification->routes) {
+            for (const auto& step : route.steps) {
+                require(
+                    step.next.has_value(),
+                    record.name + ":" + route.name + ":" + step.name +
+                        " relies on implicit route order");
+                require(
+                    !step.transition_provenance.empty(),
+                    record.name + ":" + route.name + ":" + step.name +
+                        " has no transition provenance");
+            }
+        }
+    }
     const auto catalog = maqam::Catalog::declared();
     require(catalog.entries().size() == 43, "maqam scope count changed");
     const auto bayati = catalog.find(sort::MaqamId{

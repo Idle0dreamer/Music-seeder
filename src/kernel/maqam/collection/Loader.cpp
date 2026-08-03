@@ -246,6 +246,16 @@ std::expected<Record, std::string> finish(
                     "route " + route.name + " step " + step.name +
                     " declares an invalid repetition range");
             }
+            if (!step.next) {
+                return std::unexpected(
+                    "route " + route.name + " step " + step.name +
+                    " must declare an explicit next transition or terminal");
+            }
+            if (step.transition_provenance.empty()) {
+                return std::unexpected(
+                    "route " + route.name + " step " + step.name +
+                    " must declare transition provenance");
+            }
             if (step.next) {
                 for (const auto& next : *step.next) {
                     if (!stepNames.contains(next)) {

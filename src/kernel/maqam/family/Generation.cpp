@@ -864,11 +864,12 @@ std::expected<std::vector<RouteExpansion>, std::string> routeSteps(
                         repetitionSuffix(repetition));
             }
             std::vector<std::size_t> nextSteps;
-            if (step.next) {
-                nextSteps = *step.next;
-            } else if (stepIndex + 1 < route.steps.size()) {
-                nextSteps.push_back(stepIndex + 1);
+            if (!step.next) {
+                return std::unexpected(
+                    "collection route step has no explicit transition: " +
+                    step.name);
             }
+            nextSteps = *step.next;
             if (nextSteps.empty()) {
                 result.push_back({
                     std::move(nextSuffix), std::move(nextStages)});
