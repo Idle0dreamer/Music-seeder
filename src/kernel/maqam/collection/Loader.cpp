@@ -759,7 +759,8 @@ std::expected<Set, std::string> load(
             found->steps.push_back({
                 fields[1],
                 fields[2] == "-" ? std::string{} : fields[2],
-                std::move(actions)});
+                std::move(actions),
+                std::nullopt});
         } else if (key == "step-repeat") {
             const auto fields = split(value, '|');
             if (fields.size() != 4 || fields[0].empty() ||
