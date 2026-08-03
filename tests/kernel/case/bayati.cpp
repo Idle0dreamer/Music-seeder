@@ -123,8 +123,10 @@ void test::bayati_case() {
                        spans.front().function.identity == question &&
                        spans[1].function.identity == response &&
                        spans.back().function.identity == response &&
-                       spans.front().boundary == phrase::Boundary::Open &&
-                       spans[1].boundary == phrase::Boundary::Closed &&
+                       spans.front().boundary ==
+                           mq::kernel::phrase::Boundary::Open &&
+                       spans[1].boundary ==
+                           mq::kernel::phrase::Boundary::Closed &&
                        spans[1].cadences.size() > 0 &&
                        !spans.back().cadences.empty() &&
                        spans[1].cadences.back().strength == Rational(3, 4) &&
