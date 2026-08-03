@@ -4,10 +4,12 @@
 #include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
+#include <iterator>
 #include <optional>
 #include <set>
 #include <span>
 #include <sstream>
+#include <utility>
 
 namespace mq::synthesis {
 namespace {
@@ -31,6 +33,16 @@ bool matches_prefix(
         [&](const auto& prefix) {
             return value.find(prefix) != std::string::npos;
         });
+}
+
+bool matches_fact_suffix(
+    std::string_view value,
+    std::string_view fact) {
+    if (value == fact) {
+        return true;
+    }
+    const auto suffix = "." + std::string(fact);
+    return value.size() > suffix.size() && value.ends_with(suffix);
 }
 
 using Facts = std::set<std::string>;
@@ -89,12 +101,7 @@ bool has_facts(
     std::span<const std::string> required) {
     const auto matches = [&](const std::string& fact,
                              const std::string& requiredFact) {
-        if (fact == requiredFact) {
-            return true;
-        }
-        const auto suffix = "." + requiredFact;
-        return fact.size() > suffix.size() &&
-               fact.ends_with(suffix);
+        return matches_fact_suffix(fact, requiredFact);
     };
     return std::ranges::all_of(
         required,
@@ -105,6 +112,89 @@ bool has_facts(
                     return matches(fact, requiredFact);
                 });
         });
+}
+
+std::expected<std::pair<::mq::kernel::performance::Plan, Facts>, std::string>
+select_phrase_span(
+    const ::mq::kernel::state::Snapshot& state,
+    const ::mq::kernel::performance::Plan& source,
+    std::string_view selector) {
+    const auto span = std::ranges::find_if(
+        state.phrase.completed,
+        [&](const auto& value) {
+            return matches_fact_suffix(value.identity.name, selector);
+        });
+    if (span == state.phrase.completed.end()) {
+        return std::unexpected(
+            "route derivation has no completed phrase span " +
+            std::string(selector));
+    }
+    const auto first = std::ranges::find(
+        state.melody.history,
+        span->first,
+        &::mq::kernel::performance::Event::identity);
+    const auto last = std::ranges::find(
+        state.melody.history,
+        span->last,
+        &::mq::kernel::performance::Event::identity);
+    if (first == state.melody.history.end() ||
+        last == state.melody.history.end() || first > last) {
+        return std::unexpected(
+            "phrase span does not map to the generated event history: " +
+            std::string(selector));
+    }
+    const auto firstIndex = static_cast<std::size_t>(
+        std::distance(state.melody.history.begin(), first));
+    const auto lastIndex = static_cast<std::size_t>(
+        std::distance(state.melody.history.begin(), last));
+    if (lastIndex >= source.events.size()) {
+        return std::unexpected(
+            "phrase span does not map to the generated performance plan: " +
+            std::string(selector));
+    }
+
+    const auto offset = source.events[firstIndex].onset;
+    const auto finalEvent = source.events[lastIndex];
+    const auto eventEnd = finalEvent.onset + finalEvent.duration;
+    ::mq::kernel::performance::Plan selected;
+    selected.events.reserve(lastIndex - firstIndex + 1);
+    for (std::size_t index = firstIndex; index <= lastIndex; ++index) {
+        auto event = source.events[index];
+        event.onset -= offset;
+        selected.events.push_back(std::move(event));
+    }
+    for (const auto& pause : source.pauses) {
+        if (pause.onset < offset || pause.onset > eventEnd) {
+            continue;
+        }
+        auto copied = pause;
+        copied.onset -= offset;
+        selected.pauses.push_back(std::move(copied));
+    }
+    if (!selected.well_formed()) {
+        return std::unexpected(
+            "selected phrase span is not a contiguous performance plan: " +
+            std::string(selector));
+    }
+
+    Facts facts;
+    add_identity_fact(facts, span->identity);
+    add_identity_fact(facts, span->function.identity);
+    for (const auto& cadence : span->cadences) {
+        add_identity_fact(facts, cadence.family);
+        add_identity_fact(facts, cadence.event);
+    }
+    for (const auto& event : selected.events) {
+        add_identity_fact(facts, event.target.event.identity);
+        if (event.target.cell) add_identity_fact(facts, event.target.cell->identity);
+        if (event.target.formula) add_identity_fact(facts, event.target.formula->identity);
+        if (event.target.variation) add_identity_fact(facts, event.target.variation->identity);
+        if (event.target.motif) add_identity_fact(facts, event.target.motif->identity);
+        if (event.target.transformation) {
+            add_identity_fact(facts, event.target.transformation->identity);
+        }
+    }
+    return std::pair{std::move(selected), std::move(facts)};
 }
 
 struct Phrase {
@@ -118,7 +208,8 @@ std::expected<Phrase, std::string> make_phrase(
     std::uint64_t seed,
     const ::mq::kernel::performance::Timing& timing,
     std::span<const std::string> candidate_prefixes,
-    const std::optional<::mq::kernel::Identity>& avoid) {
+    const std::optional<::mq::kernel::Identity>& avoid,
+    const std::optional<std::string>& phrase_span) {
     const auto catalog = ::mq::kernel::maqam::Catalog::declared();
     const auto scaffold = catalog.build_executable(maqam);
     if (!scaffold) {
@@ -156,15 +247,26 @@ std::expected<Phrase, std::string> make_phrase(
             continue;
         }
         const auto* selected = compatible[mix(seed, attempt) % compatible.size()];
+        auto selectedPlan = selected->plan;
+        auto facts = state_facts(selected->state);
+        if (phrase_span) {
+            const auto span = select_phrase_span(
+                selected->state, selected->plan, *phrase_span);
+            if (!span) {
+                continue;
+            }
+            selectedPlan = std::move(span->first);
+            facts = std::move(span->second);
+        }
         selected_phrase = Phrase{
             GeneratedPlan{
                 selected->candidate,
-                selected->plan,
+                std::move(selectedPlan),
                 {selected->candidate},
                 {},
             },
             selected->state,
-            state_facts(selected->state),
+            std::move(facts),
         };
         break;
     }
@@ -261,7 +363,8 @@ std::expected<GeneratedPlan, std::string> make_plan(
                            0x9e3779b97f4a7c15ULL,
                 timing,
                 current->candidate_prefixes,
-                previous);
+                previous,
+                current->phrase_span);
             if (!phrase) {
                 return std::unexpected(phrase.error());
             }

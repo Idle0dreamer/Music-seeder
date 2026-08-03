@@ -153,6 +153,7 @@ struct Pending {
         performanceRequiredFacts;
     std::vector<std::pair<std::string, std::vector<std::string>>>
         performanceProvidedFacts;
+    std::vector<std::pair<std::string, std::string>> performanceSpans;
     std::size_t beginLine{};
     std::size_t ghammazLine{};
     std::size_t extensionLine{};
@@ -480,6 +481,19 @@ std::expected<Record, std::string> finish(
             &family::PerformanceStageSpec::provided_facts,
             "performance-provides");
         if (!provided) return std::unexpected(provided.error());
+        std::set<std::string> attachedSpans;
+        for (const auto& [stageName, span] : pending.performanceSpans) {
+            if (!performanceNames.contains(stageName) || span.empty() ||
+                !attachedSpans.insert(stageName).second) {
+                return std::unexpected(
+                    "performance-span references an unknown, duplicated, or "
+                    "empty stage span for " + pending.name);
+            }
+            const auto found = std::ranges::find_if(
+                pending.performanceStages,
+                [&](const auto& stage) { return stage.name == stageName; });
+            found->phrase_span = span;
+        }
     }
     if (pending.implementation == "complete") {
         for (const auto& authority : pending.authorities) {
@@ -913,6 +927,7 @@ std::expected<Set, std::string> load(
                 static_cast<std::size_t>(*minimum),
                 static_cast<std::size_t>(*maximum),
                 fields[5],
+                std::nullopt,
                 {},
                 {},
             });
@@ -936,6 +951,15 @@ std::expected<Set, std::string> load(
                                      ? pending.performanceRequiredFacts
                                      : pending.performanceProvidedFacts;
             declarations.push_back({fields[0], facts});
+        } else if (key == "performance-span") {
+            const auto fields = split(value, '|');
+            if (fields.size() != 2 || fields[0].empty() ||
+                fields[1].empty()) {
+                return std::unexpected(
+                    "performance-span requires stage|phrase-identity at line " +
+                    std::to_string(lineNumber));
+            }
+            pending.performanceSpans.push_back({fields[0], fields[1]});
         } else if (key == "route") {
             const auto fields = split(value, '|');
             if (fields.size() != 2 || fields[0].empty()) {

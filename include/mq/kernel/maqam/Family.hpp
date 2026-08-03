@@ -82,6 +82,9 @@ struct PerformanceStageSpec {
     std::size_t minimum{1};
     std::size_t maximum{1};
     std::string provenance;
+    // Selects one completed phrase span from each legal route derivation.
+    // An omitted selector retains the whole derivation for neutral fixtures.
+    std::optional<std::string> phrase_span;
     // These are collection-owned phrase-level pre/post conditions.  They
     // describe musical memory, not implementation stages: the generator
     // derives the facts from the completed kernel state and refuses a
