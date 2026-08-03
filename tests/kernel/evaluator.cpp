@@ -128,6 +128,32 @@ void test::evaluator() {
             rejectedVariation.error().rule == "allow.variation",
         "unapproved cell variation was accepted");
 
+    const Identity approvedBase{"test.formula", "base", "1"};
+    const Identity approvedVariation{"test.formula", "variation", "1"};
+    const std::vector<operation::Any> ungroundedVariation{
+        operation::Anchor{mq::kernel::sort::CenterId{fixture.center.root}},
+        operation::Enter{mq::kernel::sort::JinsId{fixture.jins.root}},
+        operation::Place{
+            mq::kernel::sort::EventId{Identity{
+                "test.event", "variation", "1"}},
+            mq::kernel::sort::RoleId{fixture.role.root},
+            motion::Direction::Start,
+            mq::kernel::sort::RegionId{fixture.region.root},
+            std::nullopt,
+        },
+        operation::Emit{
+            mq::kernel::sort::CellId{fixture.cell},
+            mq::kernel::sort::FormulaId{approvedBase},
+            mq::kernel::sort::FormulaId{approvedVariation},
+        },
+    };
+    const auto rejectedUngrounded = evaluator.shared.run(
+        {}, ungroundedVariation);
+    require(
+        !rejectedUngrounded &&
+            rejectedUngrounded.error().rule == "cell.variation",
+        "a variation without a prior base formula was accepted");
+
     const auto a = evaluator.regional.a.run({}, established);
     require(
         !a &&

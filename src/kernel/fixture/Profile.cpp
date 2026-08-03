@@ -50,6 +50,11 @@ std::expected<Profiles, std::string> profiles(
             {fixture.role.root, fixture.role.ghammaz},
             source),
         define("allow.emit", {fixture.cell}, source),
+        define(
+            "allow.variation",
+            {Identity{"test.formula", "base", "1"},
+             Identity{"test.formula", "variation", "1"}},
+            source),
         define("allow.cadence", {fixture.cadence}, source),
         define("allow.tonicize", {fixture.jins.branch}, source),
         define("allow.modulate", {fixture.path.direct}, source),

@@ -90,6 +90,32 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                         "allow.variation",
                         value.variation->str()));
                 }
+                if (value.variation) {
+                    if (!value.formula) {
+                        return std::unexpected(Violation{
+                            index,
+                            label,
+                            "cell.variation",
+                            "a variation requires a declared base formula",
+                        });
+                    }
+                    const auto has_base = std::ranges::any_of(
+                        state.cell.owners,
+                        [&](const auto& entry) {
+                            return entry.second.formula &&
+                                   entry.second.formula->identity ==
+                                       value.formula->identity;
+                        });
+                    if (!has_base) {
+                        return std::unexpected(Violation{
+                            index,
+                            label,
+                            "cell.variation",
+                            "a variation requires a prior occurrence of its "
+                            "base formula",
+                        });
+                    }
+                }
                 state.cell.owners.emplace(
                     event,
                     state::Cell::Owner{
