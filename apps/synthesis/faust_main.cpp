@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstddef>
 #include <iostream>
+#include <set>
 #include <string_view>
 
 int main(int argc, char** argv) {
@@ -56,11 +57,24 @@ int main(int argc, char** argv) {
         std::cerr << rendered.error().message << '\n';
         return 1;
     }
+    std::set<std::string> distinct_candidates;
+    for (const auto& candidate : generated->phrase_candidates) {
+        distinct_candidates.insert(candidate.str());
+    }
     std::cout
         << "maqam: " << options->maqam << '\n'
         << "candidate: " << generated->candidate.str() << '\n'
         << "model: Faust-generated coupled-course physical model\n"
         << "phrases: " << generated->phrase_candidates.size() << '\n'
+        << "distinct_phrase_candidates: " << distinct_candidates.size() << '\n'
+        << "phrase_candidates: ";
+    for (std::size_t index = 0;
+         index < generated->phrase_candidates.size(); ++index) {
+        if (index != 0) std::cout << ',';
+        std::cout << generated->phrase_candidates[index].str();
+    }
+    std::cout
+        << '\n'
         << "events: " << generated->plan.events.size() << '\n'
         << "frames: " << rendered->frames << '\n'
         << "seconds: " << static_cast<double>(rendered->frames) /
