@@ -41,6 +41,10 @@ void test::ajam_case() {
             detail += "\n" + rejection.candidate.str() + ": " +
                       rejection.message;
         }
+        for (const auto& diagnostic : result->derivation) {
+            detail += "\n" + diagnostic.term.str() + ": " +
+                      diagnostic.message;
+        }
         require(false, detail);
     }
     require(std::ranges::all_of(result->legal, [](const auto& item) {
