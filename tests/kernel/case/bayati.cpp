@@ -138,16 +138,23 @@ void test::bayati_case() {
             item.plan.events[1].target.event.identity});
         const auto second = owners.at(sort::EventId{
             item.plan.events[4].target.event.identity});
-        const auto& target = item.plan.events[1].target;
+        const auto& firstTarget = item.plan.events[1].target;
+        const auto& variedTarget = item.plan.events[4].target;
         return first.cell.identity == developCell &&
-               second.cell.identity == developCell && target.cell &&
-               target.cell->identity == developCell && target.formula &&
-               target.formula->identity == developFormula && target.motif &&
-               target.motif->identity ==
+               second.cell.identity == developCell &&
+               firstTarget.cell && firstTarget.cell->identity == developCell &&
+               firstTarget.formula &&
+               firstTarget.formula->identity == developFormula &&
+               firstTarget.motif && firstTarget.motif->identity ==
                    Identity{"maqam.bayati", "motif.develop", "1"} &&
-               target.transformation &&
-               target.transformation->identity == transformation &&
-               target.transformation_provenance.find(
+               variedTarget.cell && variedTarget.cell->identity == developCell &&
+               variedTarget.formula &&
+               variedTarget.formula->identity == developFormula &&
+               variedTarget.motif && variedTarget.motif->identity ==
+                   Identity{"maqam.bayati", "motif.develop", "1"} &&
+               variedTarget.transformation &&
+               variedTarget.transformation->identity == transformation &&
+               variedTarget.transformation_provenance.find(
                    "MaqamWorld:jins-rast") != std::string::npos &&
                motifs != item.state.motif.occurrences.end() &&
                motifs->second.size() == 3 && motifs->second.front().formula &&
