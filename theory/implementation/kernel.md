@@ -1,7 +1,7 @@
 # Kernel implementation ledger
 
 This ledger is the authority for what the C++23 theory kernel actually
-implements. Passing legacy prototype tests does not advance this ledger.
+implements. Historical prototype tests do not advance this ledger.
 
 ## Implemented
 
@@ -107,7 +107,7 @@ implements. Passing legacy prototype tests does not advance this ledger.
 | Complete Kurd package and routes | `make_kurd`, `kurd_case`, catalog admission, and CLI execution for stay and Nahawand routes |
 | Complete Ajam package and routes | `make_ajam`, `ajam_case`, catalog admission, and CLI execution for stay, Upper Ajam, and Nahawand routes |
 | Complete Nikriz package and routes | `make_nikriz`, `nikriz_case`, catalog admission, and CLI execution for stay and Nahawand routes |
-| Provisional Bayati profile and routes | `src/kernel/maqam/bayati`, `bayati_case`, and CLI execution for stay, Nahawand, Rast, and Hijaz routes; completion debt remains explicit |
+| Provisional Bayati profile and routes | Bayati collection record, generic family builder, `bayati_case`, and CLI execution for stay, Nahawand, Rast, and Hijaz routes; completion debt remains explicit |
 | Declarative ordered-family seam | `family::BranchSpec` carries source/target centers, roles, and transition direction; the Sikah route exercises the shared builder without a route-name dispatch |
 | Executable Sikah vertical route | `make_sikah`, `sikah_case`, named CLI execution, and native synthesis render; the catalog still rejects it as incomplete |
 
@@ -119,9 +119,10 @@ implements. Passing legacy prototype tests does not advance this ledger.
   corpus data; profile-matched source segments and independent review are still
   required for phrase-rate, pause, release, ornament, and performer claims.
 - A vocabulary-composition boundary for admitting a second theory module.
-- Collection-file loading of the current C++ package definitions; the current
-  ordered-family seam is the migration target, not the final configurable
-  package format.
+- Collection-file loading now supplies the executable family package records,
+  including Bayati; the collection schema still needs the full phrase,
+  ornament, timing, evidence, and variation vocabulary required for complete
+  maqām packages.
 
 Audio rendering is outside this ledger. The independent synthesis boundary is
 implemented under `synthesis/`; its current renderer is a provisional

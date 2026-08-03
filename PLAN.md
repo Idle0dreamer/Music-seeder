@@ -160,7 +160,8 @@ Deliverables:
 
 Evidence required:
 
-- Bayati `make_bayati()` returns a complete scaffold;
+- the Bayati collection record builds an executable scaffold through
+  `Catalog::build_executable("bayati")`;
 - every route reaches a legal root return and cadence;
 - unsupported direct edges fail with named diagnostics;
 - the profile test harness covers all eight Bayati case requirements and the

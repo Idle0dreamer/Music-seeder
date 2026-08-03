@@ -11,10 +11,11 @@ none are modeled or claimed by the current kernel.
 
 The old seed-driven generator and synthesized audio prototypes remain rejected
 diagnostic artifacts. The current C++23 Ajam, Bayati, Hijaz, Kurd, Nahawand,
-Nikriz, and Rast implementations are separate profile packages. Rast,
-Nahawand, Hijaz, Kurd, Ajam, and Nikriz are admitted as complete canonical
-packages; Bayati remains explicitly incomplete until its
-profile-specific completion gates pass. The normative theory for the current maqām module is
+Nikriz, and Rast packages are loaded from provenance-bearing collection records
+and built through shared family machinery. Rast, Nahawand, Hijaz, Kurd, Ajam,
+and Nikriz are admitted as complete canonical packages; Bayati is executable
+but remains explicitly incomplete until its profile-specific completion gates
+pass. The normative theory for the current maqām module is
 under `theory/`; the implementation is isolated under
 `include/mq/kernel`, `src/kernel`, `apps/kernel`, and `tests/kernel`.
 
@@ -38,8 +39,9 @@ as `./build/kernel ajam [seed]`, `./build/kernel bayati [seed]`,
 `./build/kernel rast [seed]`. They print complete candidates and exact timed
 structural targets; the kernel is not itself an audio renderer.
 
-`make test` is an alias for the kernel law suite. Rejected legacy prototype
-sources are not part of this checkpoint.
+`make test` is an alias for the kernel law suite. Binary builds and executable
+validation for the shared repository are run by GitHub Actions; the constrained
+development machine is not the validation authority.
 
 ## Source map
 
@@ -57,16 +59,16 @@ sources are not part of this checkpoint.
 | `include/mq/kernel/profile` | rules, patches, and effective profiles |
 | `src/kernel/*` | implementations separated by the same domains |
 | `tests/kernel` | executable algebra and reconstruction laws |
+| `theory/data/maqam` | collection records for executable package reconstruction |
 | `synthesis` | separate audio interface, instrument adapters, and acoustic validation |
-| legacy directories | rejected generator/synthesizer retained for diagnosis |
 
 ## Scope
 
 The declared Arabic repertoire boundary is in
 [`theory/maqamat/scope.md`](theory/maqamat/scope.md). Rast is currently the
 first complete canonical package; Nahawand, Hijaz, Kurd, Ajam, and Nikriz are
-also admitted as complete canonical packages. Bayati is executable but remains incomplete
-under its case-study gates. Remaining entries are catalogued and refused until
+also admitted as complete canonical packages. Bayati is executable but remains
+incomplete under its case-study gates. Remaining entries are catalogued and refused until
 their own positive and negative rules, formulas, vocabulary, pathways, and
 provenance evidence are implemented.
 
