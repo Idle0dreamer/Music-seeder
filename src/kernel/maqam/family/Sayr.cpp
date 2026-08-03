@@ -18,9 +18,16 @@ std::expected<Identity, std::string> reference(
             "empty " + std::string(kind) + " reference in " + key.package);
     }
     if (kind == "obligation") {
-        return id(
-            key,
-            name.starts_with("obligation.") ? name : "obligation." + name);
+        const auto token = name.starts_with("obligation.")
+                               ? name
+                               : "obligation." + name;
+        const auto found = key.authorities.find(token);
+        if (found == key.authorities.end()) {
+            return std::unexpected(
+                "undeclared obligation reference " + token + " in " +
+                key.package);
+        }
+        return found->second;
     }
     const auto token = name.find('.') == std::string::npos
                            ? std::string(kind) + "." + name

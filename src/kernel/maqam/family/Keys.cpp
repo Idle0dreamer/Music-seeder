@@ -62,6 +62,7 @@ Key key(const Spec& spec) {
         "role",
         spec.upper_role.empty() ? "upper" : spec.upper_role,
         result.roleUpper);
+    result.authorities.insert_or_assign("role.upper", result.roleUpper);
     result.roleExtension = declared(
         result, "role", "extension", id(result, "role.extension"));
     if (spec.root_roles.empty()) {
@@ -139,6 +140,11 @@ Key key(const Spec& spec) {
     result.motionFall = id(result, "motion.fall");
     result.boundaryOpen = id(result, "boundary.open");
     result.boundaryClosed = id(result, "boundary.closed");
+    for (const auto& obligation : spec.obligations) {
+        result.authorities.emplace(
+            "obligation." + obligation.name,
+            id(result, "obligation." + obligation.name));
+    }
     result.branches.reserve(spec.branches.size());
     for (const auto& source : spec.branches) {
         BranchKey branch;

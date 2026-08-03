@@ -141,45 +141,9 @@ std::expected<void, std::string> arity(
 std::expected<Identity, std::string> reference(
     const ActionContext& context,
     std::string_view token) {
-    const std::map<std::string, Identity> fixed{
-        {"center.root", context.key.centerRoot},
-        {"center.upper", context.key.centerUpper},
-        {"jins.root", context.key.jinsRoot},
-        {"role.tonic", context.key.roleTonic},
-        {"role.ghammaz", context.key.roleGhammaz},
-        {"role.upper", context.key.roleUpper},
-        {"role.extension", context.key.roleExtension},
-        {"region.root", context.key.regionRoot},
-        {"region.upper", context.key.regionUpper},
-        {"gesture.establish", context.key.gestureEstablish},
-        {"gesture.ascent", context.key.gestureAscent},
-        {"gesture.descent", context.key.gestureDescent},
-        {"gesture.resolution", context.key.gestureResolution},
-        {"phrase.question", context.key.phraseQuestion},
-        {"phrase.response", context.key.phraseResponse},
-        {"cell.establish", context.key.cellEstablish},
-        {"cell.develop", context.key.cellDevelop},
-        {"cell.climax", context.key.cellClimax},
-        {"cell.return", context.key.cellReturn},
-        {"formula.establish", context.key.formulaEstablish},
-        {"formula.develop", context.key.formulaDevelop},
-        {"formula.develop-variation", context.key.formulaDevelopVariation},
-        {"formula.climax", context.key.formulaClimax},
-        {"formula.return", context.key.formulaReturn},
-        {"cadence.local", context.key.cadenceLocal},
-        {"cadence.return", context.key.cadenceReturn},
-        {"baggage.extension", context.key.baggageExtension},
-    };
-    if (const auto found = fixed.find(std::string(token));
-        found != fixed.end()) {
-        return found->second;
-    }
     if (const auto found = context.key.authorities.find(std::string(token));
         found != context.key.authorities.end()) {
         return found->second;
-    }
-    if (token.starts_with("obligation.")) {
-        return id(context.key, std::string(token));
     }
     if (token == "previous-descent" || token == "current-descent") {
         if (!context.previousDescent) {
@@ -309,12 +273,6 @@ std::expected<phrase::Boundary, std::string> boundary(
 std::expected<Identity, std::string> function(
     const Key& key,
     std::string_view token) {
-    if (token == "question") {
-        return key.phraseQuestion;
-    }
-    if (token == "response") {
-        return key.phraseResponse;
-    }
     if (const auto found = key.authorities.find("phrase." + std::string(token));
         found != key.authorities.end()) {
         return found->second;
