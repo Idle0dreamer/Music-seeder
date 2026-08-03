@@ -8,6 +8,7 @@
 #include "mq/kernel/performance/Event.hpp"
 #include "mq/kernel/phrase/Span.hpp"
 #include "mq/kernel/sayr/Completion.hpp"
+#include "mq/kernel/state/Motif.hpp"
 #include "mq/kernel/tonicization/Level.hpp"
 #include "mq/kernel/trace/Event.hpp"
 
@@ -119,6 +120,7 @@ struct Snapshot {
     Tonicization tonicization;
     Evidence evidence;
     Cell cell;
+    Motif motif;
     Path path;
     Melody melody;
     Phrase phrase;

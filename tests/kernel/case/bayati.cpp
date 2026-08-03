@@ -123,6 +123,8 @@ void test::bayati_case() {
         "maqam.bayati", "formula.develop", "1"};
     const Identity variedFormula{
         "maqam.bayati", "formula.develop-variation", "1"};
+    const sort::MotifId developMotif{
+        Identity{"maqam.bayati", "motif.develop", "1"}};
     require(
         std::ranges::all_of(
             result->legal,
@@ -131,6 +133,8 @@ void test::bayati_case() {
                     return true;
                 }
                 const auto& owners = item.state.cell.owners;
+                const auto motifs = item.state.motif.occurrences.find(
+                    developMotif);
                 const auto first = owners.at(sort::EventId{
                     item.plan.events[1].target.event.identity});
                 const auto second = owners.at(sort::EventId{
@@ -144,6 +148,10 @@ void test::bayati_case() {
                        target.motif &&
                        target.motif->identity ==
                            Identity{"maqam.bayati", "motif.develop", "1"} &&
+                       motifs != item.state.motif.occurrences.end() &&
+                       motifs->second.size() == 2 &&
+                       motifs->second.front().formula &&
+                       motifs->second.back().variation &&
                        first.formula &&
                        first.formula->identity == developFormula &&
                        second.formula &&

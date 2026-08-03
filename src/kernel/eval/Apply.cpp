@@ -128,6 +128,13 @@ std::expected<state::Snapshot, Violation> Evaluator::apply(
                         value.formula,
                         value.variation,
                         value.motif});
+                if (value.motif) {
+                    state.motif.occurrences[*value.motif].push_back(
+                        state::MotifOccurrence{
+                            event,
+                            value.formula,
+                            value.variation});
+                }
                 const auto previous = state.cell.occurrences[value.cell]++;
                 state.evidence.amount[evidence::Kind::Cell] += Rational(1);
                 if (previous > 0) {
