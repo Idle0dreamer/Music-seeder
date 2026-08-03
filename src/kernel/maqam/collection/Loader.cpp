@@ -600,17 +600,17 @@ std::expected<Set, std::string> load(
                     note[6], "formula dwell", lineNumber);
                 if (!emphasis) return std::unexpected(emphasis.error());
                 if (!dwell) return std::unexpected(dwell.error());
-                notes.push_back({
-                    note[0],
-                    note[1],
-                    note[2],
-                    note[3],
-                    note[4] == "-"
-                        ? std::nullopt
-                        : std::optional<std::string>{note[4]},
-                    *emphasis,
-                    *dwell,
-                });
+                family::FormulaNoteSpec parsed;
+                parsed.event = note[0];
+                parsed.role = note[1];
+                parsed.direction = note[2];
+                parsed.region = note[3];
+                if (note[4] != "-") {
+                    parsed.baggage = note[4];
+                }
+                parsed.emphasis = *emphasis;
+                parsed.dwell = *dwell;
+                notes.push_back(std::move(parsed));
             }
             pending.formulas.push_back({
                 fields[0], fields[1], fields[2], std::move(notes)});
