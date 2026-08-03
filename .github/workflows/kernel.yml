@@ -28,6 +28,14 @@ jobs:
           ./build/kernel 1
           ./build/kernel 2
           ./build/kernel sikah 53
+      - name: Upload kernel binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-seeder-kernel-binaries
+          if-no-files-found: error
+          path: |
+            build/kernel
+            build/kernel-tests
 
   undefined:
     runs-on: ubuntu-latest
@@ -43,6 +51,12 @@ jobs:
           sudo apt-get install -y g++-14
       - name: Undefined-behavior suite
         run: make CXX=g++-14 kernel-sanitize
+      - name: Upload sanitizer binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-seeder-sanitizer-binary
+          if-no-files-found: error
+          path: build/kernel-tests-sanitize
 
   faust-probe:
     runs-on: ubuntu-latest
@@ -95,6 +109,12 @@ jobs:
             -I third_party/audio/faust/architecture \
             -c /tmp/music_seed_santur_courses.cpp \
             -o /tmp/music_seed_santur_courses.o
+      - name: Upload Faust compiler binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-seeder-faust-compiler
+          if-no-files-found: error
+          path: third_party/audio/faust/build/bin/faust
 
   synthesis-render:
     runs-on: ubuntu-latest
@@ -107,11 +127,13 @@ jobs:
       - name: Install GCC 14
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++-14 cmake libmicrohttpd-dev
+          sudo apt-get install -y g++-14 cmake libmicrohttpd-dev qt6-base-dev
       - name: Build the synthesis adapter
         run: make CXX=g++-14 synthesis
       - name: Build the Faust-generated synthesis adapter
         run: make CXX=g++-14 synthesis-faust
+      - name: Build the desktop player
+        run: make CXX=g++-14 synthesis-ui
       - name: Render deterministic Sikah WAV through both adapters
         run: |
           ./build/synthesis-render --maqam sikah --seed 53 \
@@ -131,3 +153,12 @@ jobs:
           name: music-seeder-sikah-wav
           if-no-files-found: error
           path: /tmp/music-seeder-sikah*.wav
+      - name: Upload synthesis binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-seeder-player-binaries
+          if-no-files-found: error
+          path: |
+            build/synthesis-render
+            build/synthesis-faust-render
+            build/synthesis-ui
