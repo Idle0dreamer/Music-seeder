@@ -5,7 +5,7 @@ current kernel and separate provisional santur renderer are active
 implementations; the evidence and limits for each are listed below. The model
 is not a named-instrument result.
 
-Current phase: **non-ML language and staged-generation kernel implementation**.
+Current phase: **collection-driven structured performance execution**.
 
 Kernel implementation is active only under `include/mq/kernel`, `src/kernel`,
 `apps/kernel`, and `tests/kernel`. The separate `synthesis/` tree contains the
@@ -130,26 +130,25 @@ Implemented so far:
 
 Checkpoint validation state:
 
-- GitHub Actions run `30774537059` validates exact head
-  `b2f6908e8c7d1c0585e016739f0a4f1e7f83b295`; its debug law suite reports 49
-  passing law/case invocations, and its optimized CLI job exercises the
-  neutral fixture and named Sikah route remotely;
-- the same run passes the UBSan suite with 49 passing law/case invocations;
-- the remote synthesis job renders both native and Faust-generated coupled-
-  course models as non-silent RIFF WAVs: 1,585,230 frames, 33.0256 seconds,
-  peak `0.92`; the repeated Faust render is byte-identical;
-- the Faust job builds the pinned compiler, generates both physical-modeling
+- GitHub Actions run `30803900916` validates exact head
+  `cb0cf03d1359d5efe446b0ed6be6b8bd84d73b9b`; its debug law suite, optimized
+  CLI, Faust, native synthesis, Faust synthesis, Qt UI, and UBSan jobs are
+  green;
+- the downloaded exact-head kernel binary reports 49 passing law/case lines;
+  the downloaded sanitizer binary is a separate runtime artifact and remains
+  subject to the host's sanitizer environment;
+- the remote synthesis job renders native and Faust-generated Bayati WAVs for
+  the requested 30-second target. Downloaded binaries run locally without
+  compiling and report 1,535,460 frames, 31.9887 seconds, 30 phrase spans, 70
+  events, and four distinct legal route candidates; the WAVs are valid 48 kHz
+  mono PCM, and the local Faust render matches the remote Faust artifact
+  byte-for-byte;
+- the selected span report is the collection discourse sequence
+  `phrase.establish, phrase.return, phrase.establish` repeated through the
+  performance. This is execution evidence for structured route composition,
+  not evidence of cultural authenticity;
+- the Faust job builds the pinned compiler, generates the physical-modeling
   and coupled-course C++ sources, and compiles both generated probes;
-- run `30774537059` uploads `music-seeder-kernel-binaries` (`8841668945`),
-  `music-seeder-sanitizer-binary` (`8841656343`),
-  `music-seeder-faust-compiler` (`8841643712`),
-  `music-seeder-player-binaries` (`8841794875`), and
-  `music-seeder-sikah-wav` (`8841794404`);
-- those remote binaries were downloaded to
-  `output/remote-binaries-b2f6908` and executed locally without compiling:
-  the kernel and UBSan suites each produced 49 passes, both renderers produced
-  valid 48 kHz WAVs, the local Faust render matched the remote Faust artifact
-  byte-for-byte, and the Qt player remained running on the local display;
 - `.github/workflows/kernel.yml` provides the free remote debug, release, CLI,
   Faust, synthesis, and undefined-behavior validation path on GitHub Actions;
 - AddressSanitizer remains a separate environmental check and is not counted
@@ -162,11 +161,14 @@ claim every regional, historical, performer, or school realization. Bayati's
 source scope and remaining corpus/annotator debt are recorded in
 `theory/implementation/kernel.md` and `theory/case/bayati.md`.
 
-The neutral fixture remains finite and intentionally limited. The Bayati
-profile now executes four finite sourced route candidates with onset-to-target
-pitch contours, but it is not yet a recursive phrase, motif, or ornament
-generator, and its sayr vocabulary is not culturally complete. The santur
-renderer is an unvalidated provisional physical model, not a regional or
-instrument-authentic claim.
+The neutral fixture remains finite and intentionally limited. The collection
+performance layer now composes declared phrase spans and legal route
+transitions, and duration refinement creates one generated performance stream
+rather than copying an audio clip. Only Ajam, Bayati, and Sikah currently carry
+performance graphs; Bayati and Sikah remain explicitly incomplete package
+records, and the Bayati profile is not yet a full maqām implementation. The
+current phrase, motif, ornament, performer-variation, corpus, and santur
+acoustic claims therefore remain unfinished. The renderer is an unvalidated
+physical model, not a regional or instrument-authentic claim.
 
 The normative model remains under `theory/`.

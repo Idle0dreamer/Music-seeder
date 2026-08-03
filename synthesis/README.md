@@ -58,8 +58,11 @@ supplies exact timing, intensity, articulation, ornament, and release intent
 to this adapter. The Faust-generated coupled-course renderer is a separate
 compiled C++ DSP target. Faust retains resonator state between audio blocks;
 it is an executable instrument, not a pre-rendered sample bank. Exact head
-`985464504bf3f732a9ab3cbb5ce3416fa4b6bffb` passed its remote build and
-uploaded the independent and Faust WAV artifacts in run `30755938899`.
+`cb0cf03d1359d5efe446b0ed6be6b8bd84d73b9b` passed remote build and synthesis
+run `30803900916`. The downloaded native and Faust binaries rendered the same
+collection-driven Bayati plan locally for 31.9887 seconds; the local Faust WAV
+was byte-identical to the remote artifact. This proves the execution boundary,
+not an authentic santur reproduction or a complete Bayati realization.
 Neither is yet a validated instrument reproduction: geometry, material
 parameters, measurements, and perceptual comparison remain open.
 

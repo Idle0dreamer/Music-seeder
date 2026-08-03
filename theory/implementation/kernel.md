@@ -143,19 +143,16 @@ coupled-course model, not a named-instrument or regional-authenticity result.
 
 ## Validation environment
 
-Verified for the preceding 34-suite descriptor checkpoint:
-
-- optimized GCC C++23 build with warnings as errors;
-- thirty-four debug law suites;
-- undefined-behavior sanitizer;
-
-The constrained checkout does not compile these targets. GitHub Actions run
-`30774537059` validates exact head
-`b2f6908e8c7d1c0585e016739f0a4f1e7f83b295` across debug, optimized CLI, Faust,
-synthesis, desktop UI, and undefined-behavior jobs. The remote debug and UBSan jobs each
-report 49 passing law/case invocations. The synthesis job renders deterministic
-native and Faust-generated Sikah WAVs for 33.0256 seconds, and the Faust job
-generates and compiles both pinned probe sources.
+GitHub Actions run `30803900916` validates exact head
+`cb0cf03d1359d5efe446b0ed6be6b8bd84d73b9b` across debug, optimized CLI, Faust,
+synthesis, desktop UI, and undefined-behavior jobs. The downloaded exact-head
+kernel test binary reports 49 passing law/case lines. The remote synthesis job
+renders the collection-driven Bayati performance through both native and
+Faust-generated adapters for a requested 30-second target; downloaded local
+runtime checks report 31.9887 seconds, 30 phrase spans, 70 events, and valid
+48 kHz mono WAVs. The local Faust render is byte-identical to its remote
+artifact. These are execution and integration results, not evidence of full
+maqām authenticity or acoustic instrument validation.
 `.github/workflows/kernel.yml` is the clean remote validation path and installs
 GCC 14 before running these checks. Its executable artifacts are downloaded for
 local runtime checks; the local machine remains a runtime host, not a build

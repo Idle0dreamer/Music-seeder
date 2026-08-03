@@ -442,6 +442,14 @@ std::expected<Record, std::string> finish(
                     pending.name);
             }
         }
+        std::set<std::string> terminalNames(
+            pending.performanceTerminals.begin(),
+            pending.performanceTerminals.end());
+        if (terminalNames.size() != pending.performanceTerminals.size()) {
+            return std::unexpected(
+                "performance terminals contain a duplicate stage for " +
+                pending.name);
+        }
         for (const auto& stage : pending.performanceStages) {
             for (const auto& next : stage.next) {
                 if (!performanceNames.contains(next)) {
@@ -449,6 +457,62 @@ std::expected<Record, std::string> finish(
                         "performance stage references an unknown next stage "
                         "for " + pending.name);
                 }
+            }
+        }
+        // A collection performance is a finite-state discourse production,
+        // not an unconstrained random walk.  Every declared node must be
+        // reachable from the start, and the start must have a legal path to a
+        // declared terminal.  Cycles are allowed only when they still have a
+        // terminal path; duration-targeted continuation decides how many
+        // legal phrases to request from that graph.
+        std::set<std::string> reachable{pending.performanceStart};
+        bool changed = true;
+        while (changed) {
+            changed = false;
+            for (const auto& stage : pending.performanceStages) {
+                if (!reachable.contains(stage.name)) continue;
+                for (const auto& next : stage.next) {
+                    changed = reachable.insert(next).second || changed;
+                }
+            }
+        }
+        for (const auto& stage : pending.performanceStages) {
+            if (!reachable.contains(stage.name)) {
+                return std::unexpected(
+                    "performance stage is unreachable from the start for " +
+                    pending.name + ": " + stage.name);
+            }
+            if (!terminalNames.contains(stage.name) && stage.next.empty()) {
+                return std::unexpected(
+                    "non-terminal performance stage has no transition for " +
+                    pending.name + ": " + stage.name);
+            }
+        }
+        std::set<std::string> canReachTerminal = terminalNames;
+        changed = true;
+        while (changed) {
+            changed = false;
+            for (const auto& stage : pending.performanceStages) {
+                if (std::ranges::any_of(
+                        stage.next,
+                        [&](const auto& next) {
+                            return canReachTerminal.contains(next);
+                        })) {
+                    changed = canReachTerminal.insert(stage.name).second ||
+                              changed;
+                }
+            }
+        }
+        if (!canReachTerminal.contains(pending.performanceStart)) {
+            return std::unexpected(
+                "performance start has no path to a terminal for " +
+                pending.name);
+        }
+        for (const auto& terminal : terminalNames) {
+            if (!reachable.contains(terminal)) {
+                return std::unexpected(
+                    "performance terminal is unreachable from the start for " +
+                    pending.name + ": " + terminal);
             }
         }
         const auto attachFacts = [&](const auto& declarations,

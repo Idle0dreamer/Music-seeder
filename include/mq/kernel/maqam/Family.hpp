@@ -71,10 +71,12 @@ struct RouteSpec {
     std::vector<StepSpec> steps;
 };
 
-// A performance state is a phrase-level authority.  Candidate prefixes name
+// A performance state is a phrase-level authority. Candidate prefixes name
 // complete route derivations admitted by the collection; they are not note
-// generators or fallback routes.  The graph may cycle, but its traversal is
-// bounded by the requested performance duration.
+// generators or fallback routes. `next` is a collection-declared legal
+// discourse transition. The loader requires every node to be reachable and
+// to have a path to a terminal; cycles therefore represent repeatable formal
+// continuation, not an unconstrained random walk.
 struct PerformanceStageSpec {
     std::string name;
     std::vector<std::string> candidate_prefixes;
