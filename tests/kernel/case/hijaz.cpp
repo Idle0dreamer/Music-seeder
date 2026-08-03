@@ -1,14 +1,14 @@
 #include "../Test.hpp"
 
 #include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Hijaz.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
 #include <string>
 
 void test::hijaz_case() {
     using namespace mq::kernel;
-    auto scaffold = maqam::make_hijaz();
+    auto scaffold = maqam::Catalog::declared().build_executable("hijaz");
     require(scaffold.has_value(), scaffold.error_or("Hijaz scaffold failed"));
     const eval::Context context{
         .jins = {&scaffold->ajnas},

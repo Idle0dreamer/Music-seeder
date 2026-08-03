@@ -1,13 +1,13 @@
 #include "../Test.hpp"
 
 #include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Nikriz.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
 
 void test::nikriz_case() {
     using namespace mq::kernel;
-    auto scaffold = maqam::make_nikriz();
+    auto scaffold = maqam::Catalog::declared().build_executable("nikriz");
     require(scaffold.has_value(), scaffold.error_or("Nikriz scaffold failed"));
     const eval::Context context{
         .jins = {&scaffold->ajnas}, .path = {&scaffold->graph},

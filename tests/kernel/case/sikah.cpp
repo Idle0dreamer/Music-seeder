@@ -1,14 +1,14 @@
 #include "../Test.hpp"
 
 #include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Sikah.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 
 #include <string>
 #include <stdexcept>
 
 void test::sikah_case() {
     using namespace mq::kernel;
-    const auto scaffold = maqam::make_sikah();
+    const auto scaffold = maqam::Catalog::declared().build_executable("sikah");
     require(scaffold.has_value(), scaffold.error_or("Sikah scaffold failed"));
     const eval::Context context{
         .jins = {&scaffold->ajnas}, .path = {&scaffold->graph},

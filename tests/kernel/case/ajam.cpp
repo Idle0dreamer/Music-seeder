@@ -1,7 +1,7 @@
 #include "../Test.hpp"
 
 #include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Ajam.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 
 #include <string>
 
@@ -9,7 +9,7 @@
 
 void test::ajam_case() {
     using namespace mq::kernel;
-    auto scaffold = maqam::make_ajam();
+    auto scaffold = maqam::Catalog::declared().build_executable("ajam");
     require(scaffold.has_value(), scaffold.error_or("Ajam scaffold failed"));
     const eval::Context context{
         .jins = {&scaffold->ajnas}, .path = {&scaffold->graph},

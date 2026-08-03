@@ -1,14 +1,14 @@
 #include "../Test.hpp"
 
 #include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Nahawand.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
 #include <string>
 
 void test::nahawand_case() {
     using namespace mq::kernel;
-    auto scaffold = maqam::make_nahawand();
+    auto scaffold = maqam::Catalog::declared().build_executable("nahawand");
     require(scaffold.has_value(), scaffold.error_or("Nahawand scaffold failed"));
     const eval::Context context{
         .jins = {&scaffold->ajnas},

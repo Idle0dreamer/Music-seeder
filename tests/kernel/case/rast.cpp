@@ -1,14 +1,14 @@
 #include "../Test.hpp"
 
 #include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Rast.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
 #include <string>
 
 void test::rast_case() {
     using namespace mq::kernel;
-    auto scaffold = maqam::make_rast();
+    auto scaffold = maqam::Catalog::declared().build_executable("rast");
     require(scaffold.has_value(), scaffold.error_or("Rast scaffold failed"));
     const eval::Context context{
         .jins = {&scaffold->ajnas},

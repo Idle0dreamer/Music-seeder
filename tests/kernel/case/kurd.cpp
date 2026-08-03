@@ -1,13 +1,13 @@
 #include "../Test.hpp"
 
 #include "mq/kernel/generate/Engine.hpp"
-#include "mq/kernel/maqam/Kurd.hpp"
+#include "mq/kernel/maqam/Catalog.hpp"
 
 #include <algorithm>
 
 void test::kurd_case() {
     using namespace mq::kernel;
-    auto scaffold = maqam::make_kurd();
+    auto scaffold = maqam::Catalog::declared().build_executable("kurd");
     require(scaffold.has_value(), scaffold.error_or("Kurd scaffold failed"));
     const eval::Context context{
         .jins = {&scaffold->ajnas},
