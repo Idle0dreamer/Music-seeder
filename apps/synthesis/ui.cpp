@@ -424,16 +424,16 @@ private:
         }
         const auto local_renderer =
             std::filesystem::path(QApplication::applicationDirPath().toStdString()) /
-            "synthesis-render";
+            "synthesis-faust-render";
         QString executable;
         if (std::filesystem::exists(local_renderer)) {
             executable = QString::fromStdString(local_renderer.string());
         } else {
-            executable = QStandardPaths::findExecutable("synthesis-render");
+            executable = QStandardPaths::findExecutable("synthesis-faust-render");
         }
         if (executable.isEmpty()) {
             show_error(
-                "The synthesis renderer was not found beside the player.");
+                "The Faust synthesis renderer was not found beside the player.");
             return;
         }
 

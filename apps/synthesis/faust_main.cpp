@@ -60,6 +60,8 @@ int main(int argc, char** argv) {
         << "maqam: " << options->maqam << '\n'
         << "candidate: " << generated->candidate.str() << '\n'
         << "model: Faust-generated coupled-course physical model\n"
+        << "phrases: " << generated->phrase_candidates.size() << '\n'
+        << "events: " << generated->plan.events.size() << '\n'
         << "frames: " << rendered->frames << '\n'
         << "seconds: " << static_cast<double>(rendered->frames) /
                                static_cast<double>(options->sample_rate) << '\n'

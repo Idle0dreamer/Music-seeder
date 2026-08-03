@@ -215,12 +215,13 @@ Stage orderedContinuation(
 
 Stage orderedRestore(
     const Key& key,
-    const Identity& candidate) {
+    const Identity& candidate,
+    const BranchKey& finalBranch) {
     const auto p = phrase(key, candidate, "return");
     const auto descent = occurrence(
         key,
         candidate,
-        "ordered-descent." + key.branches.back().jins.name);
+        "ordered-descent." + finalBranch.jins.name);
     const auto resolution = occurrence(key, candidate, "ordered-resolution");
     std::vector<operation::Any> actions{
         operation::gesture::End{descent},
@@ -459,20 +460,30 @@ std::expected<Generation, std::string> generation(const Key& key) {
             return std::unexpected(
                 "ordered family package requires exactly two stations");
         }
-        const auto candidate = id(key, "candidate.ordered");
-        const auto stages = std::vector<Stage>{
-            establishment(key, candidate),
-            development(key, candidate),
-            climax(key, candidate, key.branches.front()),
-            orderedContinuation(key, candidate, key.branches.back()),
-            orderedRestore(key, candidate),
-        };
-        auto production = grammar::Term::alt(
-            id(key, "production.ordered"),
-            {
-            {id(key, "branch.ordered"), {}, candidateTerm(
-                key, stages, candidate)},
+        std::vector<grammar::Branch> alternatives;
+        alternatives.reserve(key.branches.size());
+        for (std::size_t index = 0; index < key.branches.size(); ++index) {
+            const auto next = (index + 1) % key.branches.size();
+            const auto candidate = id(
+                key,
+                "candidate.ordered." + key.branches[index].jins.name +
+                    ".then." + key.branches[next].jins.name);
+            const auto stages = std::vector<Stage>{
+                establishment(key, candidate),
+                development(key, candidate),
+                climax(key, candidate, key.branches[index]),
+                orderedContinuation(key, candidate, key.branches[next]),
+                orderedRestore(key, candidate, key.branches[next]),
+            };
+            alternatives.push_back({
+                id(key, "branch.ordered." +
+                           key.branches[index].jins.name),
+                {},
+                candidateTerm(key, stages, candidate),
             });
+        }
+        auto production = grammar::Term::alt(
+            id(key, "production.ordered"), std::move(alternatives));
         if (!production) {
             return std::unexpected(production.error());
         }

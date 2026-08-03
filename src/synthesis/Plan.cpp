@@ -57,7 +57,7 @@ std::expected<GeneratedPlan, std::string> make_phrase(
                            : (selected_index + continuation) %
                                  generated->legal.size();
     const auto& outcome = generated->legal[index];
-    return GeneratedPlan{outcome.candidate, outcome.plan};
+    return GeneratedPlan{outcome.candidate, outcome.plan, {outcome.candidate}};
 }
 
 } // namespace
@@ -90,7 +90,11 @@ std::expected<GeneratedPlan, std::string> make_plan(
     if (!first) {
         return std::unexpected(first.error());
     }
-    GeneratedPlan result = *first;
+    GeneratedPlan result{
+        first->candidate,
+        first->plan,
+        {first->candidate},
+    };
     for (std::size_t index = 1; index < repetitions; ++index) {
         const auto continuation = make_phrase(
             maqam,
@@ -100,6 +104,7 @@ std::expected<GeneratedPlan, std::string> make_plan(
         if (!continuation) {
             return std::unexpected(continuation.error());
         }
+        result.phrase_candidates.push_back(continuation->candidate);
         append_plan(result.plan, continuation->plan);
     }
     return result;

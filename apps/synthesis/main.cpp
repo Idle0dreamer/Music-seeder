@@ -59,6 +59,8 @@ int main(int argc, char** argv) {
                                static_cast<double>(options->sample_rate) << '\n'
         << "peak: " << rendered->peak << '\n'
         << "model: santur coupled-course physical model\n"
+        << "phrases: " << generated->phrase_candidates.size() << '\n'
+        << "events: " << generated->plan.events.size() << '\n'
         << "tonic_hz: " << rendered->conversion_tonic_hz << '\n'
         << "wav: " << options->output << '\n';
     return 0;

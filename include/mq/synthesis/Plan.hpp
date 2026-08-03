@@ -9,12 +9,14 @@
 #include <cstddef>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace mq::synthesis {
 
 struct GeneratedPlan {
     ::mq::kernel::Identity candidate;
     ::mq::kernel::performance::Plan plan;
+    std::vector<::mq::kernel::Identity> phrase_candidates;
 };
 
 [[nodiscard]] std::expected<GeneratedPlan, std::string> make_plan(

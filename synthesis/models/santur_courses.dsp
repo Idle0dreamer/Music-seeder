@@ -4,18 +4,25 @@ pm = library("physmodels.lib");
 
 declare name "music_seed_santur_courses";
 declare version "0.1";
-declare description "Three-course struck resonator; parameters remain provisional";
+declare description "Three-course hammered-dulcimer resonator with live strike control";
 
 fundamental = hslider("fundamental_hz", 220, 20, 2000, 0.01);
 intensity = hslider("intensity", 0.8, 0, 1, 0.001);
 articulation = hslider("articulation", 0, 0, 2, 1);
 releaseSeconds = hslider("release_seconds", 0.5, 0.001, 10.0, 0.001);
 strike = button("strike");
+strikePosition = hslider("strike_position", 0.42, 0.05, 0.95, 0.001);
+strikeSharpness = hslider("strike_sharpness", 0.72, 0.05, 1.5, 0.001);
+sustainSeconds = hslider("sustain_seconds", 3.2, 0.25, 12.0, 0.01);
 // Neutral, connected, and detached are distinct attack-force mappings at
 // this boundary. Their named-instrument calibration remains future work.
 attackGain = 1.0 - 0.10 * articulation;
-excitation = intensity * attackGain * pm.impulseExcitation(strike);
-decayScale = 0.5 / releaseSeconds;
+// A dulcimer hammer is a short filtered-noise contact, not a clean unit
+// impulse. Keep the excitation live so every incoming strike starts a new
+// string state while the modal state continues between render blocks.
+excitation = intensity * attackGain * pm.strike(
+    strikePosition, strikeSharpness, 1.0, strike);
+decayScale = (sustainSeconds + releaseSeconds) / 3.2;
 
 course1 = excitation : pm.modalModel(
     10,
