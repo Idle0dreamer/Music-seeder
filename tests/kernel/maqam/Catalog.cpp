@@ -6,6 +6,10 @@
 
 void test::maqam_catalog() {
     using namespace mq::kernel;
+    const auto collection = maqam::collection::load_default();
+    require(
+        collection.has_value(),
+        collection.error_or("maqam collection failed to load"));
     const auto catalog = maqam::Catalog::declared();
     require(catalog.entries().size() == 43, "maqam scope count changed");
     const auto bayati = catalog.find(sort::MaqamId{
