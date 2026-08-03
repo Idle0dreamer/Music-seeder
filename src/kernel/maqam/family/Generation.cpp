@@ -85,7 +85,6 @@ struct ActionContext {
     const Identity& candidate;
     const BranchKey* branch{};
     std::optional<Identity> previousDescent;
-    std::size_t variant{};
 };
 
 std::expected<Rational, std::string> rational(std::string_view value) {
@@ -314,7 +313,7 @@ std::expected<operation::Any, std::string> makeAction(
     const ActionBuilder emit =
         [](const ActionContext& c,
            const ActionSpec& a) -> std::expected<operation::Any, std::string> {
-        if (const auto checked = arity(a, 2, 3); !checked) {
+        if (const auto checked = arity(a, 2, 2); !checked) {
             return std::unexpected(checked.error());
         }
         const auto cellValue = reference(c, a.arguments[0]);
@@ -325,19 +324,33 @@ std::expected<operation::Any, std::string> makeAction(
         if (!formulaValue) {
             return std::unexpected(formulaValue.error());
         }
-        std::optional<sort::FormulaId> variation;
-        if (a.arguments.size() == 3 &&
-            (c.variant > 0 || a.operation == "emit.variation")) {
-            const auto variationValue = reference(c, a.arguments[2]);
-            if (!variationValue) {
-                return std::unexpected(variationValue.error());
-            }
-            variation = sort::FormulaId{*variationValue};
+        return operation::Any{operation::Emit{
+            sort::CellId{*cellValue},
+            sort::FormulaId{*formulaValue},
+            std::nullopt}};
+    };
+    const ActionBuilder emitVariation =
+        [](const ActionContext& c,
+           const ActionSpec& a) -> std::expected<operation::Any, std::string> {
+        if (const auto checked = arity(a, 3, 3); !checked) {
+            return std::unexpected(checked.error());
+        }
+        const auto cellValue = reference(c, a.arguments[0]);
+        const auto formulaValue = reference(c, a.arguments[1]);
+        const auto variationValue = reference(c, a.arguments[2]);
+        if (!cellValue) {
+            return std::unexpected(cellValue.error());
+        }
+        if (!formulaValue) {
+            return std::unexpected(formulaValue.error());
+        }
+        if (!variationValue) {
+            return std::unexpected(variationValue.error());
         }
         return operation::Any{operation::Emit{
             sort::CellId{*cellValue},
             sort::FormulaId{*formulaValue},
-            variation}};
+            sort::FormulaId{*variationValue}}};
     };
     const std::map<std::string, ActionBuilder> builders{
         {"anchor", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
@@ -454,7 +467,7 @@ std::expected<operation::Any, std::string> makeAction(
                  baggageValue}};
          }},
         {"emit", emit},
-        {"emit.variation", emit},
+        {"emit.variation", emitVariation},
         {"emphasize", [](const auto& c, const auto& a) -> std::expected<operation::Any, std::string> {
              if (const auto checked = arity(a, 2, 2); !checked) {
                  return std::unexpected(checked.error());
@@ -585,9 +598,12 @@ std::expected<std::vector<Stage>, std::string> routeSteps(
             }
             return &key.branches[*step.branch];
         }();
-        ActionContext context{key, candidate, branch, previousDescent, variant};
+        ActionContext context{key, candidate, branch, previousDescent};
         std::vector<operation::Any> actions;
         for (const auto& specification : step.actions) {
+            if (specification.variant && *specification.variant != variant) {
+                continue;
+            }
             if (specification.operation == "gesture.end.if-active") {
                 if (specification.arguments.size() != 1 ||
                     specification.arguments.front() != "previous-descent") {

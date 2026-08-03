@@ -5,6 +5,7 @@
 
 #include <expected>
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -48,6 +49,7 @@ struct BranchSpec {
 struct ActionSpec {
     std::string operation;
     std::vector<std::string> arguments;
+    std::optional<std::size_t> variant;
 };
 
 struct StepSpec {

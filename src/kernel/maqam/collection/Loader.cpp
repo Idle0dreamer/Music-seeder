@@ -180,6 +180,15 @@ std::expected<Record, std::string> finish(
             return std::unexpected(
                 "route " + route.name + " has no declared steps");
         }
+        for (const auto& step : route.steps) {
+            for (const auto& action : step.actions) {
+                if (action.variant && *action.variant >= route.variants) {
+                    return std::unexpected(
+                        "route " + route.name + " action variant is outside "
+                        "the declared route variant set");
+                }
+            }
+        }
     }
     result.specification = family::Spec{
         .package = std::move(pending.packageName),
@@ -357,9 +366,32 @@ std::expected<Set, std::string> load(
                         "step action requires operation:arguments at line " +
                         std::to_string(lineNumber));
                 }
+                auto operation = trim(action.substr(0, separator));
+                std::optional<std::size_t> variant;
+                const auto marker = operation.rfind('@');
+                if (marker != std::string::npos) {
+                    if (marker == 0 || marker + 1 >= operation.size()) {
+                        return std::unexpected(
+                            "variant-qualified action requires operation@variant at line " +
+                            std::to_string(lineNumber));
+                    }
+                    const auto parsed = integer(
+                        operation.substr(marker + 1),
+                        "action variant",
+                        lineNumber);
+                    if (!parsed || *parsed < 0) {
+                        return std::unexpected(
+                            parsed ? "action variant must be non-negative at line " +
+                                          std::to_string(lineNumber)
+                                   : parsed.error());
+                    }
+                    variant = static_cast<std::size_t>(*parsed);
+                    operation.resize(marker);
+                }
                 actions.push_back({
-                    trim(action.substr(0, separator)),
-                    split(action.substr(separator + 1), ',')});
+                    std::move(operation),
+                    split(action.substr(separator + 1), ','),
+                    variant});
             }
             found->steps.push_back({
                 fields[1],
